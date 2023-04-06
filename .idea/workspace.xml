@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="dbfe2897-6428-420d-99b3-541d83e5ecce" name="Changes" comment="Update Git ignore">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SwiftChat.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/mysql_connector_j_8_0_32.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/clientModel/Chat.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/clientModel/Log$LogType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/clientModel/Log.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/clientModel/Message.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/clientModel/User$Permission.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/clientModel/User$Status.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/clientModel/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/controler/Database.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/controler/Message.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/controler/ServerConnexion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/client/view/testPourPackage.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/server/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/server/dao/testPourPackage.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/server/network/ClientConnexionHub.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/server/network/GestionClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SwiftChat/server/serverModel/testPourPackage.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client/view/testPourPackage.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/dao/testPourPackage.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/network/ClientConnexionHub.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/serverModel/testPourPackage.txt" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2O3jTLVPuw2NUl1CnkvobaVZv7j" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ToolWindowGit.ShowToolbar&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Utilisateur\IdeaProjects\SwiftChat\.idea" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dbfe2897-6428-420d-99b3-541d83e5ecce" name="Changes" comment="" />
+      <created>1680796166822</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1680796166822</updated>
+      <workItem from="1680796168372" duration="119000" />
+      <workItem from="1680796305078" duration="4598000" />
+      <workItem from="1680800965427" duration="304000" />
+    </task>
+    <task id="LOCAL-00001" summary="Connnexion TCP/IP Test">
+      <created>1680798822557</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1680798822557</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update Server">
+      <created>1680799835593</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1680799835593</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Update Server">
+      <created>1680799985850</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1680799985850</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Update Server">
+      <created>1680800070844</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1680800070844</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Update Git ignore">
+      <created>1680800997352</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1680800997352</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Connnexion TCP/IP Test" />
+    <MESSAGE value="Update Server" />
+    <MESSAGE value="Update Git ignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update Git ignore" />
+  </component>
+</project>
