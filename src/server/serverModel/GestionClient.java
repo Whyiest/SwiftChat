@@ -1,11 +1,11 @@
-package server.network;
+package server.serverModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-class GestionClient implements Runnable {
+public class GestionClient implements Runnable {
     private Socket clientSocket;
 
     public GestionClient(Socket clientSocket) {
@@ -16,14 +16,18 @@ class GestionClient implements Runnable {
 
         try {
 
-            System.out.println("Client connected from " + clientSocket.getInetAddress() + " on port " + clientSocket.getPort() + ".");
+            System.out.println("\n[!] Client connected from " + clientSocket.getInetAddress() + " on port " + clientSocket.getPort() + ".");
 
             // Création d'un flux d'entrée pour recevoir les données du client
             BufferedReader incomingMessage = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             // Lecture de la chaîne de caractères envoyée par le client
             String message = incomingMessage.readLine();
-            System.out.println("Message reçu : " + message);
+            System.out.println("[>]Message reçu : " + message);
+
+            // Traitement du message
+            MessageAnalyser messageAnalyser = new MessageAnalyser(message);
+            messageAnalyser.redirectMessage();
 
             // Fermeture du flux et de la socket
             incomingMessage.close();

@@ -1,34 +1,38 @@
 package server.network;
-
+import server.serverModel.GestionClient;
+import server.serverModel.MessageAnalyser;
 import java.io.*;
 import java.net.*;
 
 public class ClientConnexionHub {
 
-    static int port;
+    private  int port;
 
-    static String serverIpAddress;
+    private  String serverIpAddress;
 
-    static boolean waitingForConnection = true;
+    private  boolean waitingForConnection = true;
 
     public ClientConnexionHub(int openPort) {
-        port = openPort;
-
+        this.port = openPort;
         try {
             InetAddress address = InetAddress.getLocalHost();
             serverIpAddress = address.getHostAddress();
-            System.out.println("IPv4 address: " + serverIpAddress);
         } catch (UnknownHostException ex) {
             System.err.println("Could not retrieve IP address: " + ex.getMessage());
         }
     }
 
-    public static void openConnexion() {
+    public void openConnexion() {
 
-        System.out.println("Listening connexion on port " + port + "...");
+        System.out.println("\n----------STARTING CONNECTION HUB----------");
+        System.out.println("IPv4 address: " + serverIpAddress);
+        System.out.println("Port " + port + "...");
+        System.out.println("-------------------------------------------\n");
 
         try {
             ServerSocket serverSocket = new ServerSocket(port);
+            System.out.println("[!] Server started on port " + port + " and IP address " + serverIpAddress + ".");
+            System.out.println("[!] Waiting for client connection...");
 
             while (waitingForConnection) {
 
