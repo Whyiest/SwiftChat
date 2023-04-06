@@ -12,24 +12,28 @@ public class GestionClient implements Runnable {
         this.clientSocket = clientSocket;
     }
 
+    /**
+     * Méthode run() du thread. Allow handle and manage the client connexion.
+     */
     public void run() {
 
         try {
 
+            // Display the client connexion
             System.out.println("\n[!] Client connected from " + clientSocket.getInetAddress() + " on port " + clientSocket.getPort() + ".");
 
-            // Création d'un flux d'entrée pour recevoir les données du client
+            // Create a buffer to read the message sent by the client
             BufferedReader incomingMessage = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            // Lecture de la chaîne de caractères envoyée par le client
+            // Read the message
             String message = incomingMessage.readLine();
             System.out.println("[>]Message reçu : " + message);
 
-            // Traitement du message
+            // Analyse the message
             MessageAnalyser messageAnalyser = new MessageAnalyser(message);
             messageAnalyser.redirectMessage();
 
-            // Fermeture du flux et de la socket
+            // Close the connexion
             incomingMessage.close();
             clientSocket.close();
 

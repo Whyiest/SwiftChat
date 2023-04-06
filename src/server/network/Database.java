@@ -1,4 +1,4 @@
-package client.controler;
+package server.network;
 
 import java.sql.*;
 
@@ -9,6 +9,13 @@ public class Database {
     private final String password;
     private Connection connection;
 
+    /**
+     * This constructor allow to create a database
+     * @param server    The server of the database
+     * @param database  The name of the database
+     * @param username  The username of the database
+     * @param password  The password of the database
+     */
     public Database(String server, String database, String username, String password) {
         this.server = server;
         this.database = database;
@@ -16,12 +23,16 @@ public class Database {
         this.password = password;
     }
 
+    /**
+     * This method allow to connect to the database
+     */
     public void connect() {
+
+        System.out.println("-------- DATABASE CONNECTION  ---------");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String url = "jdbc:mysql://" + server + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-            System.out.println(url);
             connection = DriverManager.getConnection(url, username, password);
             System.out.println("[*] Connection to database " + database + " successful.");
         } catch (ClassNotFoundException | SQLException e) {
@@ -30,6 +41,9 @@ public class Database {
         }
     }
 
+    /**
+     * This method allow to disconnect from the database
+     */
     public void disconnect() {
         try {
             connection.close();

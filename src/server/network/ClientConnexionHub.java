@@ -1,27 +1,37 @@
 package server.network;
 import server.serverModel.GestionClient;
-import server.serverModel.MessageAnalyser;
 import java.io.*;
 import java.net.*;
 
 public class ClientConnexionHub {
 
-    private  int port;
+    private final int port;
 
-    private  String serverIpAddress;
+    private String serverIpAddress;
 
-    private  boolean waitingForConnection = true;
+    private boolean waitingForConnection = true;
 
+    /**
+     * Constructor of the ClientConnexionHub class
+     * @param openPort Port to open
+     */
     public ClientConnexionHub(int openPort) {
-        this.port = openPort;
+
+        // Set the port
+        port = openPort;
+
+        // Get the IP address of the server
         try {
             InetAddress address = InetAddress.getLocalHost();
             serverIpAddress = address.getHostAddress();
-        } catch (UnknownHostException ex) {
-            System.err.println("Could not retrieve IP address: " + ex.getMessage());
+        } catch (UnknownHostException error) {
+            System.err.println("Could not retrieve IP address: " + error.getMessage());
         }
     }
 
+    /**
+     * Open the connexion hub
+     */
     public void openConnexion() {
 
         System.out.println("\n----------STARTING CONNECTION HUB----------");
