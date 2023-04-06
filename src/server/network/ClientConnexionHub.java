@@ -7,6 +7,8 @@ public class ClientConnexionHub {
 
     static int port;
 
+    static boolean waitingForConnection = true;
+
     public ClientConnexionHub(int openPort) {
         port = openPort;
     }
@@ -16,9 +18,11 @@ public class ClientConnexionHub {
         // Création d'un socket serveur sur le port 5000
         try {
             ServerSocket serverSocket = new ServerSocket(port);
+            System.out.println("Waiting for connection...");
 
 
             while (true) {
+
                 // Accepter une connexion entrante
                 Socket clientSocket = serverSocket.accept();
 
@@ -27,7 +31,6 @@ public class ClientConnexionHub {
                 connexionThread.start();
 
             }
-
         } catch (
                 IOException e) {
             // Traitement de l'exception IO

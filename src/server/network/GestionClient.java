@@ -15,6 +15,9 @@ class GestionClient implements Runnable {
     public void run() {
 
         try {
+
+            System.out.println("Client connected from " + clientSocket.getInetAddress() + " on port " + clientSocket.getPort() + ".");
+
             // Création d'un flux d'entrée pour recevoir les données du client
             BufferedReader incomingMessage = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
