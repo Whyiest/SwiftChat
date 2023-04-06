@@ -1,4 +1,4 @@
-import model.Database;
+import controler.Database;
 
 public class Main {
 
