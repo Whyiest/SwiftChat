@@ -1,4 +1,4 @@
-package controler;
+package client.controler;
 
 import java.sql.*;
 

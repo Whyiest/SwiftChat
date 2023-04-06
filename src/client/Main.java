@@ -1,4 +1,6 @@
-import controler.Database;
+package client;
+
+import client.controler.Database;
 
 public class Main {
 

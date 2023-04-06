@@ -1,4 +1,4 @@
-package controler;
+package client.controler;
 
 public class Message {
 }
