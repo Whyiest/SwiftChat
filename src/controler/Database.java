@@ -1,4 +1,4 @@
-package controleur;
+package controler;
 
 public class Database {
 }
