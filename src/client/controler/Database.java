@@ -23,9 +23,9 @@ public class Database {
             String url = "jdbc:mysql://" + server + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
             System.out.println(url);
             connection = DriverManager.getConnection(url, username, password);
-            System.out.println("Connection to database " + database + " successful.");
+            System.out.println("[*] Connection to database " + database + " successful.");
         } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Connection to database " + database + " failed.");
+            System.out.println("[!] Connection to database " + database + " failed.");
             e.printStackTrace();
         }
     }
@@ -33,9 +33,9 @@ public class Database {
     public void disconnect() {
         try {
             connection.close();
-            System.out.println("Disconnection from database " + database + " successful.");
+            System.out.println("[*] Disconnection from database " + database + " successful.");
         } catch (SQLException e) {
-            System.out.println("Disconnection from database " + database + " failed.");
+            System.out.println("[!] Disconnection from database " + database + " failed.");
             e.printStackTrace();
         }
     }
