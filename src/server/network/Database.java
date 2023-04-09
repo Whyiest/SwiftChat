@@ -7,7 +7,7 @@ public class Database {
     private final String database;
     private final String username;
     private final String password;
-    private Connection connection;
+    public Connection connection;
 
     /**
      * This constructor allow to create a database
@@ -51,6 +51,67 @@ public class Database {
         } catch (SQLException e) {
             System.out.println("[!] Disconnection from database " + database + " failed.");
             e.printStackTrace();
+        }
+    }
+
+    public void populate() {
+
+        // DO NOT EXECUTE THIS METHOD IF THE DATABASE IS ALREADY POPULATED
+        // FOR DEBUG ONLY
+
+        Statement populate = null;
+
+        try {
+            populate = connection.createStatement();
+
+            // Create USER table
+            String createUserTableSQL = "CREATE TABLE USER " +
+                    "(ID INTEGER not NULL, " +
+                    " USERNAME VARCHAR(255), " +
+                    " FIRST_NAME VARCHAR(255), " +
+                    " LAST_NAME VARCHAR(255), " +
+                    " EMAIL VARCHAR(255), " +
+                    " PASSWORD VARCHAR(255), " +
+                    " PERMISSION INTEGER, " +
+                    " LAST_CONNECTION_TIME TIMESTAMP, " +
+                    " PRIMARY KEY ( ID ))";
+            populate.executeUpdate(createUserTableSQL);
+
+            // Create MESSAGE table
+            String createMessageTableSQL = "CREATE TABLE MESSAGE " +
+                    "(ID INTEGER not NULL, " +
+                    " USER_ID INTEGER, " +
+                    " TIMESTAMP TIMESTAMP, " +
+                    " CONTENT VARCHAR(255), " +
+                    " PRIMARY KEY ( ID ), " +
+                    " FOREIGN KEY ( USER_ID ) REFERENCES USER(ID))";
+            populate.executeUpdate(createMessageTableSQL);
+
+            // Create LOG table
+            String createLogTableSQL = "CREATE TABLE LOG " +
+                    "(ID INTEGER not NULL, " +
+                    " USER_ID INTEGER, " +
+                    " TIMESTAMP TIMESTAMP, " +
+                    " TYPE VARCHAR(255), " +
+                    " PRIMARY KEY ( ID ), " +
+                    " FOREIGN KEY ( USER_ID ) REFERENCES USER(ID))";
+            populate.executeUpdate(createLogTableSQL);
+            populate.close();
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (populate != null) populate.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (connection != null) connection.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
         }
     }
 

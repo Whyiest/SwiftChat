@@ -1,15 +1,21 @@
 package server.serverModel;
 
+import server.dao.MessageAnalyser;
+import server.network.Database;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class GestionClient implements Runnable {
+
+    private Database myDb;
     private Socket clientSocket;
 
-    public GestionClient(Socket clientSocket) {
+    public GestionClient(Socket clientSocket, Database myDb) {
         this.clientSocket = clientSocket;
+        this.myDb = myDb;
     }
 
     /**
@@ -30,7 +36,7 @@ public class GestionClient implements Runnable {
             System.out.println("[>]Message reçu : " + message);
 
             // Analyse the message
-            MessageAnalyser messageAnalyser = new MessageAnalyser(message);
+            MessageAnalyser messageAnalyser = new MessageAnalyser(message, myDb);
             messageAnalyser.redirectMessage();
 
             // Close the connexion

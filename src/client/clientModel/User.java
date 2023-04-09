@@ -1,90 +1,96 @@
 package client.clientModel;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 public class User {
+
     private int id;
     private String userName;
     private String password;
-    public enum Status{ONLINE,OFFLINE,AWAY}
-    private Status status;
-    public enum Permission{CLASSIC,MODERATOR,ADMIN}
-    private Permission permission;
+
+    //public enum Permission {CLASSIC, MODERATOR, ADMIN}
+    //public enum Status {ONLINE, OFFLINE, AWAY}
+
+    private String status;
+    private String permission;
+
     private String mail;
     private String lastName;
     private String firstName;
+
+    private boolean isBanned;
+
     private LocalDateTime lastConnectionTime;
 
-    public User() {
-    }
+    /**
+     * This constructor allow to create a user for the first time
+     * @param permission The permission of the user
+     * @param email       The mail of the user
+     * @param lastName   The last name of the user
+     * @param firstName  The first name of the user
+     * @param userName   The username of the user
+     * @param password   The password of the user
+     */
+    public User(String permission, String firstName, String lastName, String userName, String email, String password) {
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public String getMail() {
-        return mail;
-    }
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public LocalDateTime getLastConnectionTime() {
-        return lastConnectionTime;
-    }
-
-    public void setLastConnectionTime(LocalDateTime lastConnectionTime) {
-        this.lastConnectionTime = lastConnectionTime;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Permission getPermission() {
-        return permission;
-    }
-
-    public void setPermission(Permission permission) {
         this.permission = permission;
+        this.mail = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.userName = userName;
+        this.password = password;
+
+        // Setup the others values
+        this.isBanned = false;
+        id = new Random().nextInt(1000000);
+        status = "OFFLINE";
+
+        // Hash the password
+        hashPassword();
+    }
+
+    /**
+     * This constructor allow to create a user from the database
+     * @param permission
+     * @param firstName
+     * @param lastName
+     * @param userName
+     * @param email
+     * @param password
+     * @param status
+     * @param lastConnectionTime
+     * @param isBanned
+     */
+    public User (String permission, String firstName, String lastName, String userName, String email, String password, String status, LocalDateTime lastConnectionTime, boolean isBanned) {
+        this.permission = permission;
+        this.mail = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.userName = userName;
+        this.password = password;
+        this.status = status;
+        this.lastConnectionTime = lastConnectionTime;
+        this.isBanned = isBanned;
+    }
+
+    /**
+     *  This function allow to hash the password
+     *  The password is hashed with the hashCode() function
+     */
+    private void hashPassword() {
+        password = Integer.toString(password.hashCode());
+    }
+
+    /**
+     * This method allow to transform a user into a string to send it to the server
+     * @return The user in a string format
+     */
+    public String formalizeServerMessage(){
+        return userName + ";" + password + ";" + mail + ";" + lastName + ";" + firstName + ";" + permission + ";" + status + ";" + lastConnectionTime + ";" + isBanned;
     }
 }
+
+
+
+

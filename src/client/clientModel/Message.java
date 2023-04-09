@@ -1,54 +1,34 @@
 package client.clientModel;
-
 import java.time.LocalDateTime;
 
+
 public class Message {
-    private int id;
-    private int senderId;
-    private String context;
-    private int receiverId;
-    private LocalDateTime timeStamp;
+    private final String sender;
+    private final String receiver;
+    private final String content;
+    private final LocalDateTime timestamp;
 
-    public Message() {
+    /**
+     * This constructor allow to create a message
+     * @param sender   The sender of the message
+     * @param receiver The receiver of the message
+     * @param content   The content of the message
+     *                  The timestamp is automatically generated
+     */
+    public Message(String sender, String receiver, String content) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.content = content;
+        this.timestamp = LocalDateTime.now();;
     }
 
-    public int getId() {
-        return id;
+
+    /**
+     * This method allow to transform a message into a string to send it to the server
+     * @return The message in a string format
+     */
+    public String formalizeServerMessage(){
+        return sender + ";" + receiver + ";" + content + ";" + timestamp;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(int senderId) {
-        this.senderId = senderId;
-    }
-
-    public String getContext() {
-        return context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
-    }
-
-    public int getReceiverId() {
-        return receiverId;
-    }
-
-    public void setReceiverId(int receiverId) {
-        this.receiverId = receiverId;
-    }
-
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
-    }
 }

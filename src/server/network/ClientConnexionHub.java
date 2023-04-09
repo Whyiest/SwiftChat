@@ -11,6 +11,8 @@ public class ClientConnexionHub {
 
     private boolean waitingForConnection = true;
 
+    private Database myDb;
+
     /**
      * Constructor of the ClientConnexionHub class
      * @param openPort Port to open
@@ -27,13 +29,20 @@ public class ClientConnexionHub {
         } catch (UnknownHostException error) {
             System.err.println("Could not retrieve IP address: " + error.getMessage());
         }
+
+        // Link a database
+        myDb = new Database("swiftchatserver.mysql.database.azure.com", "swiftchatdb", "siwftchat", "Ines123#");
     }
 
     /**
-     * Open the connexion hub
+     * Open the connexion hub and the database
      */
     public void openConnexion() {
 
+        // Connect to the database
+        myDb.connect();
+
+        // Start the connexion hub
         System.out.println("\n----------STARTING CONNECTION HUB----------");
         System.out.println("IPv4 address: " + serverIpAddress);
         System.out.println("Port " + port + "...");
@@ -50,7 +59,7 @@ public class ClientConnexionHub {
                 Socket clientSocket = serverSocket.accept();
 
                 // Création d'un nouveau thread pour gérer le client
-                Thread connexionThread = new Thread(new GestionClient(clientSocket));
+                Thread connexionThread = new Thread(new GestionClient(clientSocket, myDb));
                 connexionThread.start();
 
             }
@@ -58,6 +67,14 @@ public class ClientConnexionHub {
             // Traitement de l'exception IO
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Close the connexion hub and the database
+     */
+    public void closeConnexion() {
+        waitingForConnection = false;
+        myDb.disconnect();
     }
 }
 
