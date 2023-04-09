@@ -89,6 +89,8 @@ public class User {
     public String formalizeServerMessage(){
         return userName + ";" + password + ";" + mail + ";" + lastName + ";" + firstName + ";" + permission + ";" + status + ";" + lastConnectionTime + ";" + isBanned;
     }
+
+
 }
 
 

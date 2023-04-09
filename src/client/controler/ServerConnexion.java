@@ -3,17 +3,30 @@ import client.clientModel.Message;
 import client.clientModel.User;
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
-public class ServerConnexion {
+
+public class ServerConnexion implements Runnable {
+
     private String serverIP;
     private int port;
     private Socket clientSocket;
+    private boolean clientAlive = false;
+
 
     public ServerConnexion(String serverIP, int port){
         this.port = port;
         this.serverIP = serverIP;
     }
 
+    public void run() {
+
+        try {
+            connect();
+            } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
     /**
      * Allow to connect to the server
      */
@@ -21,43 +34,21 @@ public class ServerConnexion {
 
         try {
             System.out.println("[?] Trying to connect to server...");
-            // Connexion au serveur sur le port 5000
+
+            // Connecting to the server on the specified port
             clientSocket = new Socket(serverIP, port);
+
+            // Inform the client that he is connected
+            clientAlive = true;
+            System.out.println("[!] Connected to server.");
 
         } catch (
                 IOException e) {
             System.out.println("[!] Cannot connect to server.");
-
-            // Traitement de l'exception IO
             e.printStackTrace();
         }
     }
 
-    /**
-     * Send a string to the server
-     * @param serverMessage
-     */
-    public void sendToServer (String serverMessage) {
-
-        if (clientSocket == null) {
-            System.out.println("[!] Cannot send message: not connected to server.");
-            return;
-        }
-        else {
-            System.out.println("[?] Sending \"" + serverMessage + "\" to server...");
-            try {
-                // Création d'un flux de sortie pour envoyer des données au serveur
-                PrintWriter outgoingMessage = new PrintWriter(clientSocket.getOutputStream(), true);
-
-                // Envoi d'une chaîne de caractères au serveur
-                outgoingMessage.println(serverMessage);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
 
     /**
      * Disconnect from the server
@@ -66,12 +57,11 @@ public class ServerConnexion {
 
         if (clientSocket == null) {
             System.out.println("[!] Cannot disconnect: not connected to server.");
-            return;
         }
         else {
             System.out.println("[?] Disconnecting from server...");
             try {
-                // Fermeture du flux et de la socket
+                // Closing the socket
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -80,23 +70,65 @@ public class ServerConnexion {
     }
 
     /**
-     * Allow to receive a message from the server
-      * @return the message received from the server
+     * Allow to update the information of the client
+     * @return true if the client is connected to the server
      */
-    public String receiveFromServer() {
+
+    public boolean isClientAlive () {
+        return clientAlive;
+    }
+
+
+    /**
+     * Send a string to the server
+     * @param serverMessage the message to send
+     *                     Format: "COMMAND;PARAMETER1;PARAMETER2;..."
+     * @return the response from the server
+     */
+
+    public String sendToServer (String serverMessage) {
+
         if (clientSocket == null) {
-            System.out.println("[!] Cannot receive message: not connected to server.");
-            return null;
+            System.out.println("[!] Cannot send message: not connected to server.");
         }
         else {
-            System.out.println("[?] Receiving message from server...");
-            try {
-                // Création d'un flux d'entrée pour recevoir des données du serveur
-                BufferedReader incomingMessage = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                // Lecture de la réponse du serveur
-                String serverMessage = incomingMessage.readLine();
-                System.out.println("[?] Received \"" + serverMessage + "\" from server.");
+            System.out.println("[?] Sending \"" + serverMessage + "\" to server...");
+            try {
+                // Create a writer to send data to the server
+                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+
+                // Send the message to the server
+                writer.println(serverMessage);
+
+                // Flush the writer to send the data
+                writer.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return receiveFromServer();
+    }
+
+    /**
+     * Receive a string from the server
+     * @return
+     */
+    public String receiveFromServer() {
+
+        if (clientSocket == null) {
+            System.out.println("[!] Cannot receive answer from the server: not connected to server.");
+            return null;
+        } else {
+            System.out.println("[?] Waiting answser from server...");
+            try {
+                // Create a scanner to read data from the server
+                Scanner scanner = new Scanner(clientSocket.getInputStream());
+
+                // Read the response from the server
+                String serverMessage = scanner.nextLine();
+                System.out.println("[?] Received \"" + serverMessage + "\" from server.\n");
                 return serverMessage;
 
             } catch (IOException e) {
@@ -106,11 +138,13 @@ public class ServerConnexion {
         return null;
     }
 
+
+
     /**
      * Send a message to the server to be sent to the receiver
-     * @param receiver
-     * @param sender
-     * @param content
+     * @param receiver the receiver of the message
+     * @param sender the sender of the message
+     * @param content the content of the message
      */
     public void sendMessage (String receiver, String sender, String content) {
 
@@ -118,15 +152,12 @@ public class ServerConnexion {
         Message messageToSend = new Message(sender, receiver, content);
 
         // Send it through the server
-        sendToServer("SEND-MESSAGE#" + messageToSend.formalizeServerMessage());
-
-        // Receive the server's response
-        receiveFromServer();
+        sendToServer("SEND-MESSAGE;" + messageToSend.formalizeServerMessage());
     }
 
     /**
      * Create a user to send it to the server for the first time
-     * @param permission
+     * @param permission the permission of the user
      * @param firstName
      * @param lastName
      * @param username
@@ -139,9 +170,11 @@ public class ServerConnexion {
         User userToSend = new User(permission, firstName, lastName, username, email, password);
 
         // Send it through the server
-        sendToServer("CREATE-USER#" + userToSend.formalizeServerMessage());
+        sendToServer("CREATE-USER;" + userToSend.formalizeServerMessage());
+    }
 
-        // Receive the server's response
-        receiveFromServer();
+    public void login (String username, String password) {
+        // Send it through the server
+        sendToServer("LOGIN;" + username + ";" + password);
     }
 }

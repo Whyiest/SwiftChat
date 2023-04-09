@@ -46,12 +46,14 @@ public class MessageAnalyser {
         extractMessage();
 
         // Redirect the message to the correct DAO
+        System.out.println("[>] Action requested : " + messageAction);
         switch (messageAction) {
             case "LOGIN" -> System.out.println("LOGIN DAO");
             case "LOGOUT" -> System.out.println("LOGOUT DAO");
             case "SEND-MESSAGE" -> addMessageToDatabase();
             case "CREATE-USER" -> addUserToDatabase();
             case "SEND-MESSAGE-GROUP" -> System.out.println("SEND-MESSAGE-GROUP DAO");
+            case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
             default -> System.out.println("ERROR");
         }
     }

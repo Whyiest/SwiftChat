@@ -6,6 +6,7 @@ import server.network.Database;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class GestionClient implements Runnable {
@@ -31,13 +32,26 @@ public class GestionClient implements Runnable {
             // Create a buffer to read the message sent by the client
             BufferedReader incomingMessage = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            // Read the message
-            String message = incomingMessage.readLine();
-            System.out.println("[>]Message reçu : " + message);
+            while (!clientSocket.isClosed()) {
 
-            // Analyse the message
-            MessageAnalyser messageAnalyser = new MessageAnalyser(message, myDb);
-            messageAnalyser.redirectMessage();
+                // Read the message
+                String message = incomingMessage.readLine();
+                if (message == null) {
+                    // Connection has been closed by the client
+                    break;
+                }
+
+                System.out.println("\n[>] Message reçu : " + message);
+
+                // Analyse the message
+                MessageAnalyser messageAnalyser = new MessageAnalyser(message, myDb);
+                messageAnalyser.redirectMessage();
+
+                // Answer to the client
+                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+                writer.println("Message received");
+                writer.flush();
+            }
 
             // Close the connexion
             incomingMessage.close();

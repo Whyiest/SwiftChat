@@ -2,6 +2,7 @@ package server.network;
 import server.serverModel.GestionClient;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 public class ClientConnexionHub {
 
@@ -12,6 +13,8 @@ public class ClientConnexionHub {
     private boolean waitingForConnection = true;
 
     private Database myDb;
+
+    private ArrayList<Socket> clientSocketList = new ArrayList<>();
 
     /**
      * Constructor of the ClientConnexionHub class
@@ -56,11 +59,13 @@ public class ClientConnexionHub {
             while (waitingForConnection) {
 
                 // Accepter une connexion entrante
-                Socket clientSocket = serverSocket.accept();
+                Socket newClientSocket = serverSocket.accept();
+                clientSocketList.add(newClientSocket);
 
                 // Création d'un nouveau thread pour gérer le client
-                Thread connexionThread = new Thread(new GestionClient(clientSocket, myDb));
+                Thread connexionThread = new Thread(new GestionClient(newClientSocket, myDb));
                 connexionThread.start();
+                System.out.println("[!] " + clientSocketList.size() + " client(s) connected.");
 
             }
         } catch (IOException e) {
@@ -73,6 +78,14 @@ public class ClientConnexionHub {
      * Close the connexion hub and the database
      */
     public void closeConnexion() {
+
+        for (Socket socket : clientSocketList) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         waitingForConnection = false;
         myDb.disconnect();
     }
