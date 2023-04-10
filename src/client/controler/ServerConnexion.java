@@ -1,6 +1,8 @@
 package client.controler;
+
 import client.clientModel.Message;
 import client.clientModel.User;
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -14,7 +16,7 @@ public class ServerConnexion implements Runnable {
     private boolean clientAlive = false;
 
 
-    public ServerConnexion(String serverIP, int port){
+    public ServerConnexion(String serverIP, int port) {
         this.port = port;
         this.serverIP = serverIP;
     }
@@ -23,14 +25,15 @@ public class ServerConnexion implements Runnable {
 
         try {
             connect();
-            } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     /**
      * Allow to connect to the server
      */
-    public void connect(){
+    public void connect() {
 
         try {
             System.out.println("[?] Trying to connect to server...");
@@ -53,12 +56,11 @@ public class ServerConnexion implements Runnable {
     /**
      * Disconnect from the server
      */
-    public void disconnect(){
+    public void disconnect() {
 
         if (clientSocket == null) {
             System.out.println("[!] Cannot disconnect: not connected to server.");
-        }
-        else {
+        } else {
             System.out.println("[?] Disconnecting from server...");
             try {
                 // Closing the socket
@@ -71,28 +73,25 @@ public class ServerConnexion implements Runnable {
 
     /**
      * Allow to update the information of the client
+     *
      * @return true if the client is connected to the server
      */
-
-    public boolean isClientAlive () {
+    public boolean isClientAlive() {
         return clientAlive;
     }
 
 
-
     /**
-     * Send a string to the server
-     * @param serverMessage the message to send
-     *                     Format: "COMMAND;PARAMETER1;PARAMETER2;..."
-     * @return the response from the server
+     * Send a string to the server and return the response
+     * @param serverMessage the message to send / Format: "COMMAND;PARAMETER1;PARAMETER2;..."
+     * @return the response from the server / Format: "COMMAND;RESPONSE1;RESPONSE2;..."
      */
 
-    public String sendToServer (String serverMessage) {
+    public String sendToServer(String serverMessage) {
 
         if (clientSocket == null) {
             System.out.println("[!] Cannot send message: not connected to server.");
-        }
-        else {
+        } else {
 
             System.out.println("[?] Sending \"" + serverMessage + "\" to server...");
             try {
@@ -113,8 +112,8 @@ public class ServerConnexion implements Runnable {
     }
 
     /**
-     * Receive a string from the server
-     * @return
+     * Receive a string from the server and return it to the client (if the client is connected)
+     * @return the message received from the server
      */
     public String receiveFromServer() {
 
@@ -140,44 +139,68 @@ public class ServerConnexion implements Runnable {
     }
 
 
-
     /**
      * Send a message to the server to be sent to the receiver
+     *
      * @param receiver the receiver of the message
-     * @param sender the sender of the message
-     * @param content the content of the message
+     * @param sender   the sender of the message
+     * @param content  the content of the message
+     * @return the response from the server / Response format: "SEND-MESSAGE;SUCCESS/FAILURE;MESSAGE_ID;SENDER;RECEIVER;CONTENT;TIMESTAMP"
      */
-    public void sendMessage (String receiver, String sender, String content) {
+    public String sendMessage(String receiver, String sender, String content) {
+
+        String serverResponse = "";
 
         // Create message
         Message messageToSend = new Message(sender, receiver, content);
 
         // Send it through the server
-        sendToServer("SEND-MESSAGE;" + messageToSend.formalizeServerMessage());
+        serverResponse = sendToServer("SEND-MESSAGE;" + messageToSend.formalizeServerMessage());
+
+        return serverResponse;
     }
 
     /**
      * Create a user to send it to the server for the first time
      * @param permission the permission of the user
-     * @param firstName
-     * @param lastName
-     * @param username
-     * @param email
-     * @param password
+     * @param firstName  the first name of the user
+     * @param lastName   the last name of the user
+     * @param username   the username of the user
+     * @param email      the email of the user
+     * @param password   the password of the user
+     * @return the response from the server / Response format: "CREATE-USER;SUCCESS/FAILURE;
      */
-    public String createUser (String permission, String firstName, String lastName, String username, String email, String password) {
+    public String createUser(String permission, String firstName, String lastName, String username, String email, String password) {
 
+        String serverResponse = "";
         // Create user for the server
         User userToSend = new User(permission, firstName, lastName, username, email, password);
-
         // Send it through the server
-        sendToServer("CREATE-USER;" + userToSend.formalizeServerMessage());
+        serverResponse = sendToServer("CREATE-USER;" + userToSend.formalizeServerMessage());
+        return serverResponse;
     }
 
-    public String listAllUsers ()
+    /**
+     * Send a request to the server to get all the users
+     * @return the list of all the users in String format / Response format: "SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD"
+     */
+    public String listAllUsers() {
+        return sendToServer("LIST-ALL-USERS");
+    }
 
-    public void login (String username, String password) {
+    /**
+     * Send a login request to the server
+     * @param username the username of the user
+     * @param password the password of the user
+     * @return the response from the server and the user information if the login was successful / Response format: "LOGIN;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD"
+     */
+    public String login(String username, String password) {
+
+        String serverResponse = "";
+
         // Send it through the server
-        sendToServer("LOGIN;" + username + ";" + password);
+        serverResponse = sendToServer("LOGIN;" + username + ";" + password);
+
+        return serverResponse;
     }
 }
