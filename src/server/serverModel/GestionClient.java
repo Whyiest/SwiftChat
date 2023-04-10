@@ -25,6 +25,7 @@ public class GestionClient implements Runnable {
     public void run() {
 
         try {
+            String serverResponse = "";
 
             // Display the client connexion
             System.out.println("\n[!] Client connected from " + clientSocket.getInetAddress() + " on port " + clientSocket.getPort() + ".");
@@ -45,11 +46,11 @@ public class GestionClient implements Runnable {
 
                 // Analyse the message
                 MessageAnalyser messageAnalyser = new MessageAnalyser(message, myDb);
-                messageAnalyser.redirectMessage();
+                serverResponse = messageAnalyser.redirectMessage();
 
                 // Answer to the client
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-                writer.println("Message received");
+                writer.println(serverResponse);
                 writer.flush();
             }
 

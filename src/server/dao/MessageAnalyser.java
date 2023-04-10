@@ -1,5 +1,6 @@
 package server.dao;
 
+import client.controler.ServerConnexion;
 import server.network.Database;
 
 import java.sql.PreparedStatement;
@@ -40,7 +41,10 @@ public class MessageAnalyser {
     }
 
 
-    public void redirectMessage() {
+    public String redirectMessage() {
+
+        // Server response
+        String serverResponse = "";
 
         // Extract all the parts of the message
         extractMessage();
@@ -56,18 +60,19 @@ public class MessageAnalyser {
             case "GET-GROUP-FROM-USER" -> System.out.println("GET GROUP FROM USER DAO");
             case "GET-USER-FROM-USERNAME" -> System.out.println("GET USER FROM USERNAME DAO");
             case "GET-USER-FROM-MAIL" -> System.out.println("GET USER FROM MAIL DAO");
-            case "SEND-MESSAGE" -> addMessageToDatabase();
-            case "CREATE-USER" -> addUserToDatabase();
+            case "SEND-MESSAGE" -> serverResponse = addMessageToDatabase();
+            case "CREATE-USER" -> serverResponse = addUserToDatabase();
             case "SEND-MESSAGE-GROUP" -> System.out.println("SEND-MESSAGE-GROUP DAO");
             case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
             default -> System.out.println("ERROR");
         }
+        return serverResponse;
     }
 
     /**
      * This method allow to add a message to the database
      */
-    public void addMessageToDatabase() {
+    public String addMessageToDatabase() {
 
         // Linking the message parts to variables
         String messageContent = "";
@@ -80,16 +85,18 @@ public class MessageAnalyser {
             messageSender = messageParts[2];
             messageReceiver = messageParts[3];
             messageTimestamp = messageParts[4];
+            return "SEND-MESSAGE;SUCCESS";
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;SENDER;RECEIVER;CONTENT]");
+            return "SEND-MESSAGE;ERROR";
         }
     }
 
     /**
      * This method allow to add a user to the database
      */
-    public void addUserToDatabase() {
+    public String addUserToDatabase() {
 
         // Linking the message parts to variables
         String userID = "";
@@ -140,10 +147,12 @@ public class MessageAnalyser {
 
             // Close the prepared statement
             statement.close();
+            return "SEND-MESSAGE;SUCCESS";
 
         } catch (Exception e) {
             System.out.println("[!] Error while creating the user [" + message + "]");
             System.out.println("Statement failure : " + sql);
+            return "SEND-MESSAGE;ERROR";
         }
 
 
