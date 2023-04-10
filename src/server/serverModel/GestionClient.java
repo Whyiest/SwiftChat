@@ -1,6 +1,6 @@
 package server.serverModel;
 
-import server.dao.MessageAnalyser;
+import server.network.MessageAnalyser;
 import server.network.Database;
 
 import java.io.BufferedReader;

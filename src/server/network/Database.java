@@ -10,7 +10,7 @@ public class Database {
     public Connection connection;
 
     /**
-     * This constructor allow to create a database
+     * This constructor allows to create a database
      * @param server    The server of the database
      * @param database  The name of the database
      * @param username  The username of the database
@@ -24,7 +24,7 @@ public class Database {
     }
 
     /**
-     * This method allow to connect to the database
+     * This method allows to connect to the database
      */
     public void connect() {
 
@@ -42,7 +42,7 @@ public class Database {
     }
 
     /**
-     * This method allow to disconnect from the database
+     * This method allows to disconnect from the database
      */
     public void disconnect() {
         try {
@@ -72,7 +72,7 @@ public class Database {
                     " LAST_NAME VARCHAR(255), " +
                     " EMAIL VARCHAR(255), " +
                     " PASSWORD VARCHAR(255), " +
-                    " PERMISSION INTEGER, " +
+                    " PERMISSION VARCHAR(255), " +
                     " LAST_CONNECTION_TIME TIMESTAMP, " +
                     " PRIMARY KEY ( ID ))";
             populate.executeUpdate(createUserTableSQL);
