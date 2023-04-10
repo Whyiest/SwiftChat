@@ -14,31 +14,31 @@ public class LogDao {
 
         // Linking message parts to variables
         String logUser = "";
-        String logType = "";
         String logTimestamp = "";
+        String logType = "";
 
         try{
             logUser = messageParts[1];
-            logType = messageParts[2];
-            logTimestamp = messageParts[3];
+            logTimestamp = messageParts[2];
+            logType = messageParts[3];
 
         } catch (Exception e){
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [ADD-LOG;USER;TYPE;TIMESTAMP]");
+            System.out.println("Incorrect syntax provided, please use : [ADD-LOG;USER;TIMESTAMP;TYPE]");
         }
 
         // Adding the log to the database
 
         // Create a SQL statement to insert the log into the database
-        String sql = "INSERT INTO LOG (USER_ID, TYPE, TIMESTAMP) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO LOG (USER_ID, TIMESTAMPE, TYPE) VALUES (?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
         try{
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
             // Set the parameter values for the prepared statement
             statement.setInt(1, Integer.parseInt(logUser));
-            statement.setString(2, logType);
-            statement.setString(3, logTimestamp);
+            statement.setString(2, logTimestamp);
+            statement.setString(3, logType);
 
             // Execute the SQL statement
             statement.executeUpdate();
@@ -61,9 +61,9 @@ public class LogDao {
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
             if(rs != null){
-                serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TYPE") + ";" + rs.getString("TIMESTAMP");
+                serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
                 while(rs.next()){
-                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TYPE") + ";" + rs.getString("TIMESTAMP");
+                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
                 }
             }
 
