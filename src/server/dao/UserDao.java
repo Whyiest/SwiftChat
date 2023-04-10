@@ -1,11 +1,8 @@
 package server.dao;
 
 import server.network.Database;
-import client.clientModel.User;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserDao {
 
@@ -48,6 +45,7 @@ public class UserDao {
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME]");
+            return "CREATE_USER;FAILURE";
         }
 
         // Adding the user to the database

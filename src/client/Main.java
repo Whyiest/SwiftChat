@@ -24,13 +24,14 @@ public class Main {
         while (serverConnexion.isClientAlive()) {
             if (!requestTested) {
                 //serverConnexion.sendToServer("TEST;Hello world!");
-                //serverConnexion.createUser("ADMIN" ,"Esteban", "Magnon", "este", "esteban@gmail.com", "1234");
-                //serverConnexion.createUser("MODERATOR" ,"Kenza", "Erraji", "kenza", "kenza@gmail.com", "1234");
-                //serverConnexion.createUser("CLASSIC" ,"Gabriel", "Trier", "gab", "gabriel@gmail.com", "1234");
-                //serverConnexion.createUser("CLASSIC" ,"Alexandre", "Curti", "curt", "alexandre@gmail.com", "1234");
-                //serverConnexion.createUser("CLASSIC" ,"Ines", "Benabdeljhali", "ines", "ines@gmail.com", "1234");
-                serverConnexion.sendMessage(10, 9, "Hello world!");
-                serverConnexion.sendMessage(8, 7, "Je hais SQL");
+                //serverConnexion.addUser("ADMIN" ,"Esteban", "Magnon", "este", "esteban@gmail.com", "1234");
+                //serverConnexion.addUser("MODERATOR" ,"Kenza", "Erraji", "kenza", "kenza@gmail.com", "1234");
+                //serverConnexion.addUser("CLASSIC" ,"Gabriel", "Trier", "gab", "gabriel@gmail.com", "1234");
+                //serverConnexion.addUser("CLASSIC" ,"Alexandre", "Curti", "curt", "alexandre@gmail.com", "1234");
+                //serverConnexion.addUser("CLASSIC" ,"Ines", "Benabdeljhali", "ines", "ines@gmail.com", "1234");
+                //serverConnexion.addMessage(10, 9, "Hello world!");
+                //serverConnexion.addMessage(8, 7, "Je hais SQL");
+                serverConnexion.addLog(10, "This log is a test");
                 requestTested = true;
             }
         }

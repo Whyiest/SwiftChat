@@ -5,6 +5,7 @@ import client.clientModel.User;
 
 import java.io.*;
 import java.net.*;
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 
@@ -128,7 +129,7 @@ public class ServerConnexion implements Runnable {
 
                 // Read the response from the server
                 String serverMessage = scanner.nextLine();
-                System.out.println("[?] Received \"" + serverMessage + "\" from server.\n");
+                System.out.println("[!] Received \"" + serverMessage + "\" from server.\n");
                 return serverMessage;
 
             } catch (IOException e) {
@@ -147,13 +148,13 @@ public class ServerConnexion implements Runnable {
      * @param content  the content of the message
      * @return the response from the server / Response format: "SEND-MESSAGE;SUCCESS/FAILURE;MESSAGE_ID;SENDER;RECEIVER;CONTENT;TIMESTAMP"
      */
-    public String sendMessage(int receiverID, int senderID, String content) {
+    public String addMessage(int receiverID, int senderID, String content) {
 
         // Create message
         Message messageToSend = new Message(senderID, receiverID, content);
 
         // Send it through the server
-        String serverResponse = sendToServer("SEND-MESSAGE;" + messageToSend.formalizeServerMessage());
+        String serverResponse = sendToServer("ADD-MESSAGE;" + messageToSend.formalizeServerMessage());
 
         return serverResponse;
     }
@@ -168,12 +169,13 @@ public class ServerConnexion implements Runnable {
      * @param password   the password of the user
      * @return the response from the server / Response format: "CREATE-USER;SUCCESS/FAILURE;
      */
-    public String createUser(String permission, String firstName, String lastName, String username, String email, String password) {
+    public String addUser(String permission, String firstName, String lastName, String username, String email, String password) {
 
         // Create user for the server
         User userToSend = new User(permission, firstName, lastName, username, email, password);
+
         // Send it through the server
-        String serverResponse = sendToServer("CREATE-USER;" + userToSend.formalizeServerMessage());
+        String serverResponse = sendToServer("ADD-USER;" + userToSend.formalizeServerMessage());
 
         return serverResponse;
     }
@@ -196,7 +198,21 @@ public class ServerConnexion implements Runnable {
 
         // Send it through the server
         String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
-
         return serverResponse;
     }
+
+    /**
+     * Create a log to send it to the server
+     * @param userID the ID of the user who created the log
+     * @param type the content of the log
+     * @return the response from the server / Response format: "ADD-LOG;SUCCESS/FAILURE;"
+     */
+    public String addLog (int userID, String type) {
+
+        Timestamp myTimestamp = new Timestamp(System.currentTimeMillis());
+
+        String serverResponse = sendToServer("ADD-LOG;" + userID + ";" + type + ";" + myTimestamp.toString());
+    	return serverResponse;
+    }
+
 }

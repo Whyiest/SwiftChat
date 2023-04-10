@@ -25,14 +25,14 @@ public class LogDao {
         } catch (Exception e){
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [ADD-LOG;USER;TIMESTAMP;TYPE]");
+            return "ADD-LOG;FAILURE";
         }
-
-        // Adding the log to the database
 
         // Create a SQL statement to insert the log into the database
         String sql = "INSERT INTO LOG (USER_ID, TIMESTAMP, TYPE) VALUES (?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
+
         try{
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
             // Set the parameter values for the prepared statement
@@ -45,18 +45,20 @@ public class LogDao {
 
             // Close the statement
             statement.close();
-            return "CREATE_MESSAGE;SUCCESS";
+
+            return "ADD-LOG;SUCCESS";
+
         } catch (Exception e){
             System.out.println("[!] Error while creating the message [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "CREATE_MESSAGE;FAILURE";
+            return "ADD-LOG;FAILURE";
         }
     }
 
     public String getAllLogsForUser(int idUser){
 
         String sql = "SELECT * FROM LOG WHERE USER_ID = idUser";
-        String serverResponse = "";
+        String serverResponse = "GET-ALL-LOGS-FOR-USER;";
         try{
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
@@ -66,7 +68,6 @@ public class LogDao {
                     serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
                 }
             }
-
             statement.close();
             return serverResponse;
 

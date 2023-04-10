@@ -2,13 +2,9 @@ package server.serverModel;
 
 import server.network.Database;
 
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
-
 import server.dao.UserDao;
 import server.dao.MessageDao;
 import server.dao.LogDao;
-import client.clientModel.User;
 
 public class MessageAnalyser {
 
@@ -58,15 +54,15 @@ public class MessageAnalyser {
             case "LOGIN" -> serverResponse = logIn();  // not working
             case "LOGOUT" -> serverResponse = logOut();  // not working
 
-            case "CREATE-USER" -> serverResponse = addUserToDatabase();
+            case "ADD-USER" -> serverResponse = addUserToDatabase();
             case "CHANGE-USER-TYPE" -> serverResponse = changeUserType();  // not working
             case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // not working
             case "BAN-USER" -> serverResponse = banUser();  // not working
 
-            case "CREATE-MESSAGE" -> serverResponse = addMessageToDatabase();
+            case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
             case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessageForUser();  // not working
 
-            case "CREATE-LOG" -> serverResponse = addLogToDatabase();
+            case "ADD-LOG" -> serverResponse = addLogToDatabase();
             case "LIST-LOG-FOR-USER" -> serverResponse = listLogForUser();  // not working
 
             case "GET-STATISTICS" -> serverResponse = getStatistics();  // not working
