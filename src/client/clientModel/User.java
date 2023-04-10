@@ -6,20 +6,19 @@ import java.util.Random;
 public class User {
 
     private int id;
-    private final String userName;
+    private  String userName;
     private String password;
 
     //public enum Permission {CLASSIC, MODERATOR, ADMIN}
     //public enum Status {ONLINE, OFFLINE, AWAY}
 
-    private final String status;
-    private final String permission;
+    private  String status;
+    private  String permission;
 
-    private final String mail;
-    private final String lastName;
-    private final String firstName;
-
-    private final boolean isBanned;
+    private  String mail;
+    private  String lastName;
+    private  String firstName;
+    private  boolean isBanned;
 
     private LocalDateTime lastConnectionTime;
 
@@ -48,6 +47,36 @@ public class User {
 
         // Hash the password
         hashPassword();
+    }
+
+    public User() {
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName){
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
     }
 
     /**
