@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 
 import server.dao.UserDao;
 import server.dao.MessageDao;
+import server.dao.LogDao;
 import client.clientModel.User;
 
 public class MessageAnalyser {
@@ -54,15 +55,23 @@ public class MessageAnalyser {
         // Redirect the message to the correct DAO
         System.out.println("[>] Action requested : " + messageAction);
         switch (messageAction) {
-            case "LOGIN" -> serverResponse = login();
-            case "LOGOUT" -> serverResponse = logout();
-            case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessageForUser();
-            case "SEND-MESSAGE" -> serverResponse = addMessageToDatabase();
+            case "LOGIN" -> serverResponse = logIn();  // not working
+            case "LOGOUT" -> serverResponse = logOut();  // not working
+
             case "CREATE-USER" -> serverResponse = addUserToDatabase();
-            case "CHANGE-USER-TYPE" -> serverResponse = changeUserType();
-            case "BAN-USER" -> serverResponse = banUser();
-            case "GET-STATISTICS" -> serverResponse = getStatistics();
+            case "CHANGE-USER-TYPE" -> serverResponse = changeUserType();  // not working
+            case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // not working
+            case "BAN-USER" -> serverResponse = banUser();  // not working
+
+            case "CREATE-MESSAGE" -> serverResponse = addMessageToDatabase();
+            case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessageForUser();  // not working
+
+            case "CREATE-LOG" -> serverResponse = addLogToDatabase();
+            case "LIST-LOG-FOR-USER" -> serverResponse = listLogForUser();  // not working
+
+            case "GET-STATISTICS" -> serverResponse = getStatistics();  // not working
             case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
+
             default -> System.out.println("ERROR");
         }
         return serverResponse;
@@ -91,6 +100,20 @@ public class MessageAnalyser {
     }
 
     /**
+     * This method allow to add a log to the database
+     * Message format : SEND-LOG;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
+     * Response format : SEND-LOG;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
+     */
+    public String addLogToDatabase(){
+        LogDao logDao = new LogDao(myDb);
+        return logDao.addLog(messageParts, message);
+    }
+
+    public String listLogForUser(){
+        return "Not Working";
+    }
+
+    /**
      *  This method allow to get all the messages for a user
      *  Message format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID
      *  Response format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID;CONTENT;TIMESTAMP
@@ -109,7 +132,7 @@ public class MessageAnalyser {
      * Response format : LOGIN;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME
      * @return The user if the password is correct, FAILURE otherwise
      */
-    public String login () {
+    public String logIn () {
 
         return "Not Working";
 
@@ -123,7 +146,7 @@ public class MessageAnalyser {
      * Response format : LOGOUT;SUCCESS/FAILURE
      * @return SUCCESS if the user is disconnected, FAILURE otherwise
      */
-    public String logout () {
+    public String logOut () {
 
         return "Not Working";
 
@@ -160,6 +183,18 @@ public class MessageAnalyser {
      * @return SUCCESS if the user type is changed, FAILURE otherwise
      */
     public String changeUserType() {
+
+        return "Not Working";
+
+    }
+
+    /**
+     * This method allow to change the status of a user
+     * Message format : CHANGE-USER-STATUS;USER_ID;NEW_STATUS
+     * Response format : CHANGE-USER-STATUS;SUCCESS/FAILURE
+     * @return SUCCESS if the user status is changed, FAILURE otherwise
+     */
+    public String changeUserStatus() {
 
         return "Not Working";
 
