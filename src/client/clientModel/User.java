@@ -43,7 +43,7 @@ public class User {
 
         // Set up the others values
         this.isBanned = false;
-        id = new Random().nextInt(1000000);
+        this.lastConnectionTime = LocalDateTime.now();
         status = "OFFLINE";
 
         // Hash the password
@@ -87,7 +87,7 @@ public class User {
      * @return The user in a string format
      */
     public String formalizeServerMessage(){
-        return id + ";" + userName + ";" + firstName + ";" + lastName + ";" + mail + ";" + password + ";" + permission + ";" + lastConnectionTime + ";" + isBanned + ";" + status;
+        return userName + ";" + firstName + ";" + lastName + ";" + mail + ";" + password + ";" + permission + ";" + lastConnectionTime + ";" + isBanned + ";" + status;
     }
 
 

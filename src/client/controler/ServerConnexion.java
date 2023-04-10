@@ -43,11 +43,11 @@ public class ServerConnexion implements Runnable {
 
             // Inform the client that he is connected
             clientAlive = true;
-            System.out.println("[!] Connected to server.");
+            System.out.println("[!] Connected to server.\n");
 
         } catch (
                 IOException e) {
-            System.out.println("[!] Cannot connect to server.");
+            System.out.println("[!] Cannot connect to server.\n");
             e.printStackTrace();
         }
     }
@@ -142,20 +142,18 @@ public class ServerConnexion implements Runnable {
     /**
      * Send a message to the server to be sent to the receiver
      *
-     * @param receiver the receiver of the message
-     * @param sender   the sender of the message
+     * @param receiverID the ID of the receiver of the message
+     * @param senderID   the ID of the sender of the message
      * @param content  the content of the message
      * @return the response from the server / Response format: "SEND-MESSAGE;SUCCESS/FAILURE;MESSAGE_ID;SENDER;RECEIVER;CONTENT;TIMESTAMP"
      */
-    public String sendMessage(String receiver, String sender, String content) {
-
-        String serverResponse = "";
+    public String sendMessage(int receiverID, int senderID, String content) {
 
         // Create message
-        Message messageToSend = new Message(sender, receiver, content);
+        Message messageToSend = new Message(senderID, receiverID, content);
 
         // Send it through the server
-        serverResponse = sendToServer("SEND-MESSAGE;" + messageToSend.formalizeServerMessage());
+        String serverResponse = sendToServer("SEND-MESSAGE;" + messageToSend.formalizeServerMessage());
 
         return serverResponse;
     }
@@ -172,11 +170,11 @@ public class ServerConnexion implements Runnable {
      */
     public String createUser(String permission, String firstName, String lastName, String username, String email, String password) {
 
-        String serverResponse = "";
         // Create user for the server
         User userToSend = new User(permission, firstName, lastName, username, email, password);
         // Send it through the server
-        serverResponse = sendToServer("CREATE-USER;" + userToSend.formalizeServerMessage());
+        String serverResponse = sendToServer("CREATE-USER;" + userToSend.formalizeServerMessage());
+
         return serverResponse;
     }
 
@@ -196,10 +194,8 @@ public class ServerConnexion implements Runnable {
      */
     public String login(String username, String password) {
 
-        String serverResponse = "";
-
         // Send it through the server
-        serverResponse = sendToServer("LOGIN;" + username + ";" + password);
+        String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
 
         return serverResponse;
     }

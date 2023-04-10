@@ -6,48 +6,51 @@ import client.clientModel.Message;
 import java.sql.*;
 
 public class MessageDao{
-    private Connection connection;
+    private Database myDb;
 
-    public MessageDao(Connection connection){
-        this.connection = connection;
+    public MessageDao(Database myDb){
+
+        this.myDb = myDb;
     }
 
     /**
      * This method allow to add a message to the database
-     * Message format : [ADD-MESSAGE;CONTENT;SENDER;RECEIVER;TIMESTAMP]
-     * Response format : [ADD-MESSAGE;SUCCESS/ERROR;MESSAGE]
+     * Message format : [ADD-MESSAGE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP]
+     * Response format : [ADD-MESSAGE;SUCCESS/ERROR]
      **/
-    public String addMessage(String[] messageParts, String message, Database myDb){
+    public String addMessage(String[] messageParts, String message){
+
+        System.out.println(messageParts.length);
 
         // Linking message parts to variables
-        String messageContent = "";
-        String messageSender = "";
-        String messageReceiver = "";
+        String messageSenderID = "";
+        String messageReceiverID = "";
         String messageTimestamp = "";
+        String messageContent = "";
 
         try {
-            messageContent = messageParts[1];
-            messageSender = messageParts[2];
-            messageReceiver = messageParts[3];
-            messageTimestamp = messageParts[4];
+            messageSenderID = messageParts[1];
+            messageReceiverID = messageParts[2];
+            messageTimestamp = messageParts[3];
+            messageContent = messageParts[4];
+
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;SENDER;RECEIVER;CONTENT]");
+            System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT]");
         }
 
-        // Adding the message to the database
-
         // Create a SQL statement to insert the message into the database
-        String sql = "INSERT INTO MESSAGE (CONTENT, SENDER, RECEIVER, TIMESTAMP) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO MESSAGE (SENDER_ID, RECEIVER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
         try{
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
+
             // Set the parameter values for the prepared statement
-            statement.setString(1, messageContent);
-            statement.setString(2, messageSender);
-            statement.setString(3, messageReceiver);
-            statement.setString(4, messageTimestamp);
+            statement.setInt(1, Integer.parseInt(messageSenderID));
+            statement.setInt(2, Integer.parseInt(messageReceiverID));
+            statement.setString(3, messageTimestamp);
+            statement.setString(4, messageContent);
 
             // Execute the SQL statement
             statement.executeUpdate();

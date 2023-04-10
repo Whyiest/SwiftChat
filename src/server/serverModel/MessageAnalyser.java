@@ -72,22 +72,22 @@ public class MessageAnalyser {
 
     /**
      * This method allow to add a user to the database
-     * Message format : CREATE-USER;ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME
-     * Response format : CREATE-USER;SUCCESS/FAILURE;ID
+     * Message format : CREATE-USER;USERNAME;FIRST_NAME;LAST_NAME;PERMISSION;EMAIL;PASSWORD;LAST_CONNECTION_TIME;IS_BANNED;STATUS
+     * Response format : CREATE-USER;SUCCESS/FAILURE;ID (if success)
      */
     public String addUserToDatabase() {
-        UserDao userDao = new UserDao(myDb.connection);
-        return userDao.addUser(messageParts, message, myDb);
+        UserDao userDao = new UserDao(myDb);
+        return userDao.addUser(messageParts, message);
     }
 
     /**
      * This method allow to add a message to the database
-     * Message format : SEND-MESSAGE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
+     * Message format : SEND-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
      * Response format : SEND-MESSAGE;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
      */
     public String addMessageToDatabase() {
-        MessageDao messageDao = new MessageDao(myDb.connection);
-        return  messageDao.addMessage(messageParts, message, myDb);
+        MessageDao messageDao = new MessageDao(myDb);
+        return  messageDao.addMessage(messageParts, message);
     }
 
     /**

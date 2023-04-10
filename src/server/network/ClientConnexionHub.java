@@ -54,7 +54,7 @@ public class ClientConnexionHub {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("[!] Server started on port " + port + " and IP address " + serverIpAddress + ".");
-            System.out.println("[!] Waiting for client connection...");
+            System.out.println("[!] Waiting for client connection...\n");
 
             while (waitingForConnection) {
 

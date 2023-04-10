@@ -54,6 +54,9 @@ public class Database {
         }
     }
 
+    /**
+     * This method allows to populate the database
+     */
     public void populate() {
 
         // DO NOT EXECUTE THIS METHOD IF THE DATABASE IS ALREADY POPULATED
@@ -66,34 +69,38 @@ public class Database {
 
             // Create USER table
             String createUserTableSQL = "CREATE TABLE USER " +
-                    "(ID INTEGER not NULL, " +
+                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
                     " USERNAME VARCHAR(255), " +
                     " FIRST_NAME VARCHAR(255), " +
                     " LAST_NAME VARCHAR(255), " +
                     " EMAIL VARCHAR(255), " +
                     " PASSWORD VARCHAR(255), " +
                     " PERMISSION VARCHAR(255), " +
-                    " LAST_CONNECTION_TIME TIMESTAMP, " +
+                    " LAST_CONNECTION_TIME VARCHAR(255), " +
                     " IS_BANNED VARCHAR(255), " +
                     " STATUS VARCHAR(255), " +
                     " PRIMARY KEY ( ID ))";
+
             populate.executeUpdate(createUserTableSQL);
 
             // Create MESSAGE table
             String createMessageTableSQL = "CREATE TABLE MESSAGE " +
-                    "(ID INTEGER not NULL, " +
-                    " USER_ID INTEGER, " +
-                    " TIMESTAMP TIMESTAMP, " +
+                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
+                    " SENDER_ID INTEGER," +
+                    " RECEIVER_ID INTEGER, " +
+                    " TIMESTAMP VARCHAR(255), " +
                     " CONTENT VARCHAR(255), " +
                     " PRIMARY KEY ( ID ), " +
-                    " FOREIGN KEY ( USER_ID ) REFERENCES USER(ID))";
+                    " FOREIGN KEY ( SENDER_ID ) REFERENCES USER(ID)," +
+                    " FOREIGN KEY ( RECEIVER_ID ) REFERENCES USER(ID))";
+
             populate.executeUpdate(createMessageTableSQL);
 
             // Create LOG table
             String createLogTableSQL = "CREATE TABLE LOG " +
-                    "(ID INTEGER not NULL, " +
+                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
                     " USER_ID INTEGER, " +
-                    " TIMESTAMP TIMESTAMP, " +
+                    " TIMESTAMP VARCHAR(255), " +
                     " TYPE VARCHAR(255), " +
                     " PRIMARY KEY ( ID ), " +
                     " FOREIGN KEY ( USER_ID ) REFERENCES USER(ID))";
@@ -116,6 +123,7 @@ public class Database {
             }
         }
     }
+
 
 }
 

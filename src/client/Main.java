@@ -23,10 +23,14 @@ public class Main {
         // Blocking the main thread until the client is disconnected
         while (serverConnexion.isClientAlive()) {
             if (!requestTested) {
-                serverConnexion.sendToServer("TEST;Hello world!");
-                serverConnexion.createUser("CLASSIC" ,"Esteban", "Magnon", "este", "esteban@gmail.com", "1234");
-                serverConnexion.createUser("CLASSIC" ,"Gabriel", "Trier", "gab", "gabriel@gmail.com", "1234");
-                serverConnexion.sendMessage("este", "gab", "Hello world!");
+                //serverConnexion.sendToServer("TEST;Hello world!");
+                //serverConnexion.createUser("ADMIN" ,"Esteban", "Magnon", "este", "esteban@gmail.com", "1234");
+                //serverConnexion.createUser("MODERATOR" ,"Kenza", "Erraji", "kenza", "kenza@gmail.com", "1234");
+                //serverConnexion.createUser("CLASSIC" ,"Gabriel", "Trier", "gab", "gabriel@gmail.com", "1234");
+                //serverConnexion.createUser("CLASSIC" ,"Alexandre", "Curti", "curt", "alexandre@gmail.com", "1234");
+                //serverConnexion.createUser("CLASSIC" ,"Ines", "Benabdeljhali", "ines", "ines@gmail.com", "1234");
+                serverConnexion.sendMessage(10, 9, "Hello world!");
+                serverConnexion.sendMessage(8, 7, "Je hais SQL");
                 requestTested = true;
             }
         }
