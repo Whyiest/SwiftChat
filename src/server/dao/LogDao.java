@@ -30,7 +30,7 @@ public class LogDao {
         // Adding the log to the database
 
         // Create a SQL statement to insert the log into the database
-        String sql = "INSERT INTO LOG (USER_ID, TIMESTAMPE, TYPE) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO LOG (USER_ID, TIMESTAMP, TYPE) VALUES (?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
         try{
