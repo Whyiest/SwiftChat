@@ -54,6 +54,7 @@ public class MessageAnalyser {
             case "CREATE-USER" -> addUserToDatabase();
             case "SEND-MESSAGE-GROUP" -> System.out.println("SEND-MESSAGE-GROUP DAO");
             case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
+            case "LIST-ALL-USER" -> System.out.println("LIST-ALL-USER DAO");
             default -> System.out.println("ERROR");
         }
     }
