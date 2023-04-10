@@ -1,6 +1,5 @@
 package server.serverModel;
 
-import server.network.MessageAnalyser;
 import server.network.Database;
 
 import java.io.BufferedReader;

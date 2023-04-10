@@ -1,4 +1,4 @@
-package server.network;
+package server.serverModel;
 
 import server.network.Database;
 
@@ -44,7 +44,9 @@ public class MessageAnalyser {
     }
 
 
-    public void redirectMessage() {
+    public String redirectMessage() {
+
+        String serverResponse = "";
 
         // Extract all the parts of the message
         extractMessage();
@@ -60,17 +62,15 @@ public class MessageAnalyser {
             case "GET-GROUP-FROM-USER" -> System.out.println("GET GROUP FROM USER DAO");
             case "GET-USER-FROM-USERNAME" -> System.out.println("GET USER FROM USERNAME DAO");
             case "GET-USER-FROM-MAIL" -> System.out.println("GET USER FROM MAIL DAO");
-            case "SEND-MESSAGE" -> addMessageToDatabase();
-            case "CREATE-USER" -> addUserToDatabase();
+            case "SEND-MESSAGE" -> serverResponse = addMessageToDatabase();
+            case "CREATE-USER" -> serverResponse = addUserToDatabase();
             case "SEND-MESSAGE-GROUP" -> System.out.println("SEND-MESSAGE-GROUP DAO");
             case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
             default -> System.out.println("ERROR");
         }
+        return serverResponse;
     }
 
-    /**
-     * This method allow to add a message to the database
-     */
 
 
     /**
@@ -81,8 +81,12 @@ public class MessageAnalyser {
         return userDao.addUser(messageParts, message, myDb);
     }
 
-    public void addMessageToDatabase() {
+    /**
+     * This method allow to add a message to the database
+     */
+
+    public String addMessageToDatabase() {
         MessageDao messageDao = new MessageDao(myDb.connection);
-        messageDao.addMessage(messageParts, message, myDb);
+        return  messageDao.addMessage(messageParts, message, myDb);
     }
 }

@@ -121,7 +121,7 @@ public class ServerConnexion implements Runnable {
             System.out.println("[!] Cannot receive answer from the server: not connected to server.");
             return null;
         } else {
-            System.out.println("[?] Waiting answser from server...");
+            System.out.println("[?] Waiting answer from server...");
             try {
                 // Create a scanner to read data from the server
                 Scanner scanner = new Scanner(clientSocket.getInputStream());
