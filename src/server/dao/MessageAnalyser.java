@@ -49,7 +49,13 @@ public class MessageAnalyser {
         System.out.println("[>] Action requested : " + messageAction);
         switch (messageAction) {
             case "LOGIN" -> System.out.println("LOGIN DAO");
+            case "VERIFY-PASSWORD" -> System.out.println("VERIFY PASSWORD DAO");
             case "LOGOUT" -> System.out.println("LOGOUT DAO");
+            case "GET-MESSAGE-FROM-USER" -> System.out.println("GET MESSAGE FROM USER DAO");
+            case "GET-MESSAGE-FROM-GROUP" -> System.out.println("GET MESSAGE FROM GROUP DAO");
+            case "GET-GROUP-FROM-USER" -> System.out.println("GET GROUP FROM USER DAO");
+            case "GET-USER-FROM-USERNAME" -> System.out.println("GET USER FROM USERNAME DAO");
+            case "GET-USER-FROM-MAIL" -> System.out.println("GET USER FROM MAIL DAO");
             case "SEND-MESSAGE" -> addMessageToDatabase();
             case "CREATE-USER" -> addUserToDatabase();
             case "SEND-MESSAGE-GROUP" -> System.out.println("SEND-MESSAGE-GROUP DAO");
