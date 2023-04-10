@@ -79,6 +79,7 @@ public class ServerConnexion implements Runnable {
     }
 
 
+
     /**
      * Send a string to the server
      * @param serverMessage the message to send
@@ -164,7 +165,7 @@ public class ServerConnexion implements Runnable {
      * @param email
      * @param password
      */
-    public void createUser (String permission, String firstName, String lastName, String username, String email, String password) {
+    public String createUser (String permission, String firstName, String lastName, String username, String email, String password) {
 
         // Create user for the server
         User userToSend = new User(permission, firstName, lastName, username, email, password);
@@ -172,6 +173,8 @@ public class ServerConnexion implements Runnable {
         // Send it through the server
         sendToServer("CREATE-USER;" + userToSend.formalizeServerMessage());
     }
+
+    public String listAllUsers ()
 
     public void login (String username, String password) {
         // Send it through the server

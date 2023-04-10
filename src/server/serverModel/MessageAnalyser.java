@@ -54,17 +54,14 @@ public class MessageAnalyser {
         // Redirect the message to the correct DAO
         System.out.println("[>] Action requested : " + messageAction);
         switch (messageAction) {
-            case "LOGIN" -> System.out.println("LOGIN DAO");
-            case "VERIFY-PASSWORD" -> System.out.println("VERIFY PASSWORD DAO");
-            case "LOGOUT" -> System.out.println("LOGOUT DAO");
-            case "GET-MESSAGE-FROM-USER" -> System.out.println("GET MESSAGE FROM USER DAO");
-            case "GET-MESSAGE-FROM-GROUP" -> System.out.println("GET MESSAGE FROM GROUP DAO");
-            case "GET-GROUP-FROM-USER" -> System.out.println("GET GROUP FROM USER DAO");
-            case "GET-USER-FROM-USERNAME" -> System.out.println("GET USER FROM USERNAME DAO");
-            case "GET-USER-FROM-MAIL" -> System.out.println("GET USER FROM MAIL DAO");
+            case "LOGIN" -> serverResponse = login();
+            case "LOGOUT" -> serverResponse = logout();
+            case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessageForUser();
             case "SEND-MESSAGE" -> serverResponse = addMessageToDatabase();
             case "CREATE-USER" -> serverResponse = addUserToDatabase();
-            case "SEND-MESSAGE-GROUP" -> System.out.println("SEND-MESSAGE-GROUP DAO");
+            case "CHANGE-USER-TYPE" -> serverResponse = changeUserType();
+            case "BAN-USER" -> serverResponse = banUser();
+            case "GET-STATISTICS" -> serverResponse = getStatistics();
             case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
             default -> System.out.println("ERROR");
         }
@@ -75,6 +72,8 @@ public class MessageAnalyser {
 
     /**
      * This method allow to add a user to the database
+     * Message format : CREATE-USER;ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME
+     * Response format : CREATE-USER;SUCCESS/FAILURE;ID
      */
     public String addUserToDatabase() {
         UserDao userDao = new UserDao(myDb.connection);
@@ -83,10 +82,87 @@ public class MessageAnalyser {
 
     /**
      * This method allow to add a message to the database
+     * Message format : SEND-MESSAGE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
+     * Response format : SEND-MESSAGE;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
      */
-
     public String addMessageToDatabase() {
         MessageDao messageDao = new MessageDao(myDb.connection);
         return  messageDao.addMessage(messageParts, message, myDb);
     }
+
+    /**
+     *  This method allow to get all the messages for a user
+     *  Message format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID
+     *  Response format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID;CONTENT;TIMESTAMP
+     */
+    public String listMessageForUser () {
+
+        return "Not Woking";
+    }
+
+
+    /**
+     * This method allow to verify the password of a user
+     * Switch status to online if the password is correct
+     * Switch last connection time to now if the password is correct
+     * Message format : LOGIN;USERNAME;PASSWORD
+     * Response format : LOGIN;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME
+     * @return The user if the password is correct, FAILURE otherwise
+     */
+    public String login () {
+
+        return "Not Woking";
+
+    }
+
+    /**
+     * This method allow to disconnect a user
+     * Switch status to offline
+     * Switch last connection time to now
+     * Message format : LOGOUT;USERNAME
+     * Response format : LOGOUT;SUCCESS/FAILURE
+     * @return SUCCESS if the user is disconnected, FAILURE otherwise
+     */
+    public String logout () {
+
+        return "Not Woking";
+
+    }
+
+    /**
+     * This method allow to get the statistics of the server
+     * Message format : GET-STATISTICS
+     * Response format : GET-STATISTICS;NUMBER_OF_USERS;NUMBER_OF_MESSAGES;NUMBER_OF_GROUPS
+     * @return The statistics of the server
+     */
+    public String getStatistics() {
+
+        return "Not Woking";
+
+    }
+
+    /**
+     * This method allow to ban users
+     * Message format : BAN-USER;USER_ID
+     * Response format : BAN-USER;SUCCESS/FAILURE
+     * @return SUCCESS if the user is banned, FAILURE otherwise
+     */
+    public String banUser() {
+
+        return "Not Woking";
+
+    }
+
+    /**
+     * This method allow to change the type of a user
+     * Message format : CHANGE-USER-TYPE;USER_ID;NEW_TYPE
+     * Response format : CHANGE-USER-TYPE;SUCCESS/FAILURE
+     * @return SUCCESS if the user type is changed, FAILURE otherwise
+     */
+    public String changeUserType() {
+
+        return "Not Woking";
+
+    }
+
 }
