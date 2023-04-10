@@ -31,6 +31,8 @@ public class UserDao {
         String userPassword = "";
         String userPermission = "";
         String userLastConnectionTime = "";
+        String userIsBanned = "";
+        String userStatus = "";
 
 
         try {
@@ -42,6 +44,8 @@ public class UserDao {
             userEmail = messageParts[6];
             userPassword = messageParts[7];
             userLastConnectionTime = messageParts[8];
+            userIsBanned = messageParts[9];
+            userStatus = messageParts[10];
 
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
@@ -51,7 +55,7 @@ public class UserDao {
         // Adding the user to the database
 
         // Create a SQL statement to insert the user into the database
-        String sql = "INSERT INTO USER (ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, PERMISSION, LAST_CONNECTION_TIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO USER (ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, PERMISSION, LAST_CONNECTION_TIME, IS_BANNED, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
         try {
@@ -65,6 +69,8 @@ public class UserDao {
             statement.setString(6, userPassword);
             statement.setString(7, userPermission);
             statement.setTimestamp(8, Timestamp.valueOf(userLastConnectionTime));
+            statement.setString(9, userIsBanned);
+            statement.setString(10, userStatus);
 
             // Execute the SQL statement
             statement.executeUpdate();
@@ -92,9 +98,9 @@ public class UserDao {
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
             if(rs != null) {
-                serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME");
+                serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
                 while (rs.next()) {
-                    serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME");
+                    serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME")  + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
                 }
             }
             statement.close();

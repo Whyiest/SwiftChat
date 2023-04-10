@@ -74,6 +74,8 @@ public class Database {
                     " PASSWORD VARCHAR(255), " +
                     " PERMISSION VARCHAR(255), " +
                     " LAST_CONNECTION_TIME TIMESTAMP, " +
+                    " IS_BANNED VARCHAR(255), " +
+                    " STATUS VARCHAR(255), " +
                     " PRIMARY KEY ( ID ))";
             populate.executeUpdate(createUserTableSQL);
 
