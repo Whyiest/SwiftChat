@@ -97,7 +97,7 @@ public class MessageAnalyser {
      */
     public String listMessageForUser () {
 
-        return "Not Woking";
+        return "Not Working";
     }
 
 
@@ -111,7 +111,7 @@ public class MessageAnalyser {
      */
     public String login () {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
@@ -125,7 +125,7 @@ public class MessageAnalyser {
      */
     public String logout () {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
@@ -137,7 +137,7 @@ public class MessageAnalyser {
      */
     public String getStatistics() {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
@@ -149,7 +149,7 @@ public class MessageAnalyser {
      */
     public String banUser() {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
@@ -161,7 +161,7 @@ public class MessageAnalyser {
      */
     public String changeUserType() {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
