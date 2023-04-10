@@ -97,7 +97,7 @@ public class MessageAnalyser {
      */
     public String listMessageForUser () {
 
-        return "Not Woking";
+        return "Not Working";
     }
 
 
@@ -111,7 +111,7 @@ public class MessageAnalyser {
      */
     public String login () {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
@@ -125,7 +125,7 @@ public class MessageAnalyser {
      */
     public String logout () {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
@@ -137,7 +137,7 @@ public class MessageAnalyser {
      */
     public String getStatistics() {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
@@ -149,19 +149,20 @@ public class MessageAnalyser {
      */
     public String banUser() {
 
-        return "Not Woking";
+        return "Not Working";
 
     }
 
     /**
-     * This method allow to change the type of user
+     * This method allow to change the type of a user
      * Message format : CHANGE-USER-TYPE;USER_ID;NEW_TYPE
      * Response format : CHANGE-USER-TYPE;SUCCESS/FAILURE
      * @return SUCCESS if the user type is changed, FAILURE otherwise
      */
     public String changeUserType() {
 
-        return "Not Woking";
+        return "Not Working";
+
     }
 
 }

@@ -12,6 +12,11 @@ public class MessageDao{
         this.connection = connection;
     }
 
+    /**
+     * This method allow to add a message to the database
+     * Message format : [ADD-MESSAGE;CONTENT;SENDER;RECEIVER;TIMESTAMP]
+     * Response format : [ADD-MESSAGE;SUCCESS/ERROR;MESSAGE]
+     **/
     public String addMessage(String[] messageParts, String message, Database myDb){
 
         // Linking message parts to variables
@@ -54,6 +59,32 @@ public class MessageDao{
             System.out.println("[!] Error while creating the message [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "CREATE_MESSAGE;FAILURE";
+        }
+    }
+
+    /**
+     * This method allow to get all messages for a user
+     * Message format : [GET-ALL-MESSAGES-FOR-USER;ID]
+     * Response format : [GET-ALL-MESSAGES-FOR-USER;SUCCESS/ERROR;MESSAGE]
+     **/
+    public String getAllMessagesForUser(Database myDb, int idSender, int idReceiver){
+        String sql = "SELECT * FROM message WHERE SENDER = " + idSender + " AND RECEIVER = " + idReceiver + " ORDER BY TIMESTAMP ASC";
+        String serverResponse = "";
+        try {
+            PreparedStatement statement = myDb.connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            if (rs != null) {
+                serverResponse += rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
+                while (rs.next()) {
+                    serverResponse += ";" + rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
+                }
+            }
+            statement.close();
+            return serverResponse;
+        } catch(Exception e){
+            System.out.println("[!] Error while getting all messages for user [" + idReceiver + "]");
+            System.out.println("Statement failure : " + sql);
+            return "GET_ALL_MESSAGES_FOR_USER;FAILURE";
         }
     }
 
