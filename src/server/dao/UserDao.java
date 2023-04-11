@@ -85,7 +85,7 @@ public class UserDao {
         } catch (Exception e) {
             System.out.println("[!] Error while creating the user [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "ADD_USER;FAILURE";
+            return "ADD-USER;FAILURE";
         }
     }
 
@@ -99,10 +99,7 @@ public class UserDao {
 
         // Create a SQL statement to get all the users from the database
         String sql = "SELECT * FROM user";
-
-        // Create a prepared statement with the SQL statement
-        String serverResponse = "LIST-ALL-USERS;SUCCESS";
-
+        String serverResponse = "";
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);

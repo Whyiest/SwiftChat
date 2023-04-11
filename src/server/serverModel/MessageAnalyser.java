@@ -67,21 +67,25 @@ public class MessageAnalyser {
                 case "LOGIN" -> serverResponse = logIn();  // not working
                 case "LOGOUT" -> serverResponse = logOut();  // not working
 
-            case "ADD-USER" -> serverResponse = addUserToDatabase();
-            case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission();  // maybe working?
-            case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // not working - Esteban
-            case "BAN-USER" -> serverResponse = banUser();  // maybe working ?
-            case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
+                case "ADD-USER" -> serverResponse = addUserToDatabase();
+                case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission();  // maybe working?
+                case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // maybe working?
+                case "BAN-USER" -> serverResponse = banUser();  // maybe working ?
+                case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
                 case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // not working
 
-            case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
-            case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessagesForUser();  // maybe working?
+                case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
+                case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessagesForUser();  // maybe working?
 
-            case "ADD-LOG" -> serverResponse = addLogToDatabase();
-            case "LIST-LOG-FOR-USER" -> serverResponse = listLogsForUser();  // maybe working?
-            case "GET-STATISTICS" -> serverResponse = getStatistics();  // not working
+                case "ADD-LOG" -> serverResponse = addLogToDatabase();
+                case "LIST-LOG-FOR-USER" -> serverResponse = listLogsForUser();  // maybe working?
 
-            case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
+                case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();  // not working
+                case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();  // not working
+                case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();  // not working
+                case "GET-TOP-USERS" -> serverResponse = getTopUsers();  // not working
+
+                case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
 
                 default -> System.out.println("ERROR");
             }
@@ -114,9 +118,7 @@ public class MessageAnalyser {
      * @return SUCCESS if the user is disconnected, FAILURE otherwise
      */
     public String logOut () {
-
         return "Not Working";
-
     }
 
     /**
@@ -127,6 +129,15 @@ public class MessageAnalyser {
      */
     public String addUserToDatabase() {
         return userDao.addUser(messageParts, message);
+    }
+
+    /**
+     * This method allow to get all the users from the database
+     * Message format : LIST-ALL-USERS
+     * Response format : LIST-ALL-USERS;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS
+     */
+    public String listAllUsers() {
+        return userDao.listAllUsers(messageParts, message);
     }
 
     /** This method allow to change the permission of a user
@@ -209,17 +220,36 @@ public class MessageAnalyser {
     }
 
     /**
-     * This method allow to get the statistics of the server
-     * Message format : GET-STATISTICS
-     * Response format : GET-STATISTICS;NUMBER_OF_USERS;NUMBER_OF_MESSAGES;NUMBER_OF_GROUPS
-     * @return The statistics of the server
+     * This method allow to get all the users statistics
+     * Message format : GET-USERS-STATISTICS
+     * Response format : GET-USERS-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_USERS;NUMBER_OF_ONLINE_USERS;NUMBER_OF_OFFLINE_USERS;NUMBER_OF_BANNED_USERS
+     * @return The users statistics
      */
-    public String getStatistics() {
-
-        return "Not Working";
+    public String getUsersStatistics(){
+        return logDao.getUsersStatistics(message);
     }
 
-    public String listAllUsers() {
-        return userDao.listAllUsers(messageParts, message);
+    /**
+     * This method allow to get all the messages statistics
+     * Message format : GET-MESSAGES-STATISTICS
+     * Response format : GET-MESSAGES-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_MESSAGES;NUMBER_OF_SENT_MESSAGES;NUMBER_OF_RECEIVED_MESSAGES
+     * @return The messages statistics
+     */
+    public String getMessagesStatistics(){
+        return logDao.getMessagesStatistics(message);
+    }
+
+    /** This method allow to get all the connections statistics
+     * Message format : GET-CONNECTIONS-STATISTICS
+     * Response format : GET-CONNECTIONS-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_CONNECTIONS;NUMBER_OF_SUCCESSFUL_CONNECTIONS;NUMBER_OF_FAILED_CONNECTIONS
+     * @return The connections statistics
+     */
+    public String getConnectionsStatistics(){
+        return logDao.getConnectionsStatistics(message);
+    }
+
+
+    public String getTopUsers(){
+        return "Not working";
     }
 }

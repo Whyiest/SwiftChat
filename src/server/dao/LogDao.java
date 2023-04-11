@@ -56,7 +56,7 @@ public class LogDao {
             return "ADD-LOG;SUCCESS";
 
         } catch (Exception e){
-            System.out.println("[!] Error while creating the message [" + message + "]");
+            System.out.println("[!] Error while creating the log [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "ADD-LOG;FAILURE";
         }
@@ -70,6 +70,7 @@ public class LogDao {
      */
     public String getAllLogsForUser(String[] messageParts, String message) {
 
+        // Linking message parts to variables
         int idUser;
 
         try {
@@ -77,7 +78,7 @@ public class LogDao {
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [GET-ALL-LOGS-FOR-USER;USER_ID]");
-            return "GET-ALL-LOGS-FOR-USER;FAILURE";
+            return "LIST-ALL-LOGS-FOR-USER;FAILURE";
         }
 
         // Create a SQL statement to get all the logs for a user from the database
@@ -89,7 +90,9 @@ public class LogDao {
                 statement.setInt(1, idUser);
                 ResultSet rs = statement.executeQuery();
                 if (rs != null) {
+                    // Get the first log
                     serverResponse += rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    // Get the other logs
                     while (rs.next()) {
                         serverResponse += ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
                     }
@@ -101,9 +104,138 @@ public class LogDao {
                 throw new SQLException("Connection to database failed.");
             }
         } catch(Exception e) {
-            System.out.println("[!] Error while getting all messages for user [" + message + "]");
+            System.out.println("[!] Error while getting all logs for user [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "GET-ALL-LOGS-FOR-USER;FAILURE";
+            return "LIST-ALL-LOGS-FOR-USER;FAILURE";
+        }
+    }
+
+    public String getUsersStatistics(String message){
+
+        // Linking message parts to variables
+        String logType1 = "ONLINE";
+        String logType2 = "OFFLINE";
+        String logType3 = "AWAY";
+        String logType4 = "USER";
+        String logType5 = "MODERATOR";
+        String logType6 = "ADMINISTRATOR";
+        String logType7 = "BANNED";
+
+        // Create an SQL statement to get all the logs relating to a user type or status from the database
+        String sql = "SELECT * FROM log WHERE TYPE IN (?, ?, ?, ?, ?, ?, ?)";
+        String serverResponse = "";
+        try {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, logType1);
+                statement.setString(2, logType2);
+                statement.setString(3, logType3);
+                statement.setString(4, logType4);
+                statement.setString(5, logType5);
+                statement.setString(6, logType6);
+                statement.setString(7, logType7);
+
+                ResultSet rs = statement.executeQuery();
+
+                if (rs != null) {
+                    // Get the first log
+                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    while (rs.next()) {
+                        // Get the next logs
+                        serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    }
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch(Exception e) {
+            System.out.println("[!] Error while getting all logs relating to user information [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "LIST-USERS-STATISTICS;FAILURE";
+        }
+    }
+
+    public String getMessagesStatistics(String message){
+
+        // Linking message parts to variables
+        String logType1 = "SENT-MESSAGE";
+        // Uncomment commented code lines to get the logs for received messages
+        /* String logType2 = "RECEIVED-MESSAGE"; */
+
+        // Create an SQL statement to get all the logs relating to a message from the database
+        String sql = "SELECT * FROM log WHERE TYPE = ?";
+        /* String sql = "SELECT * FROM log WHERE TYPE IN (?, ?)"; */
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, logType1);
+                /* statement.setString(2, logType2); */
+
+                ResultSet rs = statement.executeQuery();
+
+                if (rs != null) {
+                    // Get the first log
+                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    // Get the other logs
+                    while (rs.next()) {
+                        serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    }
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch(Exception e) {
+            System.out.println("[!] Error while getting all logs relating to message information [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "LIST-MESSAGES-STATISTICS;FAILURE";
+        }
+    }
+
+    public String getConnectionsStatistics(String message){
+        // Linking message parts to variables
+
+        String logType1 = "CONNECTION";
+        String logType2 = "DISCONNECTION";
+
+        // Create an SQL statement to get all the logs relating to a connection from the database
+        String sql = "SELECT * FROM log WHERE TYPE IN (?, ?)";
+        String serverResponse = "";
+
+        try{
+            if(!myDb.connection.isClosed()){ // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, logType1);
+                statement.setString(2, logType2);
+
+                ResultSet rs = statement.executeQuery();
+
+                if (rs != null) {
+                    // Get the first log
+                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    // Get the other logs
+                    while (rs.next()) {
+                        serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    }
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+
+        } catch (Exception e){
+            System.out.println("[!] Error while getting all logs relating to connection information [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "LIST-CONNECTIONS-STATISTICS;FAILURE";
         }
     }
 }

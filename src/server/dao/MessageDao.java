@@ -21,8 +21,6 @@ public class MessageDao{
      **/
     public String addMessage(String[] messageParts, String message){
 
-        System.out.println(messageParts.length);
-
         // Linking message parts to variables
         String messageSenderID = "";
         String messageReceiverID = "";
@@ -71,6 +69,7 @@ public class MessageDao{
      * @return The server response
      **/
     public String getAllMessagesForUser(String[] messageParts, String message){
+
         // Linking message parts to variables
         int idSender;
         int idReceiver;
@@ -81,10 +80,10 @@ public class MessageDao{
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [GET_ALL_MESSAGES_FOR_USER;SENDER_ID;RECEIVER_ID]");
-            return "GET_ALL_MESSAGES_FOR_USER;FAILURE";
+            return "LIST_ALL_MESSAGES_FOR_USER;FAILURE";
         }
 
-        // Create a SQL statement to get all the messages for a sender and a receiver from the database
+        // Create an SQL statement to get all the messages for a sender and a receiver from the database
         String sql = "SELECT * FROM message WHERE SENDER_ID = ? AND RECEIVER_ID = ? ORDER BY TIMESTAMP ASC";
         String serverResponse = "";
         try {
@@ -94,7 +93,9 @@ public class MessageDao{
                 statement.setInt(2, idReceiver);
                 ResultSet rs = statement.executeQuery();
                 if (rs != null) {
+                    // Get the first result
                     serverResponse += rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                    // Get the other results
                     while (rs.next()) {
                         serverResponse += ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
                     }
