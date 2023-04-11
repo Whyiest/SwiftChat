@@ -74,7 +74,7 @@ public class MessageAnalyser {
                 case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // maybe working?
 
                 case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
-                case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessagesForUser();  // maybe working?
+                case "LIST-MESSAGE-BETWEEN-USERS" -> serverResponse = listMessagesBetweenUsers();  // maybe working?
 
                 case "ADD-LOG" -> serverResponse = addLogToDatabase();
                 case "LIST-LOG-FOR-USER" -> serverResponse = listLogsForUser();  // maybe working?
@@ -194,8 +194,8 @@ public class MessageAnalyser {
      *  Response format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID;CONTENT;TIMESTAMP
      *  @return The messages for a user
      */
-    public String listMessagesForUser () {
-        return messageDao.getAllMessagesForUser(messageParts, message);
+    public String listMessagesBetweenUsers() {
+        return messageDao.listAllMessagesBetweenUsers(messageParts, message);
     }
 
     /**

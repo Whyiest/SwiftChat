@@ -210,21 +210,30 @@ public class ServerConnexion implements Runnable {
     //------------------------------------ SERVER REQUEST AREA ------------------------------------------//
 
     /**
-     * Send a message to the server to be sent to the receiver
+     * Send a login request to the server
      *
-     * @param receiverID the ID of the receiver of the message
-     * @param senderID   the ID of the sender of the message
-     * @param content    the content of the message
-     * @return the response from the server / Response format: "SEND-MESSAGE;SUCCESS/FAILURE;MESSAGE_ID;SENDER;RECEIVER;CONTENT;TIMESTAMP;LOG-CREATED/LOG-ERROR"
+     * @param username the username of the user
+     * @param password the password of the user
+     * @return the response from the server and the user information if the login was successful"
      */
-    public String addMessage(int receiverID, int senderID, String content) {
-
-        // Create message
-        Message messageToSend = new Message(senderID, receiverID, content);
+    public String login(String username, String password) {
 
         // Send it through the server
-        String serverResponse = sendToServer("ADD-MESSAGE;" + messageToSend.formalizeServerMessage());
+        String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
+        return serverResponse;
+    }
 
+    /**
+     * Send a logout request to the server
+     *
+     * @param userID the ID of the user
+     * @return the response from the server
+     */
+
+    public String logout(int userID) {
+
+        // Send it through the server
+        String serverResponse = sendToServer("LOGOUT;" + userID);
         return serverResponse;
     }
 
@@ -237,7 +246,7 @@ public class ServerConnexion implements Runnable {
      * @param username   the username of the user
      * @param email      the email of the user
      * @param password   the password of the user
-     * @return the response from the server / Response format: "CREATE-USER;SUCCESS/FAILURE;LOG-CREATED/LOG-ERROR"
+     * @return the response from the server
      */
     public String addUser(String permission, String firstName, String lastName, String username, String email, String password) {
 
@@ -251,42 +260,13 @@ public class ServerConnexion implements Runnable {
     }
 
     /**
-     * Send a request to the server to get all the users
-     *
-     * @return the list of all the users in String format / Response format: "SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LOG-CREATED/LOG-ERROR"
+     * Allow to update the permission of a user
+     * @param userID the ID of the user
+     * @param permission the new permission of the user
+     * @return the response from the server
      */
-    public String listAllUsers() {
-
-        return sendToServer("LIST-ALL-USERS");
-    }
-
-    /**
-     * Send a login request to the server
-     *
-     * @param username the username of the user
-     * @param password the password of the user
-     * @return the response from the server and the user information if the login was successful / Response format: "LOGIN;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LOG-CREATED/LOG-ERROR"
-     */
-    public String login(String username, String password) {
-
-        // Send it through the server
-        String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
-        return serverResponse;
-    }
-
-    /**
-     * Create a log to send it to the server
-     *
-     * @param userID the ID of the user who created the log
-     * @param type   the content of the log
-     * @return the response from the server / Response format: "ADD-LOG;SUCCESS/FAILURE;"
-     */
-    public String addLog(int userID, String type) {
-
-        Timestamp myTimestamp = new Timestamp(System.currentTimeMillis());
-
-        String serverResponse = sendToServer("ADD-LOG;" + userID + ";" + type + ";" + myTimestamp.toString());
-        return serverResponse;
+    public String changeUserPermission(int userID, String permission) {
+        return sendToServer("LIST-ALL-LOGS");
     }
 
     /**
@@ -302,12 +282,88 @@ public class ServerConnexion implements Runnable {
         return serverResponse;
     }
 
+    public String banUser(int userID) {
+        return sendToServer("BAN-USER;" + userID);
+    }
+
+    public String upDateLastConnectinTime(int userID) {
+        return sendToServer("UPDATE-LAST-CONNECTION-TIME;" + userID);
+    }
+
+    /**
+     * List all the users in the database
+     * @return the list of all the users in String format / Response format
+     */
+    public String listAllUsers () {
+        return sendToServer("LIST-ALL-USERS");
+    }
+
+
+    /**
+     * Send a message to the server to be sent to the receiver
+     *
+     * @param receiverID the ID of the receiver of the message
+     * @param senderID   the ID of the sender of the message
+     * @param content    the content of the message
+     * @return the response from the server"
+     */
+    public String addMessage(int receiverID, int senderID, String content) {
+
+        // Create message
+        Message messageToSend = new Message(senderID, receiverID, content);
+
+        // Send it through the server
+        String serverResponse = sendToServer("ADD-MESSAGE;" + messageToSend.formalizeServerMessage());
+
+        return serverResponse;
+    }
+
+    public String listMessageBetweenUsers(int senderID, int receverID) {
+        return sendToServer("LIST-MESSAGE-BETWEEN-USERS;" + senderID + ";" + receverID);
+    }
+
+
+    /**
+     * Create a log to send it to the server
+     *
+     * @param userID the ID of the user who created the log
+     * @param type   the content of the log
+     * @return the response from the server"
+     */
+    public String addLog(int userID, String type) {
+
+        Timestamp myTimestamp = new Timestamp(System.currentTimeMillis());
+
+        String serverResponse = sendToServer("ADD-LOG;" + userID + ";" + type + ";" + myTimestamp.toString());
+        return serverResponse;
+    }
+
+    public String listLogForUser (int userID) {
+        return sendToServer("LIST-LOG-FOR-USER;" + userID);
+    }
+
+    public String getUsersStatistics () {
+        return sendToServer("GET-USERS-STATISTICS");
+    }
+
+    public String getMessagesStatistics () {
+        return sendToServer("GET-MESSAGES-STATISTICS");
+    }
+
+    public String getConnectionsStatistics () {
+        return sendToServer("GET-CONNECTIONS-STATISTICS");
+    }
+
+    public String getTopUsers () {
+        return sendToServer("GET-TOP-USERS");
+    }
+
     /**
      * Send a ping to the server
-     *
      * @return PONG if the server is alive
      */
     public String ping() {
         return sendToServer("PING");
     }
+
 }

@@ -1,7 +1,6 @@
 package server.dao;
 
 import server.network.Database;
-import client.clientModel.Message;
 
 import java.sql.*;
 
@@ -68,7 +67,7 @@ public class MessageDao{
      * This method allow to get all messages for a user
      * @return The server response
      **/
-    public String getAllMessagesForUser(String[] messageParts, String message){
+    public String listAllMessagesBetweenUsers(String[] messageParts, String message){
 
         // Linking message parts to variables
         int idSender;
