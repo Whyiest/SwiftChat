@@ -247,7 +247,12 @@ public class MessageAnalyser {
         return logDao.getConnectionsStatistics(message);
     }
 
-
+    /**
+     * This method allow to get the top users
+     * Message format : GET-TOP-USERS
+     * Response format : GET-TOP-USERS;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS
+     * @return The top users
+     */
     public String getTopUsers(){
         return logDao.getTopUsers(message);
     }
