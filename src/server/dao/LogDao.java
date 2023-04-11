@@ -200,8 +200,8 @@ public class LogDao {
     }
 
     public String getConnectionsStatistics(String message){
-        // Linking message parts to variables
 
+        // Linking message parts to variables
         String logType1 = "CONNECTION";
         String logType2 = "DISCONNECTION";
 
@@ -237,5 +237,44 @@ public class LogDao {
             System.out.println("Statement failure : " + sql);
             return "LIST-CONNECTIONS-STATISTICS;FAILURE";
         }
+    }
+
+    public String getTopUsers(String message){
+        // Linking message parts to variables
+        String logType1 = "SENT-MESSAGE";
+        /*String logType2 = "RECEIVED-MESSAGE";*/
+
+        String sql = "SELECT USER_ID, COUNT(*) AS MESSAGE_COUNT FROM LOG WHERE TYPE = ? GROUP BY USER_ID ORDER BY MESSAGE_COUNT DESC LIMIT 3";
+        String serverResponse = "";
+
+        try{
+            if(!myDb.connection.isClosed()){ // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, logType1);
+                /*statement.setString(2, logType2);*/
+
+                ResultSet rs = statement.executeQuery();
+
+                if (rs != null) {
+                    // Get the first user
+                    serverResponse += rs.getString("USER_ID");
+                    // Get the other users
+                    while (rs.next()) {
+                        serverResponse += ";" + rs.getString("USER_ID");
+                    }
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+
+        } catch (Exception e){
+            System.out.println("[!] Error while getting top users [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "LIST-TOP-USERS;FAILURE";
+        }
+
     }
 }

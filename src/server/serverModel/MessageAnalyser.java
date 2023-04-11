@@ -68,10 +68,10 @@ public class MessageAnalyser {
 
                 case "ADD-USER" -> serverResponse = addUserToDatabase();
                 case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission();  // maybe working?
-                case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // maybe working?
+                case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();
                 case "BAN-USER" -> serverResponse = banUser();  // maybe working ?
                 case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
-                case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // not working
+                case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // maybe working?
 
                 case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
                 case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessagesForUser();  // maybe working?
@@ -249,6 +249,6 @@ public class MessageAnalyser {
 
 
     public String getTopUsers(){
-        return "Not working";
+        return logDao.getTopUsers(message);
     }
 }
