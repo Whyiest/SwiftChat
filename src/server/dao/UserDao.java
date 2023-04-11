@@ -91,9 +91,11 @@ public class UserDao {
 
     /**
      * This method allow to get all the users from the database
+     * @param messageParts The message parts
+     * @param message The message
      * @return The server response
      */
-    public String listAllUsers(){
+    public String listAllUsers(String[] messageParts, String message){
 
         // Create a SQL statement to get all the users from the database
         String sql = "SELECT * FROM user";

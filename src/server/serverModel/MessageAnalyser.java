@@ -217,6 +217,9 @@ public class MessageAnalyser {
     public String getStatistics() {
 
         return "Not Working";
+    }
 
+    public String listAllUsers() {
+        return userDao.listAllUsers(messageParts, message);
     }
 }

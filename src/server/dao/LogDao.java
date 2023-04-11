@@ -64,10 +64,11 @@ public class LogDao {
 
     /**
      * This method allow to get all logs for a user
-     * @param idUser The user id
+     * @param messageParts The parts of the message
+     * @param message The message
      * @return The server response
      */
-    public String getAllLogsForUser(int idUser){
+    public String getAllLogsForUser(String[] messageParts, String message) {
 
         int idUser;
 
