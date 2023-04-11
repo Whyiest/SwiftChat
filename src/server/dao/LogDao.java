@@ -10,6 +10,13 @@ public class LogDao {
         this.myDb = myDb;
     }
 
+
+    /**
+     * This method allow to add a log to the database
+     * @param messageParts The parts of the message
+     * @param message The message
+     * @return The server response
+     */
     public String addLog(String[] messageParts, String message){
 
         // Linking message parts to variables
@@ -55,6 +62,11 @@ public class LogDao {
         }
     }
 
+    /**
+     * This method allow to get all logs for a user
+     * @param idUser The user id
+     * @return The server response
+     */
     public String getAllLogsForUser(int idUser){
 
         String sql = "SELECT * FROM LOG WHERE USER_ID = idUser";

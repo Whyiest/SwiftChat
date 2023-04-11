@@ -1,5 +1,6 @@
 package server.serverModel;
 
+import server.network.ClientConnexionHub;
 import server.network.Database;
 
 import java.io.BufferedReader;
@@ -8,14 +9,20 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class GestionClient implements Runnable {
+public class ClientManagement implements Runnable {
 
     private Database myDb;
     private Socket clientSocket;
+    private BufferedReader incomingMessage;
 
-    public GestionClient(Socket clientSocket, Database myDb) {
+    public ClientManagement(Socket clientSocket, Database myDb) {
         this.clientSocket = clientSocket;
         this.myDb = myDb;
+        try {
+            this.incomingMessage = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        } catch (IOException e) {
+            System.out.println("[!] Unable to load incoming messages.");
+        }
     }
 
     /**
@@ -26,12 +33,6 @@ public class GestionClient implements Runnable {
         try {
             String serverResponse = "";
 
-            // Display the client connexion
-            System.out.println("\n[!] Client connected from " + clientSocket.getInetAddress() + " on port " + clientSocket.getPort() + ".");
-
-            // Create a buffer to read the message sent by the client
-            BufferedReader incomingMessage = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
             while (!clientSocket.isClosed()) {
 
                 // Read the message
@@ -40,8 +41,6 @@ public class GestionClient implements Runnable {
                     // Connection has been closed by the client
                     break;
                 }
-
-                System.out.println("\n[>] Message reçu : " + message);
 
                 // Analyse the message
                 MessageAnalyser messageAnalyser = new MessageAnalyser(message, myDb);
@@ -53,10 +52,16 @@ public class GestionClient implements Runnable {
                 writer.flush();
             }
 
-            // Close the connexion
+        } catch (IOException e) {
+            System.out.println("[!] Error while reading message from client in Thread GestionClient.");
+        }
+    }
+
+    public void closeConnexion() {
+        try {
             incomingMessage.close();
             clientSocket.close();
-
+            ClientConnexionHub.removeClient(clientSocket);
         } catch (IOException e) {
             e.printStackTrace();
         }

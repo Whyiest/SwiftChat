@@ -2,6 +2,7 @@ package server.dao;
 
 import server.network.Database;
 
+import java.awt.print.PrinterGraphics;
 import java.sql.*;
 
 public class UserDao {
@@ -14,8 +15,9 @@ public class UserDao {
 
     /**
      * This method allow to add a user to the database
-     * Message format : [ADD-USER;ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME]
-     * Response format : [ADD-USER;SUCCESS/ERROR;MESSAGE]
+     * @param messageParts The message parts
+     * @param message The message
+     * @return The server response
      */
     public String addUser(String[] messageParts, String message){
 
@@ -45,7 +47,7 @@ public class UserDao {
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME]");
-            return "CREATE_USER;FAILURE";
+            return "ADD-USER;FAILURE";
         }
 
         // Adding the user to the database
@@ -73,7 +75,7 @@ public class UserDao {
 
                 // Close the prepared statement
                 statement.close();
-                return "CREATE_USER;SUCCESS";
+                return "ADD-USER;SUCCESS";
             } else {
                 throw new SQLException("Connection to database failed."); // Throw an exception if the connection is closed
             }
@@ -81,20 +83,22 @@ public class UserDao {
         } catch (Exception e) {
             System.out.println("[!] Error while creating the user [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "CREATE_USER;FAILURE";
+            return "ADD-USER;FAILURE";
         }
     }
 
     /**
      * This method allow to get all the users from the database
-     * Message format : [GET-ALL-USERS]
-     * Response format : [GET-ALL-USERS;SUCCESS/ERROR;USER1;USER2;USER3;...;USERn]
+     * @return The server response
      */
-    public String getAllUsers(){
+    public String listAllUsers(){
 
         // Create a SQL statement to get all the users from the database
         String sql = "SELECT * FROM user";
-        String serverResponse = "";
+
+        // Create a prepared statement with the SQL statement
+        String serverResponse = "LIST-ALL-USERS;SUCCESS";
+
         try {
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
@@ -109,15 +113,52 @@ public class UserDao {
             }
             statement.close();
             return serverResponse;
+
         } catch (Exception e) {
             System.out.println("[!] Error while getting all users");
             System.out.println("Statement failure : " + sql);
-            return "GET_ALL_USERS;FAILURE";
+            return "LIST-ALL-USERS;FAILURE";
         }
     }
 
+    /**
+     * This method allow to get a user from the database
+     * @param messageParts  The message parts
+     * @param message The message
+     * @return The server response
+     */
     public String changeUserStatus(String[] messageParts, String message){
 
-        return "not working yet";
+        // Linking message parts to variables
+        String userId = "";
+        String userStatus = "";
+
+        try {
+            userId = messageParts[1];
+            userStatus = messageParts[2];
+
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [CHANGE-USER-STATUS;STATUS;ID]");
+            return "CHANGE-USER-STATUS;FAILURE";
+        }
+
+        // Create a SQL statement to change the user status
+        String sql = "UPDATE user SET STATUS = ? WHERE ID = ?";
+
+        // Create a prepared statement with the SQL statement
+
+        try {
+            PreparedStatement statement = myDb.connection.prepareStatement(sql);
+            statement.setString(1, userStatus);
+            statement.setInt(2, Integer.parseInt(userId));
+            statement.executeUpdate();
+            return "CHANGE-USER-STATUS;SUCCESS";
+
+        } catch (Exception e) {
+            System.out.println("[!] Error while changing the user status");
+            System.out.println("Statement failure : " + sql);
+            return "CHANGE-USER-STATUS;FAILURE";
+        }
     }
 }

@@ -1,11 +1,8 @@
 package server;
 
 import server.network.ClientConnexionHub;
-import server.network.Database;
-import java.sql.*;
 
-public class Main {
-
+public class Server {
 
 public static void main(String[] args) {
 
@@ -14,6 +11,11 @@ public static void main(String[] args) {
     // Create a connexion hub on port 5000
     ClientConnexionHub myClientConnexionHub = new ClientConnexionHub(5000);
 
+    // Code to execute when the server is closed
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        System.out.println("\n[!] Starting safe shutdown of server...");
+        myClientConnexionHub.closeConnexion();
+    }));
     // Open the connexion hub
     myClientConnexionHub.openConnexion();
 

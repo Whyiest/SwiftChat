@@ -15,8 +15,9 @@ public class MessageDao{
 
     /**
      * This method allow to add a message to the database
-     * Message format : [ADD-MESSAGE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP]
-     * Response format : [ADD-MESSAGE;SUCCESS/ERROR]
+     * @param messageParts The parts of the message
+     * @param message The message
+     * @return The server response
      **/
     public String addMessage(String[] messageParts, String message){
 
@@ -57,18 +58,17 @@ public class MessageDao{
 
             // Close the statement
             statement.close();
-            return "CREATE_MESSAGE;SUCCESS";
+            return "ADD-MESSAGE;SUCCESS";
         } catch (Exception e){
             System.out.println("[!] Error while creating the message [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "CREATE_MESSAGE;FAILURE";
+            return "ADD-MESSAGE;FAILURE";
         }
     }
 
     /**
      * This method allow to get all messages for a user
-     * Message format : [GET-ALL-MESSAGES-FOR-USER;ID]
-     * Response format : [GET-ALL-MESSAGES-FOR-USER;SUCCESS/ERROR;MESSAGE]
+     * @return The server response
      **/
     public String getAllMessagesForUser(Database myDb, int idSender, int idReceiver){
         String sql = "SELECT * FROM message WHERE SENDER = " + idSender + " AND RECEIVER = " + idReceiver + " ORDER BY TIMESTAMP ASC";
@@ -87,7 +87,7 @@ public class MessageDao{
         } catch(Exception e){
             System.out.println("[!] Error while getting all messages for user [" + idReceiver + "]");
             System.out.println("Statement failure : " + sql);
-            return "GET_ALL_MESSAGES_FOR_USER;FAILURE";
+            return "LIST-ALL-MESSAGES-FOR-USER;FAILURE";
         }
     }
 

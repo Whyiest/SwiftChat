@@ -1,5 +1,5 @@
 package server.network;
-import server.serverModel.GestionClient;
+import server.serverModel.ClientManagement;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -14,7 +14,9 @@ public class ClientConnexionHub {
 
     private Database myDb;
 
-    private ArrayList<Socket> clientSocketList = new ArrayList<>();
+    private static ArrayList<Socket> clientSocketList = new ArrayList<>();
+
+    private static ArrayList<ClientManagement> clientManagementList = new ArrayList<>();
 
     /**
      * Constructor of the ClientConnexionHub class
@@ -54,23 +56,26 @@ public class ClientConnexionHub {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("[!] Server started on port " + port + " and IP address " + serverIpAddress + ".");
-            System.out.println("[!] Waiting for client connection...\n");
+            System.out.println("[?] Waiting for client connection...\n");
 
             while (waitingForConnection) {
 
-                // Accepter une connexion entrante
+                // Accept the client connexion and add it to the list
                 Socket newClientSocket = serverSocket.accept();
                 clientSocketList.add(newClientSocket);
 
-                // Création d'un nouveau thread pour gérer le client
-                Thread connexionThread = new Thread(new GestionClient(newClientSocket, myDb));
+                // Create a new thread for the client and start it
+                clientManagementList.add(new ClientManagement(newClientSocket, myDb));
+                Thread connexionThread = new Thread(clientManagementList.get(clientManagementList.size()-1));
                 connexionThread.start();
+
+                // Display the client connexion
+                System.out.println("\n[!] New client connected from " + newClientSocket.getInetAddress() + " on port " + newClientSocket.getPort() + ".");
                 System.out.println("[!] " + clientSocketList.size() + " client(s) connected.");
 
             }
         } catch (IOException e) {
-            // Traitement de l'exception IO
-            e.printStackTrace();
+            System.out.println("[!] Error while operating the connexion hub.");
         }
     }
 
@@ -78,16 +83,17 @@ public class ClientConnexionHub {
      * Close the connexion hub and the database
      */
     public void closeConnexion() {
-
-        for (Socket socket : clientSocketList) {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         waitingForConnection = false;
+        for (int i = 0; i < clientManagementList.size(); i++) {
+            clientManagementList.get(i).closeConnexion();
+        }
         myDb.disconnect();
+    }
+
+    public static void removeClient(Socket clientSocket) {
+        clientSocketList.remove(clientSocket);
+        System.out.println("\n[!] A client disconnected from the server.");
+        System.out.println("[!] " + clientSocketList.size() + " client(s) connected.");
     }
 }
 
