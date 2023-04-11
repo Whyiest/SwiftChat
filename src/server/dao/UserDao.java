@@ -183,7 +183,7 @@ public class UserDao {
         }
 
         // Create a SQL statement to ban the user in the database
-        String sql = "UPDATE USER SET PERMISSION = ? WHERE USERNAME = ?";
+        String sql = "UPDATE USER SET PERMISSION = ? WHERE ID = ?";
 
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
@@ -223,7 +223,7 @@ public class UserDao {
         }
 
         // Create a SQL statement to ban the user in the database
-        String sql = "UPDATE USER SET IS_BANNED = ? WHERE USERNAME = ?";
+        String sql = "UPDATE USER SET IS_BANNED = ? WHERE ID = ?";
 
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
@@ -262,7 +262,7 @@ public class UserDao {
         }
 
         // Create a SQL statement to ban the user in the database
-        String sql = "UPDATE USER SET LAST_CONNECTION_TIME = ? WHERE USERNAME = ?";
+        String sql = "UPDATE USER SET LAST_CONNECTION_TIME = ? WHERE ID = ?";
 
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
