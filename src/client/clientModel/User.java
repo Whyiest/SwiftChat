@@ -52,6 +52,13 @@ public class User {
     public User() {
     }
 
+    public  int getId(){return id;};
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+
     public String getUserName() {
         return userName;
     }
@@ -59,9 +66,6 @@ public class User {
         this.userName = userName;
     }
 
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -70,6 +74,14 @@ public class User {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
+    public String getPermission() {
+        return permission;
+    }
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
 
     public String getPassword() {
         return password;
@@ -82,6 +94,17 @@ public class User {
     public String getMail() {
         return mail;
     }
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public LocalDateTime getLastConnectionTime() {
+        return lastConnectionTime;
+    }
+
+    public void setLastConnectionTime(LocalDateTime lastConnectionTime) {
+        this.lastConnectionTime = lastConnectionTime;
+    }
 
     public String getLastName() {
         return lastName;
@@ -89,6 +112,22 @@ public class User {
 
     public String getFirstName() {
         return firstName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isBanned() {
+        return isBanned;
+    }
+
+    public void setBanned(boolean banned) {
+        isBanned = banned;
     }
 
     /**

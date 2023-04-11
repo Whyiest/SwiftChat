@@ -104,6 +104,7 @@ public class ConversationWindow extends JDialog {
         return buttonPanel;
     }
 
+
     private JButton createImageButton() {
         return new JButton("Image");
     }

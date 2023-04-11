@@ -7,6 +7,9 @@ import java.io.*;
 import java.net.*;
 import java.security.PublicKey;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -426,8 +429,10 @@ public class ServerConnexion implements Runnable {
      * @param serverResponse the response from the server
      * @return the different parts of the response
      */
-    public String[] extractServerResponse(String serverResponse) {
-        return serverResponse.split(";");
+
+
+
+
     }
 
-}
+
