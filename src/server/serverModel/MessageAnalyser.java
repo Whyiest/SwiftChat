@@ -64,9 +64,10 @@ public class MessageAnalyser {
             case "LOGOUT" -> serverResponse = logOut();  // not working
 
             case "ADD-USER" -> serverResponse = addUserToDatabase();
-            case "CHANGE-USER-TYPE" -> serverResponse = changeUserType();  // not working
+            case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission();  // maybe working?
             case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // not working
-            case "BAN-USER" -> serverResponse = banUser();  // not working
+            case "BAN-USER" -> serverResponse = banUser();  // maybe working ?
+            case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
 
             case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
             case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessageForUser();  // not working
@@ -167,27 +168,13 @@ public class MessageAnalyser {
     }
 
     /**
-     * This method allow to ban users
-     * Message format : BAN-USER;USER_ID
-     * Response format : BAN-USER;SUCCESS/FAILURE
-     * @return SUCCESS if the user is banned, FAILURE otherwise
-     */
-    public String banUser() {
-
-        return "Not Working";
-
-    }
-
-    /**
      * This method allow to change the type of a user
      * Message format : CHANGE-USER-TYPE;USER_ID;NEW_TYPE
      * Response format : CHANGE-USER-TYPE;SUCCESS/FAILURE
      * @return SUCCESS if the user type is changed, FAILURE otherwise
      */
-    public String changeUserType() {
-
-        return "Not Working";
-
+    public String changeUserPermission() {
+        return userDao.changeUserPermission(messageParts, message);
     }
 
     /**
@@ -200,4 +187,17 @@ public class MessageAnalyser {
         return userDao.changeUserStatus(messageParts, message);
     }
 
+    /**
+     * This method allow to ban users
+     * Message format : BAN-USER;USER_ID
+     * Response format : BAN-USER;SUCCESS/FAILURE
+     * @return SUCCESS if the user is banned, FAILURE otherwise
+     */
+    public String banUser() {
+        return userDao.banUser(messageParts, message);
+    }
+
+    public String updateLastConnectionTime(){
+        return userDao.updateLastConnectionTime(messageParts, message);
+    }
 }

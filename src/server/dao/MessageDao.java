@@ -67,23 +67,43 @@ public class MessageDao{
 
     /**
      * This method allow to get all messages for a user
-     * Message format : [GET-ALL-MESSAGES-FOR-USER;ID]
-     * Response format : [GET-ALL-MESSAGES-FOR-USER;SUCCESS/ERROR;MESSAGE]
+     * Message format : [GET_ALL_MESSAGES_FOR_USER;SENDER_ID;RECEIVER_ID]
+     * Response format : [GET_ALL_MESSAGES_FOR_USER;SUCCESS/ERROR;CONTENT;SENDER_ID;RECEIVER_ID;TIMESTAMP]
      **/
-    public String getAllMessagesForUser(Database myDb, int idSender, int idReceiver){
-        String sql = "SELECT * FROM message WHERE SENDER = " + idSender + " AND RECEIVER = " + idReceiver + " ORDER BY TIMESTAMP ASC";
+    public String getAllMessagesForUser(String[] messageParts, String message){
+        // Linking message parts to variables
+        int idSender;
+        int idReceiver;
+
+        try {
+            idSender = Integer.parseInt(messageParts[1]);
+            idReceiver = Integer.parseInt(messageParts[2]);
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [GET_ALL_MESSAGES_FOR_USER;SENDER_ID;RECEIVER_ID]");
+            return "GET_ALL_MESSAGES_FOR_USER;FAILURE";
+        }
+
+        String sql = "SELECT * FROM message WHERE SENDER = ? AND RECEIVER = ? ORDER BY TIMESTAMP ASC";
         String serverResponse = "";
         try {
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
-            ResultSet rs = statement.executeQuery();
-            if (rs != null) {
-                serverResponse += rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
-                while (rs.next()) {
-                    serverResponse += ";" + rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setInt(1, idSender);
+                statement.setInt(2, idReceiver);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null) {
+                    serverResponse += rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
+                    while (rs.next()) {
+                        serverResponse += ";" + rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
+                    }
                 }
+                statement.close();
+                return serverResponse;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
             }
-            statement.close();
-            return serverResponse;
         } catch(Exception e){
             System.out.println("[!] Error while getting all messages for user [" + idReceiver + "]");
             System.out.println("Statement failure : " + sql);

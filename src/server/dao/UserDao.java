@@ -3,6 +3,7 @@ package server.dao;
 import server.network.Database;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class UserDao {
 
@@ -45,7 +46,7 @@ public class UserDao {
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME]");
-            return "CREATE_USER;FAILURE";
+            return "CREATE-USER;FAILURE";
         }
 
         // Adding the user to the database
@@ -73,15 +74,16 @@ public class UserDao {
 
                 // Close the prepared statement
                 statement.close();
-                return "CREATE_USER;SUCCESS";
+                return "CREATE-USER;SUCCESS";
             } else {
-                throw new SQLException("Connection to database failed."); // Throw an exception if the connection is closed
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
             }
 
         } catch (Exception e) {
             System.out.println("[!] Error while creating the user [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "CREATE_USER;FAILURE";
+            return "CREATE-USER;FAILURE";
         }
     }
 
@@ -96,28 +98,153 @@ public class UserDao {
         String sql = "SELECT * FROM user";
         String serverResponse = "";
         try {
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
-            ResultSet rs = statement.executeQuery();
-            if(rs != null) {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null) {
 
-                // Get the first user
-                serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
-                while (rs.next()) {
-                    // Get the next user
-                    serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME")  + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
+                    // Get the first user
+                    serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
+                    while (rs.next()) {
+                        // Get the next user
+                        serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
+                    }
                 }
+                statement.close();
+                return serverResponse;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
             }
-            statement.close();
-            return serverResponse;
         } catch (Exception e) {
             System.out.println("[!] Error while getting all users");
             System.out.println("Statement failure : " + sql);
-            return "GET_ALL_USERS;FAILURE";
+            return "GET-ALL-USERS;FAILURE";
         }
     }
 
     public String changeUserStatus(String[] messageParts, String message){
-
         return "not working yet";
+    }
+
+
+    public String changeUserPermission(String[] messageParts, String message){
+        // Linking message parts to variables
+        String userUsername = "";
+        String userPermission = "";
+
+        try {
+            userUsername = messageParts[1];
+            userPermission = messageParts[2];
+
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [CHANGE-USER-PERMISSION;USERNAME;PERMISSION]");
+            return "CHANGE-USER-PERMISSION;FAILURE";
+        }
+
+        // Create a SQL statement to ban the user in the database
+        String sql = "UPDATE USER SET PERMISSION = ? WHERE USERNAME = ?";
+
+        try {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, userPermission);
+                statement.setString(2, userUsername);
+
+                // Execute the SQL statement
+                statement.executeUpdate();
+
+                // Close the prepared statement
+                statement.close();
+                return "CHANGE-USER-PERMISSION;SUCCESS";
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while changing user permission [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "CHANGE-USER-PERMISSION;FAILURE";
+        }
+    }
+
+    public String banUser(String[] messageParts, String message){
+        // Linking message parts to variables
+        String userUsername = "";
+        String userIsBanned = "";
+
+        try {
+            userUsername = messageParts[1];
+            userIsBanned = messageParts[2];
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [BAN-USER;USERNAME;IS_BANNED]");
+            return "BAN-USER;FAILURE";
+        }
+
+        // Create a SQL statement to ban the user in the database
+        String sql = "UPDATE USER SET IS_BANNED = ? WHERE USERNAME = ?";
+
+        try {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, userIsBanned);
+                statement.setString(2, userUsername);
+
+                // Execute the SQL statement
+                statement.executeUpdate();
+
+                // Close the prepared statement
+                statement.close();
+                return "BAN-USER;SUCCESS";
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while banning user [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "BAN-USER;FAILURE";
+        }
+    }
+
+    public String updateLastConnectionTime(String[] messageParts, String message){
+        // Linking message parts to variables
+        String userUsername = "";
+        String userLastConnectionTime = LocalDateTime.now().toString();
+
+        try {
+            userUsername = messageParts[1];
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [UPDATE-LAST-CONNECTION-TIME;USERNAME]");
+            return "UPDATE-LAST-CONNECTION-TIME;FAILURE";
+        }
+
+        // Create a SQL statement to ban the user in the database
+        String sql = "UPDATE USER SET LAST_CONNECTION_TIME = ? WHERE USERNAME = ?";
+
+        try {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, userLastConnectionTime);
+                statement.setString(2, userUsername);
+
+                // Execute the SQL statement
+                statement.executeUpdate();
+
+                // Close the prepared statement
+                statement.close();
+                return "UPDATE-LAST-CONNECTION-TIME;SUCCESS";
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while updating last connection time [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "UPDATE-LAST-CONNECTION-TIME;FAILURE";
+        }
     }
 }
