@@ -169,11 +169,11 @@ public class UserDao {
 
     public String changeUserPermission(String[] messageParts, String message){
         // Linking message parts to variables
-        String userUsername = "";
+        String userId = "";
         String userPermission = "";
 
         try {
-            userUsername = messageParts[1];
+            userId = messageParts[1];
             userPermission = messageParts[2];
 
         } catch (Exception e) {
@@ -189,7 +189,7 @@ public class UserDao {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setString(1, userPermission);
-                statement.setString(2, userUsername);
+                statement.setInt(2, Integer.parseInt(userId));
 
                 // Execute the SQL statement
                 statement.executeUpdate();
@@ -210,11 +210,11 @@ public class UserDao {
 
     public String banUser(String[] messageParts, String message){
         // Linking message parts to variables
-        String userUsername = "";
+        String userId = "";
         String userIsBanned = "";
 
         try {
-            userUsername = messageParts[1];
+            userId = messageParts[1];
             userIsBanned = messageParts[2];
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
@@ -229,7 +229,7 @@ public class UserDao {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setString(1, userIsBanned);
-                statement.setString(2, userUsername);
+                statement.setInt(2, Integer.parseInt(userId));
 
                 // Execute the SQL statement
                 statement.executeUpdate();
@@ -250,11 +250,11 @@ public class UserDao {
 
     public String updateLastConnectionTime(String[] messageParts, String message){
         // Linking message parts to variables
-        String userUsername = "";
+        String userId = "";
         String userLastConnectionTime = LocalDateTime.now().toString();
 
         try {
-            userUsername = messageParts[1];
+            userId = messageParts[1];
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [UPDATE-LAST-CONNECTION-TIME;USERNAME]");
@@ -268,7 +268,7 @@ public class UserDao {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setString(1, userLastConnectionTime);
-                statement.setString(2, userUsername);
+                statement.setInt(2, Integer.parseInt(userId));
 
                 // Execute the SQL statement
                 statement.executeUpdate();
