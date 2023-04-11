@@ -9,13 +9,18 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientManagement implements Runnable {
+public class ClientManager implements Runnable {
 
     private Database myDb;
     private Socket clientSocket;
     private BufferedReader incomingMessage;
 
-    public ClientManagement(Socket clientSocket, Database myDb) {
+    /**
+     * Constructor of the ClientManager class
+     * @param clientSocket The socket of the client
+     * @param myDb The database
+     */
+    public ClientManager(Socket clientSocket, Database myDb) {
         this.clientSocket = clientSocket;
         this.myDb = myDb;
         try {
@@ -57,6 +62,9 @@ public class ClientManagement implements Runnable {
         }
     }
 
+    /**
+     * Close the connexion with the client
+     */
     public void closeConnexion() {
         try {
             incomingMessage.close();

@@ -1,5 +1,5 @@
 package server.network;
-import server.serverModel.ClientManagement;
+import server.serverModel.ClientManager;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class ClientConnectionHub {
 
     private static ArrayList<Socket> clientSocketList = new ArrayList<>();
 
-    private static ArrayList<ClientManagement> clientManagementList = new ArrayList<>();
+    private static ArrayList<ClientManager> clientManagerList = new ArrayList<>();
 
     /**
      * Constructor of the ClientConnexionHub class
@@ -65,8 +65,8 @@ public class ClientConnectionHub {
                 clientSocketList.add(newClientSocket);
 
                 // Create a new thread for the client and start it
-                clientManagementList.add(new ClientManagement(newClientSocket, myDb));
-                Thread connexionThread = new Thread(clientManagementList.get(clientManagementList.size()-1));
+                clientManagerList.add(new ClientManager(newClientSocket, myDb));
+                Thread connexionThread = new Thread(clientManagerList.get(clientManagerList.size()-1));
                 connexionThread.start();
 
                 // Display the client connexion
@@ -84,8 +84,8 @@ public class ClientConnectionHub {
      */
     public void closeConnexion() {
         waitingForConnection = false;
-        for (int i = 0; i < clientManagementList.size(); i++) {
-            clientManagementList.get(i).closeConnexion();
+        for (int i = 0; i < clientManagerList.size(); i++) {
+            clientManagerList.get(i).closeConnexion();
         }
         myDb.disconnect();
     }

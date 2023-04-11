@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class UserDao {
 
-    private Database myDb;
+    private final Database myDb;
 
     public UserDao(Database myDb) {
         this.myDb = myDb;
@@ -15,11 +15,12 @@ public class UserDao {
 
     /**
      * This method allow to add a user to the database
+     *
      * @param messageParts The message parts
-     * @param message The message
+     * @param message      The message
      * @return The server response
      */
-    public String addUser(String[] messageParts, String message){
+    public String addUser(String[] messageParts, String message) {
 
         // Linking message parts to variables
         String userUsername = "";
@@ -90,48 +91,65 @@ public class UserDao {
 
     /**
      * This method allow to get all the users from the database
+     *
      * @param messageParts The message parts
-     * @param message The message
+     * @param message      The message
      * @return The server response
      */
-    public String listAllUsers(String[] messageParts, String message){
+    public String listAllUsers(String[] messageParts, String message) {
 
-        // Create a SQL statement to get all the users from the database
-        String sql = "SELECT * FROM user";
-        String serverResponse = "";
+        StringBuilder result = new StringBuilder();
+        result.append("LIST-ALL-USERS;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS\n");
+
         try {
+
+            // Create a SQL statement to get all the users from the database
+            String sql = "SELECT * FROM user";
+
+            // Execute the SQL statement and get the ResultSet object
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
-                ResultSet rs = statement.executeQuery();
-                if (rs != null) {
+                ResultSet resultSet = statement.executeQuery(sql);
 
-                    // Get the first user
-                    serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
-                    while (rs.next()) {
-                        // Get the next user
-                        serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getTimestamp("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
-                    }
+                // Loop through the ResultSet and append each row to the result string
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("ID");
+                    String username = resultSet.getString("USERNAME");
+                    String firstName = resultSet.getString("FIRST_NAME");
+                    String lastName = resultSet.getString("LAST_NAME");
+                    String email = resultSet.getString("EMAIL");
+                    String password = resultSet.getString("PASSWORD");
+                    String permission = resultSet.getString("PERMISSION");
+                    String lastConnectionTime = resultSet.getString("LAST_CONNECTION_TIME");
+                    String isBanned = resultSet.getString("IS_BANNED");
+                    String status = resultSet.getString("STATUS");
+
+                    result.append(String.format("%d;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
+                            id, permission, firstName, lastName, username, email, password, lastConnectionTime, status, isBanned));
                 }
+
+                // Close the ResultSet and Statement objects
+                resultSet.close();
                 statement.close();
-                return serverResponse;
+                return result.toString();
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
         } catch (Exception e) {
             System.out.println("[!] Error while getting all users");
-            System.out.println("Statement failure : " + sql);
+            System.out.println("Statement failure");
             return "LIST-ALL-USERS;FAILURE";
         }
     }
 
     /**
      * This method allow to get a user from the database
-     * @param messageParts  The message parts
-     * @param message The message
+     * @param messageParts The message parts
+     * @param message      The message
      * @return The server response
      */
-    public String changeUserStatus(String[] messageParts, String message){
+    public String changeUserStatus(String[] messageParts, String message) {
 
         // Linking message parts to variables
         String userId = "";
@@ -167,7 +185,13 @@ public class UserDao {
     }
 
 
-    public String changeUserPermission(String[] messageParts, String message){
+    /**
+     * This method allow to change the user permission
+     * @param messageParts The message parts
+     * @param message The message
+     * @return The server response
+     */
+    public String changeUserPermission(String[] messageParts, String message) {
         // Linking message parts to variables
         String userId = "";
         String userPermission = "";
@@ -208,7 +232,13 @@ public class UserDao {
         }
     }
 
-    public String changeBanStatus(String[] messageParts, String message){
+    /**
+     * This method allow to ban a user from the database
+     * @param messageParts The message parts
+     * @param message      The message
+     * @return The server response
+     */
+    public String changeBanStatus(String[] messageParts, String message) {
         // Linking message parts to variables
         String userId = "";
         String userIsBanned = "";
@@ -248,7 +278,13 @@ public class UserDao {
         }
     }
 
-    public String updateLastConnectionTime(String[] messageParts, String message){
+    /**
+     * This method allow to update the last connection time of a user
+     * @param messageParts The message parts
+     * @param message      The message
+     * @return The server response
+     */
+    public String updateLastConnectionTime(String[] messageParts, String message) {
         // Linking message parts to variables
         String userId = "";
         String userLastConnectionTime = LocalDateTime.now().toString();

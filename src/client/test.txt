@@ -9,3 +9,6 @@
  serverConnexion.addLog(10, "This log is a test");
  serverConnexion.changeStatus(10, "ONLINE");
  serverConnexion.changeStatus(9, "ONLINE");
+ serverConnexion.changeUserPermission(10, "ADMIN");
+ serverConnexion.upDateLastConnectinTime(10);
+ serverConnexion.banUser(10, "True");

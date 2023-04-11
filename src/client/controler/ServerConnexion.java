@@ -5,6 +5,7 @@ import client.clientModel.User;
 
 import java.io.*;
 import java.net.*;
+import java.security.PublicKey;
 import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Scanner;
@@ -266,7 +267,7 @@ public class ServerConnexion implements Runnable {
      * @return the response from the server
      */
     public String changeUserPermission(int userID, String permission) {
-        return sendToServer("LIST-ALL-LOGS");
+        return sendToServer("CHANGE-USER-PERMISSION;" + userID + ";" + permission);
     }
 
     /**
@@ -282,10 +283,21 @@ public class ServerConnexion implements Runnable {
         return serverResponse;
     }
 
-    public String banUser(int userID) {
-        return sendToServer("BAN-USER;" + userID);
+    /**
+     * Alllow to ban or unban a user
+     * @param userID the ID of the user
+     * @param isBanned the new status of the user
+     * @return the response from the server
+     */
+    public String banUser(int userID, String isBanned) {
+        return sendToServer("CHANGE-BAN-STATUS;" + userID + ";" + isBanned);
     }
 
+    /**
+     * Update the last connection time of the user
+     * @param userID the ID of the user
+     * @return the response from the server
+     */
     public String upDateLastConnectinTime(int userID) {
         return sendToServer("UPDATE-LAST-CONNECTION-TIME;" + userID);
     }
@@ -318,6 +330,12 @@ public class ServerConnexion implements Runnable {
         return serverResponse;
     }
 
+    /**
+     * List all the messages for between the client and a specific user
+     * @param senderID the ID of the sender
+     * @param receverID the ID of the receiver
+     * @return the list of all the messages in String format
+     */
     public String listMessageBetweenUsers(int senderID, int receverID) {
         return sendToServer("LIST-MESSAGE-BETWEEN-USERS;" + senderID + ";" + receverID);
     }
@@ -328,7 +346,7 @@ public class ServerConnexion implements Runnable {
      *
      * @param userID the ID of the user who created the log
      * @param type   the content of the log
-     * @return the response from the server"
+     * @return the response from the server
      */
     public String addLog(int userID, String type) {
 
@@ -338,22 +356,43 @@ public class ServerConnexion implements Runnable {
         return serverResponse;
     }
 
+    /**
+     * List all the logs for a specific user
+     * @param userID the ID of the user
+     * @return the list of all the logs in String format
+     */
     public String listLogForUser (int userID) {
         return sendToServer("LIST-LOG-FOR-USER;" + userID);
     }
 
+    /**
+     * List all statistics related to users for the server
+     * @return the list of all the statistics in String format
+     */
     public String getUsersStatistics () {
         return sendToServer("GET-USERS-STATISTICS");
     }
 
+    /**
+     * List all statistics related to Messages for the server
+     * @return the list of all the statistics in String format
+     */
     public String getMessagesStatistics () {
         return sendToServer("GET-MESSAGES-STATISTICS");
     }
 
+    /**
+     * List all statistics related to Connections for the server
+     * @return the list of all the statistics in String format
+     */
     public String getConnectionsStatistics () {
         return sendToServer("GET-CONNECTIONS-STATISTICS");
     }
 
+    /**
+     * Give the most active users
+     * @return the list of the most active users in String format
+     */
     public String getTopUsers () {
         return sendToServer("GET-TOP-USERS");
     }
@@ -364,6 +403,15 @@ public class ServerConnexion implements Runnable {
      */
     public String ping() {
         return sendToServer("PING");
+    }
+
+    /**
+     * Extract the server response to get the different parts
+     * @param serverResponse the response from the server
+     * @return the different parts of the response
+     */
+    public String[] extractServerResponse(String serverResponse) {
+        return serverResponse.split(";");
     }
 
 }

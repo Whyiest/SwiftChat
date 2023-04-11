@@ -13,7 +13,6 @@ public class MessageAnalyser {
     private String message;
     private String[] messageParts;
     private String messageAction;
-    private Database myDb;
 
     private UserDao userDao;
 
@@ -51,6 +50,10 @@ public class MessageAnalyser {
     }
 
 
+    /**
+     * This method allow to redirect the message to the correct DAO
+     * @return The server response
+     */
     public String redirectMessage() {
 
         String serverResponse = "";
@@ -69,7 +72,7 @@ public class MessageAnalyser {
                 case "ADD-USER" -> serverResponse = addUserToDatabase(); // working
                 case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission(); // working
                 case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus(); // working
-                case "CHANGE-BAN-USER" -> serverResponse = changeBanStatus();  // maybe working ?
+                case "CHANGE-BAN-STATUS" -> serverResponse = changeBanStatus();  // maybe working ?
                 case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
                 case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // maybe working?
 
@@ -121,9 +124,9 @@ public class MessageAnalyser {
     }
 
     /**
-     * This method allow to get the statistics of the server
-     * Message format : GET-STATISTICS
-     * Response format : GET-STATISTICS;NUMBER_OF_USERS;NUMBER_OF_MESSAGES;NUMBER_OF_GROUPS
+     * This method allow to add an user to the database
+     * Message format : ADD-USER;ID;USERNAME;FIRST_NAME;LAST_NAME;EMAIL;PASSWORD;PERMISSION;LAST-CONNECTION_TIME;BAN_STATUS;STATUS
+     * Response format : ADD-USER;SUCCESS/FAILURE
      * @return The statistics of the server
      */
     public String addUserToDatabase() {
