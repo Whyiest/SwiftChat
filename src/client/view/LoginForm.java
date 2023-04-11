@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 public class LoginForm extends JDialog {
     public User user;
     private JTextField tfUsername;
@@ -34,6 +35,7 @@ public class LoginForm extends JDialog {
                 user = getAuthenticatedUser(username, password);
                 if (user != null) {
                     dispose();
+                     new ContactsWindow(null);
                 } else {
                     JOptionPane.showMessageDialog(LoginForm.this, "Email or password Invalid", "Try again", JOptionPane.ERROR_MESSAGE);
                 }
@@ -57,10 +59,12 @@ public class LoginForm extends JDialog {
                     System.out.println(" Username: " + user.getUserName());
                     System.out.println(" Mail: " + user.getMail());
                     System.out.println(" Password: " + user.getPassword());
-                } else {
+                    dispose();
+                    new ContactsWindow(null);
+                }
+                else {
                     System.out.println("Registration failed");
                 }
-                dispose();
             }
         });
 
