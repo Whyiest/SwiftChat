@@ -13,6 +13,12 @@ public class MessageAnalyser {
     private String messageAction;
     private Database myDb;
 
+    private UserDao userDao;
+
+    private MessageDao messageDao;
+
+    private LogDao logDao;
+
 
     /**
      * This constructor allow to create a message analyser
@@ -23,6 +29,9 @@ public class MessageAnalyser {
 
         this.myDb = myDb;
         this.message = message;
+        this.userDao = new UserDao(myDb);
+        this.messageDao = new MessageDao(myDb);
+        this.logDao = new LogDao(myDb);
     }
 
     /**
@@ -81,7 +90,6 @@ public class MessageAnalyser {
      * Response format : CREATE-USER;SUCCESS/FAILURE;ID (if success)
      */
     public String addUserToDatabase() {
-        UserDao userDao = new UserDao(myDb);
         return userDao.addUser(messageParts, message);
     }
 
@@ -91,7 +99,6 @@ public class MessageAnalyser {
      * Response format : SEND-MESSAGE;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
      */
     public String addMessageToDatabase() {
-        MessageDao messageDao = new MessageDao(myDb);
         return  messageDao.addMessage(messageParts, message);
     }
 
@@ -101,7 +108,6 @@ public class MessageAnalyser {
      * Response format : SEND-LOG;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
      */
     public String addLogToDatabase(){
-        LogDao logDao = new LogDao(myDb);
         return logDao.addLog(messageParts, message);
     }
 
@@ -191,9 +197,7 @@ public class MessageAnalyser {
      * @return SUCCESS if the user status is changed, FAILURE otherwise
      */
     public String changeUserStatus() {
-
-        return "Not Working";
-
+        return userDao.changeUserStatus(messageParts, message);
     }
 
 }

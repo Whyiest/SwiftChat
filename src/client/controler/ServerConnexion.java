@@ -146,7 +146,7 @@ public class ServerConnexion implements Runnable {
      * @param receiverID the ID of the receiver of the message
      * @param senderID   the ID of the sender of the message
      * @param content  the content of the message
-     * @return the response from the server / Response format: "SEND-MESSAGE;SUCCESS/FAILURE;MESSAGE_ID;SENDER;RECEIVER;CONTENT;TIMESTAMP"
+     * @return the response from the server / Response format: "SEND-MESSAGE;SUCCESS/FAILURE;MESSAGE_ID;SENDER;RECEIVER;CONTENT;TIMESTAMP;LOG-CREATED/LOG-ERROR"
      */
     public String addMessage(int receiverID, int senderID, String content) {
 
@@ -167,7 +167,7 @@ public class ServerConnexion implements Runnable {
      * @param username   the username of the user
      * @param email      the email of the user
      * @param password   the password of the user
-     * @return the response from the server / Response format: "CREATE-USER;SUCCESS/FAILURE;
+     * @return the response from the server / Response format: "CREATE-USER;SUCCESS/FAILURE;LOG-CREATED/LOG-ERROR"
      */
     public String addUser(String permission, String firstName, String lastName, String username, String email, String password) {
 
@@ -182,9 +182,10 @@ public class ServerConnexion implements Runnable {
 
     /**
      * Send a request to the server to get all the users
-     * @return the list of all the users in String format / Response format: "SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD"
+     * @return the list of all the users in String format / Response format: "SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LOG-CREATED/LOG-ERROR"
      */
     public String listAllUsers() {
+
         return sendToServer("LIST-ALL-USERS");
     }
 
@@ -192,9 +193,9 @@ public class ServerConnexion implements Runnable {
      * Send a login request to the server
      * @param username the username of the user
      * @param password the password of the user
-     * @return the response from the server and the user information if the login was successful / Response format: "LOGIN;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD"
+     * @return the response from the server and the user information if the login was successful / Response format: "LOGIN;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LOG-CREATED/LOG-ERROR"
      */
-    public String login(String username, String password) {
+    public String login (String username, String password) {
 
         // Send it through the server
         String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
@@ -215,4 +216,15 @@ public class ServerConnexion implements Runnable {
     	return serverResponse;
     }
 
+    /**
+     * Send a request to the server to get all the logs
+     * @param userID the ID of the user who created the log
+     * @param status the status of the log
+     * @return the list of all the logs in String format / Response format: "CHANGE-STATUS;SUCCESS/FAILURE;LOG-CREATED/LOG-ERROR"
+     */
+    public String changeStatus (int userID, String status) {
+
+        String serverResponse = sendToServer("CHANGE-STATUS;" + userID + ";" + status);
+        return serverResponse;
+    }
 }

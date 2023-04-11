@@ -88,9 +88,9 @@ public class UserDao {
     /**
      * This method allow to get all the users from the database
      * Message format : [GET-ALL-USERS]
-     * Response format : [GET-ALL-USERS;SUCCESS/ERROR;MESSAGE]
+     * Response format : [GET-ALL-USERS;SUCCESS/ERROR;USER1;USER2;USER3;...;USERn]
      */
-    public String getAllUsers(Database myDb){
+    public String getAllUsers(){
 
         // Create a SQL statement to get all the users from the database
         String sql = "SELECT * FROM user";
@@ -114,5 +114,10 @@ public class UserDao {
             System.out.println("Statement failure : " + sql);
             return "GET_ALL_USERS;FAILURE";
         }
+    }
+
+    public String changeUserStatus(String[] messageParts, String message){
+
+        return "not working yet";
     }
 }
