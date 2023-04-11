@@ -6,7 +6,6 @@ import server.dao.UserDao;
 import server.dao.MessageDao;
 import server.dao.LogDao;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 public class MessageAnalyser {

@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
-public class ClientConnexionHub {
+public class ClientConnectionHub {
 
     private final int port;
 
@@ -22,7 +22,7 @@ public class ClientConnexionHub {
      * Constructor of the ClientConnexionHub class
      * @param openPort Port to open
      */
-    public ClientConnexionHub(int openPort) {
+    public ClientConnectionHub(int openPort) {
 
         // Set the port
         port = openPort;

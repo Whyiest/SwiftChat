@@ -1,6 +1,6 @@
 package server.serverModel;
 
-import server.network.ClientConnexionHub;
+import server.network.ClientConnectionHub;
 import server.network.Database;
 
 import java.io.BufferedReader;
@@ -61,7 +61,7 @@ public class ClientManagement implements Runnable {
         try {
             incomingMessage.close();
             clientSocket.close();
-            ClientConnexionHub.removeClient(clientSocket);
+            ClientConnectionHub.removeClient(clientSocket);
         } catch (IOException e) {
             e.printStackTrace();
         }

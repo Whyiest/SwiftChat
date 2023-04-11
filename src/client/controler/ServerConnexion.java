@@ -43,8 +43,7 @@ public class ServerConnexion implements Runnable {
 
                 // If connection is lost, try to reconnect
                 if (!checkConnection()) {
-                    System.out.println("\n[!] Connection lost : trying to reconnect (Retry delay: " + retryDelay + "ms)..");
-
+                    System.out.println("\n[!] Connection has been lost, trying to reconnect to server... \n");
                     // Try to reconnect
                     attemptConnect();
                 }
@@ -88,7 +87,7 @@ public class ServerConnexion implements Runnable {
 
         } catch (
                 IOException e) {
-            System.out.println("[!] Unable to connect to server.");
+            System.out.println("[!] Unable to establish the connection. (Retrying in " + retryDelay/1000 + " seconds)\n");
             return false;
         }
     }
