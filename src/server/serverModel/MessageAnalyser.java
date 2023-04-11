@@ -62,9 +62,11 @@ public class MessageAnalyser {
         extractMessage();
 
         // Redirect the message to the correct DAO
-        if (!Objects.equals(messageAction, "PING")) {
+        if (message.equals("PING")) {
+            return "PONG";
+        }
+        else {
             System.out.println("\n[>] Action requested : " + messageAction);
-            System.out.println("[>] Message received : " + message);
             switch (messageAction) {
                 case "LOGIN" -> serverResponse = logIn();  // not working
                 case "LOGOUT" -> serverResponse = logOut();  // not working
@@ -87,13 +89,15 @@ public class MessageAnalyser {
                 case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();  // not working
                 case "GET-TOP-USERS" -> serverResponse = getTopUsers();  // not working
 
-                case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
+                case "TEST" -> serverResponse = "[!] Test is working, received : " + messageParts[1];
 
+                case "LEAVE-SIGNAL" -> {
+                    serverResponse = "LEAVE-ACKNOWLEDGEMENT";
+                    System.out.println("[!] Client is leaving");
+                }
                 default -> System.out.println("ERROR");
             }
             return serverResponse;
-        } else {
-            return "PONG";
         }
     }
 

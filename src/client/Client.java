@@ -27,6 +27,7 @@ public class Client {
                 if (clientIsLogged) {
                     serverConnexion.sendToServer("LOGOUT;" + clientID);
                 }
+                serverConnexion.leaveSignal();
                 serverConnexion.disconnect();
             }
         }));
@@ -47,7 +48,6 @@ public class Client {
         while (serverConnexion.isClientAlive()) {
             if (!requestTested) {
                 serverConnexion.sendToServer("TEST;Hello World!");
-                serverConnexion.listAllUsers();
                 serverConnexion.listMessageBetweenUsers(10, 9);
 
                 requestTested = true;

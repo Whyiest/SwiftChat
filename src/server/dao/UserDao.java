@@ -98,47 +98,36 @@ public class UserDao {
      */
     public String listAllUsers(String[] messageParts, String message) {
 
-        StringBuilder result = new StringBuilder();
-        result.append("LIST-ALL-USERS;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS\n");
-
+        // Create a SQL statement to get all the users from the database
+        String sql = "SELECT * FROM user";
+        String serverResponse = "";
         try {
-
-            // Create a SQL statement to get all the users from the database
-            String sql = "SELECT * FROM user";
-
-            // Execute the SQL statement and get the ResultSet object
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
-                ResultSet resultSet = statement.executeQuery(sql);
+                ResultSet rs = statement.executeQuery();
 
-                // Loop through the ResultSet and append each row to the result string
-                while (resultSet.next()) {
-                    int id = resultSet.getInt("ID");
-                    String username = resultSet.getString("USERNAME");
-                    String firstName = resultSet.getString("FIRST_NAME");
-                    String lastName = resultSet.getString("LAST_NAME");
-                    String email = resultSet.getString("EMAIL");
-                    String password = resultSet.getString("PASSWORD");
-                    String permission = resultSet.getString("PERMISSION");
-                    String lastConnectionTime = resultSet.getString("LAST_CONNECTION_TIME");
-                    String isBanned = resultSet.getString("IS_BANNED");
-                    String status = resultSet.getString("STATUS");
+                if (rs != null && rs.next()) {
+                    // Get the first user
+                    serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getString("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
 
-                    result.append(String.format("%d;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
-                            id, permission, firstName, lastName, username, email, password, lastConnectionTime, status, isBanned));
+                    while (rs.next()) {
+                        // Get the next user
+                        serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getString("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
+                    }
+                } else {
+                    // Throw an exception if the result set is empty
+                    throw new SQLException("No user found.");
                 }
-
-                // Close the ResultSet and Statement objects
-                resultSet.close();
                 statement.close();
-                return result.toString();
+                return serverResponse;
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
         } catch (Exception e) {
+            e.getMessage();
             System.out.println("[!] Error while getting all users");
-            System.out.println("Statement failure");
+            System.out.println("Statement failure : " + sql);
             return "LIST-ALL-USERS;FAILURE";
         }
     }

@@ -88,7 +88,7 @@ public class ServerConnexion implements Runnable {
 
         } catch (
                 IOException e) {
-            System.out.println("[!] Unable to establish the connection. (Retrying in " + retryDelay/1000 + " seconds)\n");
+            System.out.println("[!] Unable to establish the connection. (Retrying in " + retryDelay / 1000 + " seconds)\n");
             return false;
         }
     }
@@ -262,7 +262,8 @@ public class ServerConnexion implements Runnable {
 
     /**
      * Allow to update the permission of a user
-     * @param userID the ID of the user
+     *
+     * @param userID     the ID of the user
      * @param permission the new permission of the user
      * @return the response from the server
      */
@@ -285,7 +286,8 @@ public class ServerConnexion implements Runnable {
 
     /**
      * Alllow to ban or unban a user
-     * @param userID the ID of the user
+     *
+     * @param userID   the ID of the user
      * @param isBanned the new status of the user
      * @return the response from the server
      */
@@ -295,6 +297,7 @@ public class ServerConnexion implements Runnable {
 
     /**
      * Update the last connection time of the user
+     *
      * @param userID the ID of the user
      * @return the response from the server
      */
@@ -304,9 +307,10 @@ public class ServerConnexion implements Runnable {
 
     /**
      * List all the users in the database
+     *
      * @return the list of all the users in String format / Response format
      */
-    public String listAllUsers () {
+    public String listAllUsers() {
         return sendToServer("LIST-ALL-USERS");
     }
 
@@ -332,7 +336,8 @@ public class ServerConnexion implements Runnable {
 
     /**
      * List all the messages for between the client and a specific user
-     * @param senderID the ID of the sender
+     *
+     * @param senderID  the ID of the sender
      * @param receverID the ID of the receiver
      * @return the list of all the messages in String format
      */
@@ -358,55 +363,66 @@ public class ServerConnexion implements Runnable {
 
     /**
      * List all the logs for a specific user
+     *
      * @param userID the ID of the user
      * @return the list of all the logs in String format
      */
-    public String listLogForUser (int userID) {
+    public String listLogForUser(int userID) {
         return sendToServer("LIST-LOG-FOR-USER;" + userID);
     }
 
     /**
      * List all statistics related to users for the server
+     *
      * @return the list of all the statistics in String format
      */
-    public String getUsersStatistics () {
+    public String getUsersStatistics() {
         return sendToServer("GET-USERS-STATISTICS");
     }
 
     /**
      * List all statistics related to Messages for the server
+     *
      * @return the list of all the statistics in String format
      */
-    public String getMessagesStatistics () {
+    public String getMessagesStatistics() {
         return sendToServer("GET-MESSAGES-STATISTICS");
     }
 
     /**
      * List all statistics related to Connections for the server
+     *
      * @return the list of all the statistics in String format
      */
-    public String getConnectionsStatistics () {
+    public String getConnectionsStatistics() {
         return sendToServer("GET-CONNECTIONS-STATISTICS");
     }
 
     /**
      * Give the most active users
+     *
      * @return the list of the most active users in String format
      */
-    public String getTopUsers () {
+    public String getTopUsers() {
         return sendToServer("GET-TOP-USERS");
     }
 
     /**
      * Send a ping to the server
+     *
      * @return PONG if the server is alive
      */
     public String ping() {
         return sendToServer("PING");
     }
 
+    public String leaveSignal() {
+        return sendToServer("LEAVE-SIGNAL");
+    }
+
     /**
      * Extract the server response to get the different parts
+     *
      * @param serverResponse the response from the server
      * @return the different parts of the response
      */

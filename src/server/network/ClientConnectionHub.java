@@ -12,7 +12,7 @@ public class ClientConnectionHub {
 
     private boolean waitingForConnection = true;
 
-    private Database myDb;
+    private final Database myDb;
 
     private static ArrayList<Socket> clientSocketList = new ArrayList<>();
 
@@ -70,12 +70,13 @@ public class ClientConnectionHub {
                 connexionThread.start();
 
                 // Display the client connexion
-                System.out.println("\n[!] New client connected from " + newClientSocket.getInetAddress() + " on port " + newClientSocket.getPort() + ".");
-                System.out.println("[!] " + clientSocketList.size() + " client(s) connected.");
+                System.out.println("\n[*] New client connected from " + newClientSocket.getInetAddress() + " on port " + newClientSocket.getPort() + ".");
+                System.out.println("[*] " + clientSocketList.size() + " client(s) connected.");
 
             }
         } catch (IOException e) {
             System.out.println("[!] Error while operating the connexion hub.");
+            System.out.println("[!] " + e.getMessage());
         }
     }
 
@@ -83,6 +84,7 @@ public class ClientConnectionHub {
      * Close the connexion hub and the database
      */
     public void closeConnexion() {
+
         waitingForConnection = false;
         for (int i = 0; i < clientManagerList.size(); i++) {
             clientManagerList.get(i).closeConnexion();
@@ -90,10 +92,13 @@ public class ClientConnectionHub {
         myDb.disconnect();
     }
 
+    /**
+     * Remove a client from the list
+     * @param clientSocket The socket of the client to remove
+     */
     public static void removeClient(Socket clientSocket) {
+        System.out.println("\n[*] Closing client socket " + clientSocket.getInetAddress() + " (" + (clientSocketList.size() - 1)  + " client(s) remaining)\n");
         clientSocketList.remove(clientSocket);
-        System.out.println("\n[!] A client disconnected from the server.");
-        System.out.println("[!] " + clientSocketList.size() + " client(s) connected.");
     }
 }
 

@@ -11,14 +11,15 @@ import java.net.Socket;
 
 public class ClientManager implements Runnable {
 
-    private Database myDb;
-    private Socket clientSocket;
+    private final Database myDb;
+    private final Socket clientSocket;
     private BufferedReader incomingMessage;
 
     /**
      * Constructor of the ClientManager class
+     *
      * @param clientSocket The socket of the client
-     * @param myDb The database
+     * @param myDb         The database
      */
     public ClientManager(Socket clientSocket, Database myDb) {
         this.clientSocket = clientSocket;
@@ -42,21 +43,40 @@ public class ClientManager implements Runnable {
 
                 // Read the message
                 String message = incomingMessage.readLine();
-                if (message == null) {
+
+                if (message == null || message.equals("")) {
+                    System.out.println("[>] Message is empty.");
                     // Connection has been closed by the client
                     break;
+                }
+                if (!message.equals("PING") && !message.equals("LEAVE-SIGNAL")) {
+                    System.out.print("\n[>] Message received from client " + clientSocket.getInetAddress() + " : " + message);
                 }
 
                 // Analyse the message
                 MessageAnalyser messageAnalyser = new MessageAnalyser(message, myDb);
+
+                // Create the response
                 serverResponse = messageAnalyser.redirectMessage();
 
-                // Answer to the client
+                // Display the response
+                if (!serverResponse.equals("PONG") && !serverResponse.equals("LEAVE-SIGNAL")) {
+                    System.out.println("[>] Sending answer to client " + clientSocket.getInetAddress() + " : " + serverResponse);
+                }
+
+
+                // Answer to the client otherwise
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
                 writer.println(serverResponse);
                 writer.flush();
-            }
 
+                // Close the connexion if the client wants to leave
+                if (serverResponse.equals("LEAVE-ACKNOWLEDGEMENT")) {
+                    // Close the connexion with the client
+                    closeConnexion();
+                    break;
+                }
+            }
         } catch (IOException e) {
             System.out.println("[!] Error while reading message from client in Thread GestionClient.");
         }
@@ -68,9 +88,10 @@ public class ClientManager implements Runnable {
     public void closeConnexion() {
         try {
             incomingMessage.close();
-            clientSocket.close();
             ClientConnectionHub.removeClient(clientSocket);
+            clientSocket.close();
         } catch (IOException e) {
+            System.out.println("[!] Unable to close connexion with client.");
             e.printStackTrace();
         }
     }
