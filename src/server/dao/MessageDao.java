@@ -68,7 +68,7 @@ public class MessageDao{
     /**
      * This method allow to get all messages for a user
      * Message format : [GET_ALL_MESSAGES_FOR_USER;SENDER_ID;RECEIVER_ID]
-     * Response format : [GET_ALL_MESSAGES_FOR_USER;SUCCESS/ERROR;CONTENT;SENDER_ID;RECEIVER_ID;TIMESTAMP]
+     * Response format : [GET_ALL_MESSAGES_FOR_USER;TIMESTAMP;CONTENT;TIMESTAMP;CONTENT;...] or [GET_ALL_MESSAGES_FOR_USER;FAILURE]
      **/
     public String getAllMessagesForUser(String[] messageParts, String message){
         // Linking message parts to variables
@@ -84,7 +84,8 @@ public class MessageDao{
             return "GET_ALL_MESSAGES_FOR_USER;FAILURE";
         }
 
-        String sql = "SELECT * FROM message WHERE SENDER = ? AND RECEIVER = ? ORDER BY TIMESTAMP ASC";
+        // Create a SQL statement to get all the messages for a sender and a receiver from the database
+        String sql = "SELECT * FROM message WHERE SENDER_ID = ? AND RECEIVER_ID = ? ORDER BY TIMESTAMP ASC";
         String serverResponse = "";
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
@@ -93,9 +94,9 @@ public class MessageDao{
                 statement.setInt(2, idReceiver);
                 ResultSet rs = statement.executeQuery();
                 if (rs != null) {
-                    serverResponse += rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
+                    serverResponse += rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getString("CONTENT") + ";" + rs.getString("SENDER") + ";" + rs.getString("RECEIVER") + ";" + rs.getString("TIMESTAMP");
+                        serverResponse += ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
                     }
                 }
                 statement.close();
@@ -105,7 +106,7 @@ public class MessageDao{
                 throw new SQLException("Connection to database failed.");
             }
         } catch(Exception e){
-            System.out.println("[!] Error while getting all messages for user [" + idReceiver + "]");
+            System.out.println("[!] Error while getting all messages for user [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "GET_ALL_MESSAGES_FOR_USER;FAILURE";
         }

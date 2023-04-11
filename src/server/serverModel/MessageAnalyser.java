@@ -65,67 +65,23 @@ public class MessageAnalyser {
 
             case "ADD-USER" -> serverResponse = addUserToDatabase();
             case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission();  // maybe working?
-            case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // not working
+            case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();  // not working - Esteban
             case "BAN-USER" -> serverResponse = banUser();  // maybe working ?
             case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
 
             case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
-            case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessageForUser();  // not working
+            case "LIST-MESSAGE-FOR-USER" -> serverResponse = listMessagesForUser();  // maybe working?
 
             case "ADD-LOG" -> serverResponse = addLogToDatabase();
-            case "LIST-LOG-FOR-USER" -> serverResponse = listLogForUser();  // not working
-
+            case "LIST-LOG-FOR-USER" -> serverResponse = listLogsForUser();  // maybe working?
             case "GET-STATISTICS" -> serverResponse = getStatistics();  // not working
+
             case "TEST" -> System.out.println("[!] Test is working, received : " + messageParts[1]);
 
             default -> System.out.println("ERROR");
         }
         return serverResponse;
     }
-
-
-
-    /**
-     * This method allow to add a user to the database
-     * Message format : CREATE-USER;USERNAME;FIRST_NAME;LAST_NAME;PERMISSION;EMAIL;PASSWORD;LAST_CONNECTION_TIME;IS_BANNED;STATUS
-     * Response format : CREATE-USER;SUCCESS/FAILURE;ID (if success)
-     */
-    public String addUserToDatabase() {
-        return userDao.addUser(messageParts, message);
-    }
-
-    /**
-     * This method allow to add a message to the database
-     * Message format : SEND-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
-     * Response format : SEND-MESSAGE;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
-     */
-    public String addMessageToDatabase() {
-        return  messageDao.addMessage(messageParts, message);
-    }
-
-    /**
-     * This method allow to add a log to the database
-     * Message format : SEND-LOG;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
-     * Response format : SEND-LOG;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
-     */
-    public String addLogToDatabase(){
-        return logDao.addLog(messageParts, message);
-    }
-
-    public String listLogForUser(){
-        return "Not Working";
-    }
-
-    /**
-     *  This method allow to get all the messages for a user
-     *  Message format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID
-     *  Response format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID;CONTENT;TIMESTAMP
-     */
-    public String listMessageForUser () {
-
-        return "Not Working";
-    }
-
 
     /**
      * This method allow to verify the password of a user
@@ -156,22 +112,19 @@ public class MessageAnalyser {
     }
 
     /**
-     * This method allow to get the statistics of the server
-     * Message format : GET-STATISTICS
-     * Response format : GET-STATISTICS;NUMBER_OF_USERS;NUMBER_OF_MESSAGES;NUMBER_OF_GROUPS
-     * @return The statistics of the server
+     * This method allow to add a user to the database
+     * Message format : CREATE-USER;USERNAME;FIRST_NAME;LAST_NAME;PERMISSION;EMAIL;PASSWORD;LAST_CONNECTION_TIME;IS_BANNED;STATUS
+     * Response format : CREATE-USER;SUCCESS/FAILURE;ID (if success)
+     * @return SUCCESS if the user is added, FAILURE otherwise
      */
-    public String getStatistics() {
-
-        return "Not Working";
-
+    public String addUserToDatabase() {
+        return userDao.addUser(messageParts, message);
     }
 
-    /**
-     * This method allow to change the type of a user
-     * Message format : CHANGE-USER-TYPE;USER_ID;NEW_TYPE
-     * Response format : CHANGE-USER-TYPE;SUCCESS/FAILURE
-     * @return SUCCESS if the user type is changed, FAILURE otherwise
+    /** This method allow to change the permission of a user
+     * Message format : CHANGE-USER-PERMISSION;USER_ID;NEW_PERMISSION
+     * Response format : CHANGE-USER-PERMISSION;SUCCESS/FAILURE
+     * @return SUCCESS if the user permission is changed, FAILURE otherwise
      */
     public String changeUserPermission() {
         return userDao.changeUserPermission(messageParts, message);
@@ -197,7 +150,65 @@ public class MessageAnalyser {
         return userDao.banUser(messageParts, message);
     }
 
+    /**
+     * This method allow to update the last connection time of a user
+     * Message format : UPDATE-LAST-CONNECTION-TIME;USER_ID
+     * Response format : UPDATE-LAST-CONNECTION-TIME;SUCCESS/FAILURE
+     * @return SUCCESS if the last connection time is updated, FAILURE otherwise
+     */
     public String updateLastConnectionTime(){
         return userDao.updateLastConnectionTime(messageParts, message);
+    }
+
+    /**
+     * This method allow to add a message to the database
+     * Message format : SEND-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
+     * Response format : SEND-MESSAGE;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
+     * @return SUCCESS if the message is added, FAILURE otherwise
+     */
+    public String addMessageToDatabase() {
+        return  messageDao.addMessage(messageParts, message);
+    }
+
+    /**
+     *  This method allow to get all the messages for a user
+     *  Message format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID
+     *  Response format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID;CONTENT;TIMESTAMP
+     *  @return The messages for a user
+     */
+    public String listMessagesForUser () {
+        return messageDao.getAllMessagesForUser(messageParts, message);
+    }
+
+    /**
+     * This method allow to add a log to the database
+     * Message format : SEND-LOG;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
+     * Response format : SEND-LOG;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
+     * @return SUCCESS if the log is added, FAILURE otherwise
+     */
+    public String addLogToDatabase(){
+        return logDao.addLog(messageParts, message);
+    }
+
+    /**
+     * This method allow to change the status of a user
+     * Message format : CHANGE-USER-STATUS;USER_ID;NEW_STATUS
+     * Response format : CHANGE-USER-STATUS;SUCCESS/FAILURE
+     * @return SUCCESS if the status is changed, FAILURE otherwise
+     */
+    public String listLogsForUser(){
+        return logDao.getAllLogsForUser(messageParts, message);
+    }
+
+    /**
+     * This method allow to get the statistics of the server
+     * Message format : GET-STATISTICS
+     * Response format : GET-STATISTICS;NUMBER_OF_USERS;NUMBER_OF_MESSAGES;NUMBER_OF_GROUPS
+     * @return The statistics of the server
+     */
+    public String getStatistics() {
+
+        return "Not Working";
+
     }
 }

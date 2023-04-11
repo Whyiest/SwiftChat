@@ -10,6 +10,11 @@ public class LogDao {
         this.myDb = myDb;
     }
 
+    /** Thi
+     * This method allows to add a log to the database
+     * Message format : [ADD-LOG;USER;TIMESTAMP;TYPE]
+     * Response format : [ADD-LOG;SUCCESS/ERROR]
+     */
     public String addLog(String[] messageParts, String message){
 
         // Linking message parts to variables
@@ -55,24 +60,46 @@ public class LogDao {
         }
     }
 
-    public String getAllLogsForUser(int idUser){
+    /**
+     * This method allows to get all the logs for a user from the database
+     * Message format : [GET-ALL-LOGS-FOR-USER;USER_ID]
+     * Response format : [GET-ALL-LOGS-FOR-USER;TIMESTAMP;TYPE;TIMESTAMP;TYPE;...] or [GET-ALL-LOGS-FOR-USER;FAILURE]
+     */
+    public String getAllLogsForUser(String[] messageParts, String message){
 
-        String sql = "SELECT * FROM LOG WHERE USER_ID = idUser";
-        String serverResponse = "GET-ALL-LOGS-FOR-USER;";
-        try{
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
-            ResultSet rs = statement.executeQuery();
-            if(rs != null){
-                serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
-                while(rs.next()){
-                    serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+        // Linking message parts to variables
+        int idUser;
+
+        try {
+            idUser = Integer.parseInt(messageParts[1]);
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [GET-ALL-LOGS-FOR-USER;USER_ID]");
+            return "GET-ALL-LOGS-FOR-USER;FAILURE";
+        }
+
+        // Create a SQL statement to get all the logs for a user from the database
+        String sql = "SELECT * FROM log WHERE USER_ID = ?";
+        String serverResponse = "";
+        try {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setInt(1, idUser);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null) {
+                    serverResponse += rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    while (rs.next()) {
+                        serverResponse += ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    }
                 }
+                statement.close();
+                return serverResponse;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
             }
-            statement.close();
-            return serverResponse;
-
-        } catch (Exception e){
-            System.out.println("[!] Error while getting all logs for user [" + idUser + "]");
+        } catch(Exception e) {
+            System.out.println("[!] Error while getting all messages for user [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "GET-ALL-LOGS-FOR-USER;FAILURE";
         }
