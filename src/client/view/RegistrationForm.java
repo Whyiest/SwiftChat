@@ -17,6 +17,7 @@ public class RegistrationForm extends JDialog {
     private JPasswordField pfConfirmPassword;
     private JButton btnRegister;
     private JButton btnCancel;
+
     public User user;
 
 
@@ -59,13 +60,11 @@ public class RegistrationForm extends JDialog {
              JOptionPane.showMessageDialog(this,"Passwords do not match","Try again",JOptionPane.ERROR_MESSAGE);
              return;
          }
-         //user = getAuthenticatedUser(firstName,lastName,userName,mail,password);
+         user = getAuthenticatedUser(firstName,lastName,userName,mail,password);
          dispose();
-         //Creer sur la BSD
-        /*ServerConnexion serverConnexion= null; // comment appeler server connection
-        serverConnexion.createUser(null,firstName,lastName,userName,mail,password);*/
+
     }
-    /*private User getAuthenticatedUser(String firstName, String lastName, String username, String email, String password) {
+    private User getAuthenticatedUser(String firstName, String lastName, String username, String email, String password) {
         User users = new User();
         users.setFirstName(firstName);
         users.setLastName(lastName);
@@ -73,5 +72,5 @@ public class RegistrationForm extends JDialog {
         users.setMail(email);
         users.setPassword(password);
         return users;
-    }*/
+    }
 }
