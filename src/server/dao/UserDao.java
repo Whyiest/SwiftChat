@@ -208,7 +208,7 @@ public class UserDao {
         }
     }
 
-    public String banUser(String[] messageParts, String message){
+    public String changeBanStatus(String[] messageParts, String message){
         // Linking message parts to variables
         String userId = "";
         String userIsBanned = "";

@@ -66,17 +66,17 @@ public class MessageAnalyser {
                 case "LOGIN" -> serverResponse = logIn();  // not working
                 case "LOGOUT" -> serverResponse = logOut();  // not working
 
-                case "ADD-USER" -> serverResponse = addUserToDatabase();
-                case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission();  // maybe working?
-                case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();
-                case "BAN-USER" -> serverResponse = banUser();  // maybe working ?
+                case "ADD-USER" -> serverResponse = addUserToDatabase(); // working
+                case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission(); // working
+                case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus(); // working
+                case "CHANGE-BAN-USER" -> serverResponse = changeBanStatus();  // maybe working ?
                 case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
                 case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // maybe working?
 
-                case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
+                case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase(); // working
                 case "LIST-MESSAGE-BETWEEN-USERS" -> serverResponse = listMessagesBetweenUsers();  // maybe working?
 
-                case "ADD-LOG" -> serverResponse = addLogToDatabase();
+                case "ADD-LOG" -> serverResponse = addLogToDatabase(); // working
                 case "LIST-LOG-FOR-USER" -> serverResponse = listLogsForUser();  // maybe working?
 
                 case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();  // not working
@@ -164,8 +164,8 @@ public class MessageAnalyser {
      * Response format : BAN-USER;SUCCESS/FAILURE
      * @return SUCCESS if the user is banned, FAILURE otherwise
      */
-    public String banUser() {
-        return userDao.banUser(messageParts, message);
+    public String changeBanStatus() {
+        return userDao.changeBanStatus(messageParts, message);
     }
 
     /**
