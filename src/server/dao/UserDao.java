@@ -100,7 +100,7 @@ public class UserDao {
 
         // Create a SQL statement to get all the users from the database
         String sql = "SELECT * FROM user";
-        String serverResponse = "";
+        String serverResponse = "LIST-ALL-USERS;";
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);

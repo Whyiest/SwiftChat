@@ -19,8 +19,9 @@ public class LoginForm extends JDialog {
     private JButton clickToRegisterAButton;
     private ServerConnection serverConnection;
 
-    public LoginForm(JFrame parent) {
+    public LoginForm(JFrame parent, ServerConnection serverConnection) {
         super(parent);
+        this.serverConnection = serverConnection;
         setTitle("Login Form");
         setContentPane(loginForm);
         setMinimumSize(new Dimension(700, 600));
