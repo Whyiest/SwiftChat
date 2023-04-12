@@ -1,5 +1,7 @@
 package client.view;
 
+import client.controler.ServerConnection;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +9,8 @@ import java.awt.event.ActionEvent;
 public class ConversationWindow extends JDialog {
     private String contactName;
     private JTextField messageField;
+    private ServerConnection serverConnection;
+
 
     private Dimension previousSize;
 
@@ -78,7 +82,7 @@ public class ConversationWindow extends JDialog {
         backButton.addActionListener(e -> {
             previousSize = getSize();
             dispose();
-            new ContactsWindow(null);
+            new ContactsWindow(null,serverConnection);
         });
         return backButton;
     }

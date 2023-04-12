@@ -1,6 +1,7 @@
 package client.view;
 
 import client.clientModel.User;
+import client.controler.ServerConnection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,7 @@ public class LoginForm extends JDialog {
     private JButton btnCancel;
     private JPanel loginForm;
     private JButton clickToRegisterAButton;
+    private ServerConnection serverConnection;
 
     public LoginForm(JFrame parent) {
         super(parent);
@@ -35,7 +37,7 @@ public class LoginForm extends JDialog {
                 user = getAuthenticatedUser(username, password);
                 if (user != null) {
                     dispose();
-                     new ContactsWindow(null);
+                     new ContactsWindow(null, serverConnection);
                 } else {
                     JOptionPane.showMessageDialog(LoginForm.this, "Email or password Invalid", "Try again", JOptionPane.ERROR_MESSAGE);
                 }
@@ -60,7 +62,7 @@ public class LoginForm extends JDialog {
                     System.out.println(" Mail: " + user.getMail());
                     System.out.println(" Password: " + user.getPassword());
                     dispose();
-                    new ContactsWindow(null);
+                    new ContactsWindow(null,serverConnection);
                 }
                 else {
                     System.out.println("Registration failed");

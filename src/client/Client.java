@@ -1,6 +1,9 @@
 package client;
 import client.controler.ServerConnection;
-import java.time.*;
+import client.controler.ServerConnection;
+import client.view.ViewManagement;
+
+import javax.swing.text.View;
 
 public class Client {
 
@@ -18,6 +21,7 @@ public class Client {
 
         // Create basics objects
         ServerConnection serverConnection = new ServerConnection("localhost", 5000);
+        ViewManagement viewApp = new ViewManagement(serverConnection);
 
         // Code to execute when the program is closed
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
