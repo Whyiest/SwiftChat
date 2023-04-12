@@ -49,7 +49,7 @@ public class Client {
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
             if (!requestTested) {
-                serverConnection.sendToServer("GET-TOP-USERS;Connection");
+                serverConnection.sendToServer("GET-USER-BY-ID;9");
                 requestTested = true;
             }
         }
