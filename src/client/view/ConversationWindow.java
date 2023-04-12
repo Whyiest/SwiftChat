@@ -1,42 +1,49 @@
 package client.view;
 
+import client.clientModel.User;
+import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class ConversationWindow extends JDialog {
     private String contactName;
     private JTextField messageField;
     private ServerConnection serverConnection;
-    public  int numberForCase;
-
-
     private Dimension previousSize;
 
-    public ConversationWindow(JFrame parent, String contactName, Dimension previousSize) {
+    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user, Dimension previousSize) {
+
         super(parent, "SwiftChat", true);
-        this.contactName = contactName;
+
+        // SETUP
         this.previousSize = previousSize;
-        this.numberForCase=3;
+        this.serverConnection = serverConnection;
+
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(previousSize);
         setLocationRelativeTo(parent);
 
         initComponents();
 
+    }
+
+    public void openConversationWindow() {
         setVisible(true);
     }
 
-    public int getNumberForCase() {
-        return numberForCase;
+    public void closeConversationWindow() {
+        setVisible(false);
+        dispose();
     }
 
-    public void setNumberForCase(int numberForCase) {
-        this.numberForCase = numberForCase;
-    }
 
+    private void linkWithUser (int userID) {
+        String serverReponse = serverConnection.getUserByID(userID);
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(String.valueOf(userID));
+        User user = responseAnalyser.extractUser();
+    }
     private JTextField createMessageField() {
         messageField = new JTextField();
         return messageField;
@@ -90,8 +97,9 @@ public class ConversationWindow extends JDialog {
         backButton.setPreferredSize(new Dimension(100, 30));
         backButton.addActionListener(e -> {
             previousSize = getSize();
-            dispose();
-            numberForCase=2; //Allow viewManagement to open the contacts window
+            // Go gack to contact page
+            ViewManagement.setCurrentDisplay(2);
+            closeConversationWindow();
         });
         return backButton;
     }
