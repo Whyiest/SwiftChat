@@ -75,10 +75,23 @@ public class LoginForm extends JDialog {
     }
 
     public User getAuthenticatedUser(String userName, String password) {
-        User users = null;
+
+        int userLoggedID;
         String serverResponse = serverConnection.login(userName,password);
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-        users = responseAnalyser.login();
-        return users;
+        userLoggedID = responseAnalyser.login();
+
+        if (userLoggedID != -1) {
+
+            serverResponse = serverConnection.getUserByID(userLoggedID);
+            serverConnection.upDateLastConnectinTime(userLoggedID);
+            serverConnection.changeStatus(userLoggedID, "ONLINE");
+            ResponseAnalyser responseAnalyserSecond = new ResponseAnalyser(serverResponse);
+            User loggedUser = responseAnalyserSecond.extractUser();
+            return loggedUser;
+        }
+        else {
+            return null;
+        }
     }
 }

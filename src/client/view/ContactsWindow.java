@@ -7,6 +7,8 @@ import client.controler.ServerConnection;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,12 +28,19 @@ public class ContactsWindow extends JDialog {
         setTitle("Contacts");
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Window is closing");
+                dispose();
+            }
+        });
         setSize(previousSize);
         setLocationRelativeTo(parent);
+        initComponents();
         setVisible(true);
-
-
     }
+
 
     public int getNumberForCase() {
         return numberForCase;
@@ -92,8 +101,8 @@ public class ContactsWindow extends JDialog {
                 contactButton.setPreferredSize(new Dimension(550 - labelSize, labelSize));
                 contactButton.addActionListener(e -> {
                     previousSize = getSize();
-                    dispose();
                     numberForCase=3;
+                    dispose();
                 });
                 contactButton.setBorderPainted(true);
                 contactButton.setContentAreaFilled(false);

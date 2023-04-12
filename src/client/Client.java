@@ -52,7 +52,6 @@ public class Client {
             if (!oneTimeCall) {
                 Thread viewThread = new Thread(viewApp);
                 viewThread.start();
-                serverConnection.sendToServer("LOGIN;este;1509442");
                 oneTimeCall = true;
             }
         }

@@ -31,14 +31,14 @@ public class User {
      * @param userName   The username of the user
      * @param password   The password of the user
      */
-    public User(String permission, String firstName, String lastName, String userName, String email, String password) {
+    public User(String userName, String firstName, String lastName, String email, String password, String permission) {
 
-        this.permission = permission;
-        this.mail = email;
-        this.lastName = lastName;
-        this.firstName = firstName;
         this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.mail = email;
         this.password = password;
+        this.permission = permission;
 
         // Set up the others values
         this.isBanned = false;
@@ -47,6 +47,30 @@ public class User {
 
         // Hash the password
         hashPassword();
+    }
+
+    /**
+     * This constructor allow to create a user from the database
+     * @param permission The permission of the user
+     * @param firstName The first name of the user
+     * @param lastName The last name of the user
+     * @param userName The username of the user
+     * @param email The mail of the user
+     * @param password The password of the user
+     * @param status The status of the user
+     * @param lastConnectionTime The last connection time of the user
+     * @param isBanned If the user is banned or not
+     */
+    public User (String userName, String firstName, String lastName, String email, String password, String permission, LocalDateTime lastConnectionTime, boolean isBanned, String status) {
+        this.permission = permission;
+        this.mail = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.userName = userName;
+        this.password = password;
+        this.status = status;
+        this.lastConnectionTime = lastConnectionTime;
+        this.isBanned = isBanned;
     }
 
     public User() {
@@ -130,29 +154,7 @@ public class User {
         isBanned = banned;
     }
 
-    /**
-     * This constructor allow to create a user from the database
-     * @param permission The permission of the user
-     * @param firstName The first name of the user
-     * @param lastName The last name of the user
-     * @param userName The username of the user
-     * @param email The mail of the user
-     * @param password The password of the user
-     * @param status The status of the user
-     * @param lastConnectionTime The last connection time of the user
-     * @param isBanned If the user is banned or not
-     */
-    public User (String permission, String firstName, String lastName, String userName, String email, String password, String status, LocalDateTime lastConnectionTime, boolean isBanned) {
-        this.permission = permission;
-        this.mail = email;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.userName = userName;
-        this.password = password;
-        this.status = status;
-        this.lastConnectionTime = lastConnectionTime;
-        this.isBanned = isBanned;
-    }
+
 
     /**
      *  This function allow to hash the password

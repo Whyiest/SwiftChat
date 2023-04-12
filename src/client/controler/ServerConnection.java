@@ -218,7 +218,7 @@ public class ServerConnection implements Runnable {
     public String login(String username, String password) {
 
         // Send it through the server
-        String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
+        String serverResponse = sendToServer("LOGIN;" + username + ";" + password.hashCode());
         return serverResponse;
     }
 
@@ -247,10 +247,10 @@ public class ServerConnection implements Runnable {
      * @param password   the password of the user
      * @return the response from the server
      */
-    public String addUser(String permission, String firstName, String lastName, String username, String email, String password) {
+    public String addUser(String username, String firstName, String lastName, String email, String password, String permission) {
 
         // Create user for the server
-        User userToSend = new User(permission, firstName, lastName, username, email, password);
+        User userToSend = new User(username, firstName, lastName, email, password, permission);
 
         // Send it through the server
         String serverResponse = sendToServer("ADD-USER;" + userToSend.formalizeServerMessage());
@@ -405,6 +405,10 @@ public class ServerConnection implements Runnable {
         return sendToServer("GET-TOP-USERS");
     }
 
+    public String getUserByID (int userID) {
+        String serverResponse = sendToServer("GET-USER-BY-ID;" + userID);
+        return serverResponse;
+    }
     /**
      * Send a ping to the server
      *
@@ -424,6 +428,8 @@ public class ServerConnection implements Runnable {
      * @param serverResponse the response from the server
      * @return the different parts of the response
      */
+
+
 
 
 

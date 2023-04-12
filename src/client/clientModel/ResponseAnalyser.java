@@ -1,8 +1,10 @@
 package client.clientModel;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 public class ResponseAnalyser {
 
@@ -57,12 +59,20 @@ public class ResponseAnalyser {
         return userList;
     }
 
-    public User login () {
-        User user = null;
-        for (int i = 1; i < messageParts.length; i++) {
-            user = new User();
-            user.setId(Integer.parseInt(messageParts[2]));
+    public User extractUser() {
+
+        User myUser = new User(messageParts[1], messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], LocalDateTime.parse(messageParts[7]), Boolean.parseBoolean(messageParts[8]), messageParts[9]);
+
+        return myUser;
+    }
+
+    public int login () {
+
+        if (messageParts[1].equals("SUCCESS")) {
+            return Integer.parseInt(messageParts[2]);
         }
-        return user;
+        else {
+            return -1;
+        }
     }
 }
