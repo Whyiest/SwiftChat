@@ -41,10 +41,8 @@ public class ContactsWindow extends JDialog {
 
         int pageSize = 12;
 
-        String serverResponse = "";
-        serverResponse = serverConnection.listAllUsers();
+        String serverResponse = serverConnection.listAllUsers();
         ResponseAnalyser  responseAnalyser = new ResponseAnalyser(serverResponse);
-
         List<User> listAllUser = responseAnalyser.createUserList();
 
         /*for (int i = 1; i <= 14; i++) {

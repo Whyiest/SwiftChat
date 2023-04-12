@@ -5,7 +5,7 @@ import client.controler.ServerConnection;
 public class ViewManagement {
      public ServerConnection serverConnexion;
 
-     public ViewManagement(ServerConnection serverConnetion) {
+     public ViewManagement(ServerConnection serverConnection) {
 
 
      }

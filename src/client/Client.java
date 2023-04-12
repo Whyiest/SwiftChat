@@ -1,6 +1,5 @@
 package client;
 import client.controler.ServerConnection;
-import client.controler.ServerConnection;
 import client.view.ViewManagement;
 
 import javax.swing.text.View;

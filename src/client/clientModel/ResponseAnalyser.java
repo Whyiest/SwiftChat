@@ -14,6 +14,7 @@ public class ResponseAnalyser {
 
     public ResponseAnalyser (String serverResponse) {
         this.serverResponse = serverResponse;
+        extractMessage();
     }
 
     /**
@@ -32,62 +33,14 @@ public class ResponseAnalyser {
     }
 
 
-    /**
-     * This method allow to redirect the server response to the correct function to analyze
-     * @return The server response
-     */
-
-    public void dispatch () {
-
-        extractMessage();
-
-        if (serverResponse.equals("PONG")) {
-            // Do nothing
-            return;
-        }
-        else {
-            switch (messageAction) {
-                case "LOGIN" -> System.out.println("NOT WORKING YET");
-                case "LOGOUT" ->  System.out.println("NOT WORKING YET");
-
-                case "ADD-USER" -> System.out.println("NOT WORKING YET");
-                case "CHANGE-USER-PERMISSION" -> System.out.println("NOT WORKING YET");
-                case "CHANGE-USER-STATUS" -> System.out.println("NOT WORKING YET");
-                case "CHANGE-BAN-STATUS" ->  System.out.println("NOT WORKING YET");
-                case "UPDATE-LAST-CONNECTION-TIME" ->  System.out.println("NOT WORKING YET");
-                case "LIST-ALL-USERS" -> createUserList();
-
-                case "ADD-MESSAGE" -> System.out.println("NOT WORKING YET");
-                case "LIST-MESSAGES-BETWEEN-USERS" -> System.out.println("NOT WORKING YET");
-
-                case "ADD-LOG" -> System.out.println("NOT WORKING YET");
-                case "LIST-LOGS-FOR-USER" -> System.out.println("NOT WORKING YET");
-
-                case "GET-USERS-STATISTICS" -> System.out.println("NOT WORKING YET");
-                case "GET-MESSAGES-STATISTICS" -> System.out.println("NOT WORKING YET");
-                case "GET-CONNECTIONS-STATISTICS" -> System.out.println("NOT WORKING YET");
-                case "GET-TOP-USERS" -> System.out.println("NOT WORKING YET");
-
-                case "TEST" -> System.out.println("[!] No Action needed.");
-
-                case "LEAVE-ACKNOWLEDGEMENT" -> {
-                    // No action needed
-                }
-                case "UNKNOWN-ACTION" -> System.out.println("[!] Action in was not recognized by server");
-                default -> {
-                    System.out.println("[!] Error : Unable to understand the action in server response : " + messageAction);
-                }
-            }
-        }
-    }
 
    // USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS
 
     public List<User> createUserList() {
 
         List<User> userList = new ArrayList<>();
-        int caractPerUser = 10;
-        for(int i = 0; i<messageParts.length; i += caractPerUser) {
+        int caractPerUser = 10; // n user
+        for(int i = 1; i < messageParts.length; i += caractPerUser) {
             User user = new User();
             user.setId(Integer.parseInt(messageParts[i]));
             user.setPermission(messageParts[i+1]);
