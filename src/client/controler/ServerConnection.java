@@ -175,7 +175,12 @@ public class ServerConnection implements Runnable {
                 System.out.println("[!] Error while sending message to server.");
             }
         }
-        return receiveFromServer();
+        if (serverMessage.equals("LEAVE-SIGNAL")) {
+            return "LEAVE-AKNOWNLEDGE";
+        }
+        else {
+            return receiveFromServer();
+        }
     }
 
     /**

@@ -3,48 +3,44 @@ package client.view;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
-import javax.swing.*;
-
 public class ViewManagement implements Runnable {
      public ServerConnection serverConnection;
      public LoginForm loginForm;
      public RegistrationForm registrationForm;
      public ContactsWindow myContactWindows;
      public ConversationWindow conversationWindow;
-     public int choiceForCase; // 0=Login , 1=Registration, 2=ContactsWindow, 3=ConversationWindow
+     public int currentWindow; // 0 = Login , 1 =Registration, 2 = ContactsWindow, 3 = ConversationWindow
+
      public User user;
 
      public ViewManagement(ServerConnection serverConnection) {
           this.serverConnection = serverConnection;
-          this.choiceForCase=0;
+          this.currentWindow = 0;
      }
 
-     public void setChoiceForCase(int choiceForCase) {
-          this.choiceForCase = choiceForCase;
+     public void setCurrentWindow(int currentWindow) {
+          this.currentWindow = currentWindow;
      }
 
      public void run () {
+
+          initWindows();
+
           do {
-               switch (choiceForCase) {
-                    case 0: //For Login form
-                         this.loginForm= new LoginForm(null,serverConnection);//new
-                         this.user= loginForm.user;//new
-                         setChoiceForCase(this.loginForm.getNumberForCase());
+               switch (currentWindow) {
+                    case 0: // LOGIN
+                         loginForm.openLoginWindow();
+                         this.user = loginForm.user;
                          break;
-                    case 1://For registration form
-                         this.registrationForm=new RegistrationForm(null);
-                         this.user= registrationForm.user;//new
-                         serverConnection.addUser("CLASSIC", user.getFirstName(), user.getLastName(),user.getUserName(), user.getMail(), user.getPassword());//new
-                         setChoiceForCase(this.registrationForm.getNumberForCase());
+                    case 1: // REGISTER
+                         this.user = registrationForm.user;
+                         serverConnection.addUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getMail(), user.getPassword(), "CLASSIC");//new
                          break;
-                    case 2://for Contacts window
-                         this.myContactWindows = new ContactsWindow(null, serverConnection);
+                    case 2: // CONTACT
                          initContact();
-                         setChoiceForCase(this.myContactWindows.getNumberForCase());
                          break;
-                    case 3://for Conversation window
-                         this.conversationWindow = new ConversationWindow(null,"SwiftChat",myContactWindows.getSize());
-                         setChoiceForCase(conversationWindow.getNumberForCase());
+                    case 3: // CHAT
+                         break;
                     default:
                          System.out.println("Invalid choice");
                          break;
@@ -53,8 +49,19 @@ public class ViewManagement implements Runnable {
 
      }
 
+     public void initWindows () {
+
+          this.loginForm = new LoginForm(null, serverConnection);
+          //this.registrationForm = new RegistrationForm(null);
+          //this.myContactWindows = new ContactsWindow(null, serverConnection);
+          //this.conversationWindow = new ConversationWindow(null,"SwiftChat",myContactWindows.getSize());
+     }
+
      public void initContact () {
           myContactWindows.initComponents();
      }
 
+     public void setCurrentDisplay (int idOfWindowToDisplay) {
+          currentWindow = idOfWindowToDisplay;
+     }
 }
