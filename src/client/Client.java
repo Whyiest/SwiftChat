@@ -46,8 +46,7 @@ public class Client {
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
             if (!requestTested) {
-                serverConnection.sendToServer("ADD-LOG;9;" + LocalDateTime.now().toString() + ";Sent-message");
-                serverConnection.sendToServer("GET-MESSAGES-STATISTICS;Sent-message;Received-message");
+                serverConnection.sendToServer("GET-TOP-USERS;Connection");
                 requestTested = true;
             }
         }

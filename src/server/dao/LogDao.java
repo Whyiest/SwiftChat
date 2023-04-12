@@ -168,7 +168,7 @@ public class LogDao {
         } catch(Exception e) {
             System.out.println("[!] Error while getting all logs relating to user information [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "LIST-USERS-STATISTICS;FAILURE";
+            return "GET-USERS-STATISTICS;FAILURE";
         }
     }
 
@@ -216,15 +216,24 @@ public class LogDao {
         } catch(Exception e) {
             System.out.println("[!] Error while getting all logs relating to message information [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "LIST-MESSAGES-STATISTICS;FAILURE";
+            return "GET-MESSAGES-STATISTICS;FAILURE";
         }
     }
 
-    public String getConnectionsStatistics(String message){
+    public String getConnectionsStatistics(String[] messageParts, String message){
 
         // Linking message parts to variables
-        String logType1 = "CONNECTION";
-        String logType2 = "DISCONNECTION";
+        String logType1 = "";
+        String logType2 = "";
+
+        try {
+            logType1 = messageParts[1];
+            logType2 = messageParts[2];
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [GET-CONNECTIONS-STATISTICS;TYPE;TYPE]");
+            return "GET-CONNECTIONS-STATISTICS;FAILURE";
+        }
 
         // Create an SQL statement to get all the logs relating to a connection from the database
         String sql = "SELECT * FROM log WHERE TYPE IN (?, ?)";
@@ -256,14 +265,22 @@ public class LogDao {
         } catch (Exception e){
             System.out.println("[!] Error while getting all logs relating to connection information [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "LIST-CONNECTIONS-STATISTICS;FAILURE";
+            return "GET-CONNECTIONS-STATISTICS;FAILURE";
         }
     }
 
-    public String getTopUsers(String message){
+    public String getTopUsers(String[] messageParts, String message){
+
         // Linking message parts to variables
-        String logType1 = "SENT-MESSAGE";
-        /*String logType2 = "RECEIVED-MESSAGE";*/
+        String logType1 = "";
+
+        try {
+            logType1 = messageParts[1];
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [GET-TOP-USERS;TYPE]");
+            return "GET-TOP-USERS;FAILURE";
+        }
 
         String sql = "SELECT USER_ID, COUNT(*) AS MESSAGE_COUNT FROM LOG WHERE TYPE = ? GROUP BY USER_ID ORDER BY MESSAGE_COUNT DESC LIMIT 3";
         String serverResponse = "";
@@ -272,7 +289,6 @@ public class LogDao {
             if(!myDb.connection.isClosed()){ // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setString(1, logType1);
-                /*statement.setString(2, logType2);*/
 
                 ResultSet rs = statement.executeQuery();
 

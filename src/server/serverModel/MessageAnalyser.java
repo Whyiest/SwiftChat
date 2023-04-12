@@ -86,8 +86,8 @@ public class MessageAnalyser {
 
                 case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();  // working
                 case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();  // working
-                case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();  // not working
-                case "GET-TOP-USERS" -> serverResponse = getTopUsers();  // not working
+                case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();  // working
+                case "GET-TOP-USERS" -> serverResponse = getTopUsers();  // working
 
                 case "TEST" -> serverResponse = "[!] Test is working, received : " + messageParts[1];
 
@@ -251,7 +251,7 @@ public class MessageAnalyser {
      * @return The connections statistics
      */
     public String getConnectionsStatistics(){
-        return logDao.getConnectionsStatistics(message);
+        return logDao.getConnectionsStatistics(messageParts, message);
     }
 
     /**
@@ -261,6 +261,6 @@ public class MessageAnalyser {
      * @return The top users
      */
     public String getTopUsers(){
-        return logDao.getTopUsers(message);
+        return logDao.getTopUsers(messageParts, message);
     }
 }
