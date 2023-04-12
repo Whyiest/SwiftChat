@@ -123,7 +123,7 @@ public class MessageAnalyser {
      * Switch status to offline
      * Switch last connection time to now
      * Message format : LOGOUT;USER_ID
-     * Response format : LOGOUT;SUCCESS/FAILURE
+     * Response format : LOGOUT;SUCCESS/FAILURE;USER_ID
      * @return SUCCESS if the user is disconnected, FAILURE otherwise
      */
     public String logOut () {

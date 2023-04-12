@@ -57,6 +57,12 @@ public class ResponseAnalyser {
         return userList;
     }
 
+    public int login () {
+        int id = 0;
+        /*
+        id = Integer.parseInt(messageParts[2]);
 
-
+         */
+        return id;
+    }
 }
