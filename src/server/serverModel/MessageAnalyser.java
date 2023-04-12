@@ -76,6 +76,7 @@ public class MessageAnalyser {
                 case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus(); // working
                 case "CHANGE-BAN-STATUS" -> serverResponse = changeBanStatus();  //  working
                 case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // working
+                case "GET-USER-BY-ID" -> serverResponse = getUserById();  // working
                 case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // working
 
                 case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase(); // working
@@ -109,13 +110,11 @@ public class MessageAnalyser {
      * Switch status to online if the password is correct
      * Switch last connection time to now if the password is correct
      * Message format : LOGIN;USERNAME;PASSWORD
-     * Response format : LOGIN;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME
-     * @return The user if the password is correct, FAILURE otherwise
+     * Response format : LOGIN;SUCCESS/FAILURE;USER_ID
+     * @return SUCCESS if the user if the password is correct, FAILURE otherwise
      */
     public String logIn () {
-
-        return "Not Working";
-
+        return userDao.logIn(messageParts, message);
     }
 
     /**
@@ -127,7 +126,7 @@ public class MessageAnalyser {
      * @return SUCCESS if the user is disconnected, FAILURE otherwise
      */
     public String logOut () {
-        return userDao.logout(messageParts, message);
+        return userDao.logOut(messageParts, message);
     }
 
     /**
@@ -186,6 +185,10 @@ public class MessageAnalyser {
      */
     public String updateLastConnectionTime(){
         return userDao.updateLastConnectionTime(messageParts, message);
+    }
+
+    public String getUserById(){
+        return userDao.getUserById(messageParts, message);
     }
 
     /**

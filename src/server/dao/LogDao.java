@@ -35,7 +35,7 @@ public class LogDao {
             return "ADD-LOG;FAILURE";
         }
 
-        // Create a SQL statement to insert the log into the database
+        // Create an SQL statement to insert the log into the database
         String sql = "INSERT INTO LOG (USER_ID, TIMESTAMP, TYPE) VALUES (?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
@@ -81,7 +81,7 @@ public class LogDao {
             return "LIST-ALL-LOGS-FOR-USER;FAILURE";
         }
 
-        // Create a SQL statement to get all the logs for a user from the database
+        // Create an SQL statement to get all the logs for a user from the database
         String sql = "SELECT * FROM log WHERE USER_ID = ?";
         String serverResponse = "";
         try {
@@ -282,6 +282,7 @@ public class LogDao {
             return "GET-TOP-USERS;FAILURE";
         }
 
+        // Create an SQL statement to get the 3 top users according to a specified type of log from the database
         String sql = "SELECT USER_ID, COUNT(*) AS MESSAGE_COUNT FROM LOG WHERE TYPE = ? GROUP BY USER_ID ORDER BY MESSAGE_COUNT DESC LIMIT 3";
         String serverResponse = "";
 

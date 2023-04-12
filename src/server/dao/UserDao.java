@@ -53,7 +53,7 @@ public class UserDao {
 
         // Adding the user to the database
 
-        // Create a SQL statement to insert the user into the database
+        // Create an SQL statement to insert the user into the database
         String sql = "INSERT INTO USER (USERNAME, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, PERMISSION, LAST_CONNECTION_TIME, IS_BANNED, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
@@ -150,11 +150,11 @@ public class UserDao {
 
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [CHANGE-USER-STATUS;STATUS;ID]");
+            System.out.println("Incorrect syntax provided, please use : [CHANGE-USER-STATUS;ID;STATUS]");
             return "CHANGE-USER-STATUS;FAILURE";
         }
 
-        // Create a SQL statement to change the user status
+        // Create an SQL statement to change user status
         String sql = "UPDATE user SET STATUS = ? WHERE ID = ?";
 
         // Create a prepared statement with the SQL statement
@@ -191,11 +191,11 @@ public class UserDao {
 
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [CHANGE-USER-PERMISSION;USERNAME;PERMISSION]");
+            System.out.println("Incorrect syntax provided, please use : [CHANGE-USER-PERMISSION;ID;PERMISSION]");
             return "CHANGE-USER-PERMISSION;FAILURE";
         }
 
-        // Create a SQL statement to ban the user in the database
+        // Create an SQL statement to change user permission
         String sql = "UPDATE USER SET PERMISSION = ? WHERE ID = ?";
 
         try {
@@ -237,11 +237,11 @@ public class UserDao {
             userIsBanned = messageParts[2];
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [BAN-USER;USERNAME;IS_BANNED]");
+            System.out.println("Incorrect syntax provided, please use : [BAN-USER;ID;IS_BANNED]");
             return "BAN-USER;FAILURE";
         }
 
-        // Create a SQL statement to ban the user in the database
+        // Create an SQL statement to change user ban status
         String sql = "UPDATE USER SET IS_BANNED = ? WHERE ID = ?";
 
         try {
@@ -274,6 +274,7 @@ public class UserDao {
      * @return The server response
      */
     public String updateLastConnectionTime(String[] messageParts, String message) {
+
         // Linking message parts to variables
         String userId = "";
         String userLastConnectionTime = LocalDateTime.now().toString();
@@ -282,11 +283,11 @@ public class UserDao {
             userId = messageParts[1];
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [UPDATE-LAST-CONNECTION-TIME;USERNAME]");
+            System.out.println("Incorrect syntax provided, please use : [UPDATE-LAST-CONNECTION-TIME;ID]");
             return "UPDATE-LAST-CONNECTION-TIME;FAILURE";
         }
 
-        // Create a SQL statement to ban the user in the database
+        // Create an SQL statement to update user last connection time
         String sql = "UPDATE USER SET LAST_CONNECTION_TIME = ? WHERE ID = ?";
 
         try {
@@ -313,13 +314,117 @@ public class UserDao {
     }
 
     /**
+     * This method allow to get a user from the database
+     * @param messageParts The message parts
+     * @param message      The message
+     * @return The server response
+     */
+    public String getUserById(String[] messageParts, String message){
+        // Linking message parts to variables
+        String userId = "";
+
+        try {
+            userId = messageParts[1];
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [GET-USER-BY-ID;ID]");
+            return "GET-USER-BY-ID;FAILURE";
+        }
+
+        // Create an SQL statement to select a user based on their id
+        String sql = "SELECT * FROM USER WHERE ID = ?";
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setInt(1, Integer.parseInt(userId));
+
+                // Execute the SQL statement
+                ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getString("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
+                } else {
+                    // Throw an exception if the result set is empty
+                    throw new SQLException("No user found.");
+                }
+
+                // Close the prepared statement
+                statement.close();
+                return serverResponse;
+
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while retrieving user according to their id [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "GET-USER-BY-ID;FAILURE";
+        }
+    }
+
+    /**
+     * This method allow to log a user in
+     * @param messageParts The message parts
+     * @param message      The message
+     * @return The server response
+     */
+    public String logIn(String[] messageParts, String message){
+
+        // Linking message parts to variables
+        String username = "";
+        String password = "";
+        String userLastConnectionTime = LocalDateTime.now().toString();
+        int userId = 0;
+
+        try{
+            username = messageParts[1];
+            password = messageParts[2];
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [LOGIN;USERNAME;PASSWORD]");
+            return "LOGIN;FAILURE";
+        }
+
+        // Create an SQL statement to log the user in
+        String sql = "SELECT ID FROM USER WHERE USERNAME = ? AND PASSWORD = ?";
+
+        try{
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                statement.setString(1, username);
+                statement.setString(2, password);
+
+                // Execute the SQL statement
+                ResultSet rs = statement.executeQuery();
+                String serverResponse = "";
+
+                if (rs != null && rs.next()) {
+                    userId = rs.getInt("ID");
+                }
+
+                // Close the prepared statement
+                statement.close();
+                return "LOGIN;SUCCESS;" + userId;
+            } else {
+                // Throw an exception if the connection is closed
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while comparing username and password values in [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "LOGIN;FAILURE";
+        }
+    }
+
+    /**
      * This method allow an user to logout
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
      */
-
-    public String logout (String[] messageParts, String message) {
+    public String logOut (String[] messageParts, String message) {
 
         // Linking message parts to variables
         String userId = "";
@@ -334,8 +439,8 @@ public class UserDao {
             return "LOGOUT;FAILURE";
         }
 
-        // Create a SQL statement to ban the user in the database
-        String sql = "UPDATE user SET STATUS = 'OFFLINE', LAST_CONNECTION_TIME = ? WHERE ID = ?";
+        // Create an SQL statement to log the user out
+        String sql = "UPDATE USER SET STATUS = 'OFFLINE', LAST_CONNECTION_TIME = ? WHERE ID = ?";
 
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
@@ -354,7 +459,7 @@ public class UserDao {
                 throw new SQLException("Connection to database failed.");
             }
         } catch (Exception e) {
-            System.out.println("[!] Error while updating last connection time [" + message + "]");
+            System.out.println("[!] Error while logging out [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "LOGOUT;FAILURE";
         }

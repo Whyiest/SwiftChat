@@ -37,7 +37,7 @@ public class MessageDao{
             System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT]");
         }
 
-        // Create a SQL statement to insert the message into the database
+        // Create an SQL statement to insert the message into the database
         String sql = "INSERT INTO MESSAGE (SENDER_ID, RECEIVER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
