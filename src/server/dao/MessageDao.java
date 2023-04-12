@@ -91,9 +91,11 @@ public class MessageDao{
                 statement.setInt(1, idSender);
                 statement.setInt(2, idReceiver);
                 ResultSet rs = statement.executeQuery();
-                if (rs != null) {
+
+                if (rs != null && rs.next()) {
                     // Get the first result
                     serverResponse += rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+
                     // Get the other results
                     while (rs.next()) {
                         serverResponse += ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");

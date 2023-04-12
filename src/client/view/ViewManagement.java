@@ -1,9 +1,9 @@
 package client.view;
 
-import client.controler.ServerConnexion;
+import client.controler.ServerConnection;
 
 public class ViewManagement {
-     public ServerConnexion serverConnexion;
+     public ServerConnection serverConnexion;
      //serverConnexion.addUser("CLASSIC", user.getFirstName(), user.getLastName(),user.getUserName(), user.getMail(), user.getPassword());//new
 
     //LoginForm loginForm= new LoginForm(null);//new
