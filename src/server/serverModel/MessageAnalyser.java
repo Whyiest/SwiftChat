@@ -248,7 +248,7 @@ public class MessageAnalyser {
      * @return The messages statistics
      */
     public String getMessagesStatistics(){
-        return logDao.getMessagesStatistics(messageParts, message);
+        return logDao.getMessagesStatistics(message);
     }
 
     /** This method allow to get all the connections statistics
@@ -257,7 +257,7 @@ public class MessageAnalyser {
      * @return The connections statistics
      */
     public String getConnectionsStatistics(){
-        return logDao.getConnectionsStatistics(messageParts, message);
+        return logDao.getConnectionsStatistics(message);
     }
 
     /**

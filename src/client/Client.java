@@ -3,6 +3,7 @@ import client.controler.ServerConnection;
 import client.view.ViewManagement;
 
 import javax.swing.text.View;
+import java.time.LocalDateTime;
 
 public class Client {
 
@@ -49,7 +50,7 @@ public class Client {
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
             if (!requestTested) {
-                serverConnection.sendToServer("GET-USER-BY-ID;9");
+                serverConnection.sendToServer("GET-TOP-USERS;Sent-message");
                 requestTested = true;
             }
         }

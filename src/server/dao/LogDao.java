@@ -2,6 +2,7 @@ package server.dao;
 
 import server.network.Database;
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class LogDao {
     private Database myDb;
@@ -20,18 +21,17 @@ public class LogDao {
     public String addLog(String[] messageParts, String message){
 
         // Linking message parts to variables
-        String logUser = "";
-        String logTimestamp = "";
+        String logUserId = "";
+        String logTimestamp = LocalDateTime.now().toString();
         String logType = "";
 
         try{
-            logUser = messageParts[1];
-            logTimestamp = messageParts[2];
-            logType = messageParts[3];
+            logUserId = messageParts[1];
+            logType = messageParts[2];
 
         } catch (Exception e){
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [ADD-LOG;USER;TIMESTAMP;TYPE]");
+            System.out.println("Incorrect syntax provided, please use : [ADD-LOG;USER_ID;TYPE]");
             return "ADD-LOG;FAILURE";
         }
 
@@ -43,7 +43,7 @@ public class LogDao {
         try{
             PreparedStatement statement = myDb.connection.prepareStatement(sql);
             // Set the parameter values for the prepared statement
-            statement.setInt(1, Integer.parseInt(logUser));
+            statement.setInt(1, Integer.parseInt(logUserId));
             statement.setString(2, logTimestamp);
             statement.setString(3, logType);
 
@@ -113,27 +113,13 @@ public class LogDao {
     public String getUsersStatistics(String[] messageParts, String message){
 
         // Linking message parts to variables
-        String logType1 = "";
-        String logType2 = "";
-        String logType3 = "";
-        String logType4 = "";
-        String logType5 = "";
-        String logType6 = "";
-        String logType7 = "";
-
-        try {
-            logType1 = messageParts[1];
-            logType2 = messageParts[2];
-            logType3 = messageParts[3];
-            logType4 = messageParts[4];
-            logType5 = messageParts[5];
-            logType6 = messageParts[6];
-            logType7 = messageParts[7];
-        } catch (Exception e) {
-            System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [GET-USERS-STATISTICS;TYPE;TYPE;TYPE;TYPE;TYPE;TYPE;TYPE]");
-            return "GET-USERS-STATISTICS;FAILURE";
-        }
+        String logType1 = "Offline";
+        String logType2 = "Online";
+        String logType3 = "Away";
+        String logType4 = "Classic";
+        String logType5 = "Moderator";
+        String logType6 = "Administrator";
+        String logType7 = "Banned";
 
         // Create an SQL statement to get all the logs relating to a user type or status from the database
         String sql = "SELECT * FROM log WHERE TYPE IN (?, ?, ?, ?, ?, ?, ?)";
@@ -172,30 +158,19 @@ public class LogDao {
         }
     }
 
-    public String getMessagesStatistics(String[] messageParts, String message){
+    public String getMessagesStatistics(String message){
 
         // Linking message parts to variables
-        String logType1 = "";
-        String logType2 = "";
-
-        try {
-            logType1 = messageParts[1];
-            logType2 = messageParts[2];
-        } catch (Exception e) {
-            System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [GET-MESSAGES-STATISTICS;TYPE;TYPE]");
-            return "GET-MESSAGES-STATISTICS;FAILURE";
-        }
+        String logType = "Sent-message";
 
         // Create an SQL statement to get all the logs relating to a message from the database
-        String sql = "SELECT * FROM log WHERE TYPE IN (?, ?)";
+        String sql = "SELECT * FROM log WHERE TYPE = ?";
         String serverResponse = "";
 
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
-                statement.setString(1, logType1);
-                statement.setString(2, logType2);
+                statement.setString(1, logType);
 
                 ResultSet rs = statement.executeQuery();
 
@@ -220,20 +195,11 @@ public class LogDao {
         }
     }
 
-    public String getConnectionsStatistics(String[] messageParts, String message){
+    public String getConnectionsStatistics(String message){
 
         // Linking message parts to variables
-        String logType1 = "";
-        String logType2 = "";
-
-        try {
-            logType1 = messageParts[1];
-            logType2 = messageParts[2];
-        } catch (Exception e) {
-            System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [GET-CONNECTIONS-STATISTICS;TYPE;TYPE]");
-            return "GET-CONNECTIONS-STATISTICS;FAILURE";
-        }
+        String logType1 = "Connection";
+        String logType2 = "Disconnection";
 
         // Create an SQL statement to get all the logs relating to a connection from the database
         String sql = "SELECT * FROM log WHERE TYPE IN (?, ?)";
