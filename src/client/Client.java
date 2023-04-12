@@ -50,8 +50,8 @@ public class Client {
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
             if (!oneTimeCall) {
-               // Thread viewThread = new Thread(viewApp);
-               // viewThread.start();
+                Thread viewThread = new Thread(viewApp);
+                viewThread.start();
                 serverConnection.sendToServer("GET-TOP-USERS;Connection");
                 oneTimeCall = true;
             }

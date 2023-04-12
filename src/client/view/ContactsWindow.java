@@ -16,10 +16,13 @@ import java.util.regex.Pattern;
 public class ContactsWindow extends JDialog {
     private static Dimension previousSize = new Dimension(550, 600);
     private ServerConnection serverConnection;
+    public  int numberForCase;
+
 
     public ContactsWindow(JFrame parent, ServerConnection serverConnection) {
         super(parent);
         this.serverConnection = serverConnection;
+        this.numberForCase=2;
         setTitle("Contacts");
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -28,6 +31,14 @@ public class ContactsWindow extends JDialog {
         setVisible(true);
 
 
+    }
+
+    public int getNumberForCase() {
+        return numberForCase;
+    }
+
+    public void setNumberForCase(int numberForCase) {
+        this.numberForCase = numberForCase;
     }
 
     public void initComponents() {
@@ -82,7 +93,7 @@ public class ContactsWindow extends JDialog {
                 contactButton.addActionListener(e -> {
                     previousSize = getSize();
                     dispose();
-                    new ConversationWindow(null, fullName, previousSize);
+                    numberForCase=3;
                 });
                 contactButton.setBorderPainted(true);
                 contactButton.setContentAreaFilled(false);

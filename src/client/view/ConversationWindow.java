@@ -10,6 +10,7 @@ public class ConversationWindow extends JDialog {
     private String contactName;
     private JTextField messageField;
     private ServerConnection serverConnection;
+    public  int numberForCase;
 
 
     private Dimension previousSize;
@@ -18,7 +19,7 @@ public class ConversationWindow extends JDialog {
         super(parent, "SwiftChat", true);
         this.contactName = contactName;
         this.previousSize = previousSize;
-
+        this.numberForCase=3;
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(previousSize);
         setLocationRelativeTo(parent);
@@ -26,6 +27,14 @@ public class ConversationWindow extends JDialog {
         initComponents();
 
         setVisible(true);
+    }
+
+    public int getNumberForCase() {
+        return numberForCase;
+    }
+
+    public void setNumberForCase(int numberForCase) {
+        this.numberForCase = numberForCase;
     }
 
     private JTextField createMessageField() {
@@ -82,7 +91,7 @@ public class ConversationWindow extends JDialog {
         backButton.addActionListener(e -> {
             previousSize = getSize();
             dispose();
-            new ContactsWindow(null,serverConnection);
+            numberForCase=2; //Allow viewManagement to open the contacts window
         });
         return backButton;
     }
@@ -118,6 +127,11 @@ public class ConversationWindow extends JDialog {
     }
 
     private JButton createSendButton() {
-        return new JButton("Send");
+        JButton sendButton = new JButton("Send");
+        sendButton.addActionListener(e -> {
+            String message= messageField.getText();
+            System.out.println(message);
+        });
+        return sendButton;
     }
 }

@@ -57,12 +57,12 @@ public class ResponseAnalyser {
         return userList;
     }
 
-    public int login () {
-        int id = 0;
-        /*
-        id = Integer.parseInt(messageParts[2]);
-
-         */
-        return id;
+    public User login () {
+        User user = null;
+        for (int i = 1; i < messageParts.length; i++) {
+            user = new User();
+            user.setId(Integer.parseInt(messageParts[2]));
+        }
+        return user;
     }
 }

@@ -1,5 +1,6 @@
 package client.view;
 
+import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
@@ -7,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 
 public class LoginForm extends JDialog {
@@ -18,9 +20,11 @@ public class LoginForm extends JDialog {
     private JPanel loginForm;
     private JButton clickToRegisterAButton;
     private ServerConnection serverConnection;
+    public  int numberForCase;
 
     public LoginForm(JFrame parent, ServerConnection serverConnection) {
         super(parent);
+        this.numberForCase=0;
         this.serverConnection = serverConnection;
         setTitle("Login Form");
         setContentPane(loginForm);
@@ -38,7 +42,7 @@ public class LoginForm extends JDialog {
                 user = getAuthenticatedUser(username, password);
                 if (user != null) {
                     dispose();
-                     new ContactsWindow(null, serverConnection);
+                    numberForCase= 2; // we go to the contacts window
                 } else {
                     JOptionPane.showMessageDialog(LoginForm.this, "Email or password Invalid", "Try again", JOptionPane.ERROR_MESSAGE);
                 }
@@ -53,21 +57,8 @@ public class LoginForm extends JDialog {
         clickToRegisterAButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RegistrationForm registrationForm = new RegistrationForm(null);
-                user = registrationForm.user;
-                if (user != null) {
-                    System.out.println("Successful registration:");
-                    System.out.println(" First Name: " + user.getFirstName());
-                    System.out.println(" Last Name: " + user.getLastName());
-                    System.out.println(" Username: " + user.getUserName());
-                    System.out.println(" Mail: " + user.getMail());
-                    System.out.println(" Password: " + user.getPassword());
-                    dispose();
-                    new ContactsWindow(null,serverConnection);
-                }
-                else {
-                    System.out.println("Registration failed");
-                }
+                numberForCase=1; //We go to the registration form
+                dispose();
             }
         });
 
@@ -75,10 +66,19 @@ public class LoginForm extends JDialog {
 
     }
 
+    public int getNumberForCase() {
+        return numberForCase;
+    }
+
+    public void setNumberForCase(int numberForCase) {
+        this.numberForCase = numberForCase;
+    }
+
     public User getAuthenticatedUser(String userName, String password) {
-        User users = new User();
-        users.setUserName(userName);
-        users.setPassword(password);
+        User users = null;
+        String serverResponse = serverConnection.login(userName,password);
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        users = responseAnalyser.login();
         return users;
     }
 }
