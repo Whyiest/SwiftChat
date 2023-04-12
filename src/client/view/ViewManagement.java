@@ -11,7 +11,7 @@ public class ViewManagement implements Runnable {
      public RegistrationForm registrationForm; /// REGISTER 1
      public ContactsWindow myContactWindows; // CONTACT 2
      public ConversationWindow conversationWindow; // CHAT 3
-     public static int currentWindow; // 0 = Login , 1 =Registration, 2 = ContactsWindow, 3 = ConversationWindow
+     public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactsWindow, 3 = ConversationWindow
 
      public static boolean alreadyDisplay;
 
@@ -19,36 +19,37 @@ public class ViewManagement implements Runnable {
 
      public ViewManagement(ServerConnection serverConnection) {
           this.serverConnection = serverConnection;
-          this.currentWindow = 0;
-          this.alreadyDisplay = false;
+          currentWindow = 0;
+          alreadyDisplay = false;
      }
 
      public void run () {
 
           initWindows();
 
+
           do {
+
                switch (currentWindow) {
                     case 0 -> { // LOGIN
 
                          if (!alreadyDisplay) {
-                              loginForm.openLoginWindow();
-                              loginForm.closeLoginWindow();
                               alreadyDisplay = true;
-                              //this.user = loginForm.user;
+                              System.out.println(currentWindow);
+                              loginForm.openLoginWindow();
                          }
                     }
                     case 1 -> { // REGISTER
                          if (!alreadyDisplay) {
-                              this.user = registrationForm.user;
-                              serverConnection.addUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getMail(), user.getPassword(), "CLASSIC");
                               alreadyDisplay = true;
+                              System.out.println(currentWindow);
+                              registrationForm.openRegisterWindow();
                          }
                     }
                     case 2 -> { // CONTACT
                          if (!alreadyDisplay) {
-                              initContact();
                               alreadyDisplay = true;
+                              initContact();
                          }
                     }
                     case 3 -> { // CHAT
@@ -66,7 +67,7 @@ public class ViewManagement implements Runnable {
      public void initWindows () {
 
           this.loginForm = new LoginForm(null, serverConnection);
-          //this.registrationForm = new RegistrationForm(null);
+          this.registrationForm = new RegistrationForm(null, serverConnection);
           //this.myContactWindows = new ContactsWindow(null, serverConnection);
           //this.conversationWindow = new ConversationWindow(null,"SwiftChat",myContactWindows.getSize());
      }

@@ -252,6 +252,8 @@ public class ServerConnection implements Runnable {
      * @param password   the password of the user
      * @return the response from the server
      */
+
+
     public String addUser(String username, String firstName, String lastName, String email, String password, String permission) {
 
         // Create user for the server

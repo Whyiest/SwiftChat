@@ -1,6 +1,8 @@
 package client.view;
 
 import client.clientModel.User;
+import client.controler.ServerConnection;
+import server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,43 +14,60 @@ public class RegistrationForm extends JDialog {
     private JTextField textFieldLastName;
     private JTextField textFieldUsername;
     private JTextField textFieldEmail;
-    private JPasswordField pfPassword;
-    private JPasswordField pfConfirmPassword;
+    private JPasswordField passwordField;
+    private JPasswordField confirmPasswordField;
+
+    private ServerConnection serverConnection;
     private JButton btnRegister;
     private JButton btnCancel;
-    public  int numberForCase;
-
-    public User user;
 
 
-    public RegistrationForm(JFrame parent){
+    public RegistrationForm(JFrame parent, ServerConnection serverConnection){
         super(parent);
-        this.numberForCase=1;
+
+        this.serverConnection = serverConnection;
+        // SETUP
+
         setTitle("Registration Form");
         setContentPane(registerPanel);
         setMinimumSize(new Dimension(700,600));
         setModal(true);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        // REGISTER BUTTON
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 registerUser();
             }
         });
+
+        // CANCEL BUTTON
         btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
+
+                // Go back to login
+                ViewManagement.setCurrentDisplay(0);
+
+                // Close the current window
+                closeRegisterWindow();
             }
         });
+    }
 
+
+
+    public void openRegisterWindow () {
         setVisible(true);
     }
-    /**
-     * @param c
-     * @return
-     */
+
+    public void closeRegisterWindow () {
+        setVisible(false);
+        dispose();
+    }
+
     public static boolean isAlphanumeric(char c){
         // if the character is alphanumeric (either an arabic number, an uppercase letter, or a lowercase letter), the method returns true
         if((c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122)){
@@ -187,21 +206,21 @@ public class RegistrationForm extends JDialog {
         return false;
     }
 
-    public int getNumberForCase() {
-        return numberForCase;
-    }
 
-    public void setNumberForCase(int numberForCase) {
-        this.numberForCase = numberForCase;
-    }
 
     private void registerUser() {
+
+        // Get the content of all fields :
+
         String firstName= textFieldFirstname.getText();
         String lastName= textFieldLastName.getText();
         String userName= textFieldUsername.getText();
         String mail= textFieldEmail.getText();
-        String password = String.valueOf(pfPassword.getPassword());
-        String confirmPassword = String.valueOf(pfConfirmPassword.getPassword());
+        String password = String.valueOf(passwordField.getPassword());
+        String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+
+        // Check validity of fields :
+
          if( firstName.isEmpty() || lastName.isEmpty() || userName.isEmpty()|| password.isEmpty()){
              JOptionPane.showMessageDialog(this,"Invalid fields","Try again",JOptionPane.ERROR_MESSAGE);
              return;
@@ -214,18 +233,15 @@ public class RegistrationForm extends JDialog {
             JOptionPane.showMessageDialog(this,"Incorrect mail format","Try again",JOptionPane.ERROR_MESSAGE);
             return;
         }
-         user = getAuthenticatedUser(firstName,lastName,userName,mail,password);
-        numberForCase=2; //chnage so view management can open the conversation page
-         dispose();
 
+        // Create an user with the provided parameter
+        serverConnection.addUser(userName, firstName, lastName, mail, password, "CLASSIC");
+
+        // Go back to login page to log in
+        ViewManagement.setCurrentDisplay(0);
+
+        // Close the current window
+         dispose();
     }
-    private User getAuthenticatedUser(String firstName, String lastName, String username, String email, String password) {
-        User users = new User();
-        users.setFirstName(firstName);
-        users.setLastName(lastName);
-        users.setUserName(username);
-        users.setMail(email);
-        users.setPassword(password);
-        return users;
-    }
+
 }
