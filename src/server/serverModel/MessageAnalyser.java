@@ -74,18 +74,18 @@ public class MessageAnalyser {
                 case "ADD-USER" -> serverResponse = addUserToDatabase(); // working
                 case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission(); // working
                 case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus(); // working
-                case "CHANGE-BAN-STATUS" -> serverResponse = changeBanStatus();  // maybe working ?
-                case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // maybe working?
-                case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // maybe working?
+                case "CHANGE-BAN-STATUS" -> serverResponse = changeBanStatus();  //  working
+                case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // working
+                case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // working
 
                 case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase(); // working
-                case "LIST-MESSAGE-BETWEEN-USERS" -> serverResponse = listMessagesBetweenUsers();  // maybe working?
+                case "LIST-MESSAGES-BETWEEN-USERS" -> serverResponse = listMessagesBetweenUsers();  // working
 
                 case "ADD-LOG" -> serverResponse = addLogToDatabase(); // working
-                case "LIST-LOG-FOR-USER" -> serverResponse = listLogsForUser();  // maybe working?
+                case "LIST-LOGS-FOR-USER" -> serverResponse = listLogsForUser();  // working
 
-                case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();  // not working
-                case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();  // not working
+                case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();  // working
+                case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();  // working
                 case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();  // not working
                 case "GET-TOP-USERS" -> serverResponse = getTopUsers();  // not working
 
@@ -222,7 +222,7 @@ public class MessageAnalyser {
      * @return SUCCESS if the status is changed, FAILURE otherwise
      */
     public String listLogsForUser(){
-        return logDao.getAllLogsForUser(messageParts, message);
+        return logDao.listAllLogsForUser(messageParts, message);
     }
 
     /**
@@ -232,7 +232,7 @@ public class MessageAnalyser {
      * @return The users statistics
      */
     public String getUsersStatistics(){
-        return logDao.getUsersStatistics(message);
+        return logDao.getUsersStatistics(messageParts, message);
     }
 
     /**
@@ -242,7 +242,7 @@ public class MessageAnalyser {
      * @return The messages statistics
      */
     public String getMessagesStatistics(){
-        return logDao.getMessagesStatistics(message);
+        return logDao.getMessagesStatistics(messageParts, message);
     }
 
     /** This method allow to get all the connections statistics

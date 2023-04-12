@@ -1,7 +1,6 @@
 package client;
-import client.controler.ServerConnexion;
-
-import javax.swing.text.View;
+import client.controler.ServerConnection;
+import java.time.*;
 
 public class Client {
 
@@ -18,25 +17,25 @@ public class Client {
         boolean requestTested = false;
 
         // Create basics objects
-        ServerConnexion serverConnexion = new ServerConnexion("localhost", 5000);
+        ServerConnection serverConnection = new ServerConnection("localhost", 5000);
 
         // Code to execute when the program is closed
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 
-            if (serverConnexion.isClientAlive()) {
+            if (serverConnection.isClientAlive()) {
                 if (clientIsLogged) {
-                    serverConnexion.sendToServer("LOGOUT;" + clientID);
+                    serverConnection.sendToServer("LOGOUT;" + clientID);
                 }
-                serverConnexion.leaveSignal();
-                serverConnexion.disconnect();
+                serverConnection.leaveSignal();
+                serverConnection.disconnect();
             }
         }));
 
-        Thread connexionServerThread = new Thread(serverConnexion);
+        Thread connexionServerThread = new Thread(serverConnection);
         connexionServerThread.start();
 
         // Waiting for server connexion to be established
-        while (!serverConnexion.isClientAlive()) {
+        while (!serverConnection.isClientAlive()) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -45,11 +44,10 @@ public class Client {
         };
 
         // Blocking the main thread until the client is disconnected
-        while (serverConnexion.isClientAlive()) {
+        while (serverConnection.isClientAlive()) {
             if (!requestTested) {
-                serverConnexion.sendToServer("TEST;Hello World!");
-                serverConnexion.listMessageBetweenUsers(10, 9);
-
+                serverConnection.sendToServer("ADD-LOG;9;" + LocalDateTime.now().toString() + ";Sent-message");
+                serverConnection.sendToServer("GET-MESSAGES-STATISTICS;Sent-message;Received-message");
                 requestTested = true;
             }
         }

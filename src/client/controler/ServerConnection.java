@@ -5,16 +5,11 @@ import client.clientModel.User;
 
 import java.io.*;
 import java.net.*;
-import java.security.PublicKey;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 
-public class ServerConnexion implements Runnable {
+public class ServerConnection implements Runnable {
 
     private String serverIP;
     private int port;
@@ -27,7 +22,7 @@ public class ServerConnexion implements Runnable {
     private int retryDelay = 5000; // 5 seconds
 
 
-    public ServerConnexion(String serverIP, int port) {
+    public ServerConnection(String serverIP, int port) {
         this.port = port;
         this.serverIP = serverIP;
     }

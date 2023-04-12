@@ -1,7 +1,6 @@
 package client.view;
 
 import client.clientModel.User;
-import client.controler.ServerConnexion;
 
 import javax.swing.*;
 import java.awt.*;
