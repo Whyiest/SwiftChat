@@ -17,7 +17,7 @@ public class Client {
      */
     public static void main(String[] args) {
 
-        boolean requestTested = false;
+        boolean oneTimeCall = false;
 
         // Create basics objects
         ServerConnection serverConnection = new ServerConnection("localhost", 5000);
@@ -49,9 +49,11 @@ public class Client {
 
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
-            if (!requestTested) {
-                serverConnection.sendToServer("GET-TOP-USERS;Sent-message");
-                requestTested = true;
+            if (!oneTimeCall) {
+               // Thread viewThread = new Thread(viewApp);
+               // viewThread.start();
+                serverConnection.sendToServer("GET-TOP-USERS;Connection");
+                oneTimeCall = true;
             }
         }
     }

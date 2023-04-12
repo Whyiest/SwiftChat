@@ -98,9 +98,9 @@ public class UserDao {
      */
     public String listAllUsers(String[] messageParts, String message) {
 
-        // Create an SQL statement to get all the users from the database
-        String sql = "SELECT * FROM USER";
-        String serverResponse = "";
+        // Create a SQL statement to get all the users from the database
+        String sql = "SELECT * FROM user";
+        String serverResponse = "LIST-ALL-USERS;";
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);

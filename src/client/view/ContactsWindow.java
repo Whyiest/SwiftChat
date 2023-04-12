@@ -19,19 +19,18 @@ public class ContactsWindow extends JDialog {
 
     public ContactsWindow(JFrame parent, ServerConnection serverConnection) {
         super(parent);
+        this.serverConnection = serverConnection;
         setTitle("Contacts");
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setSize(previousSize);
         setLocationRelativeTo(parent);
-
-        initComponents();
         setVisible(true);
 
-        this.serverConnection = serverConnection;
+
     }
 
-    private void initComponents() {
+    public void initComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout());
         add(mainPanel);
 
@@ -100,7 +99,7 @@ public class ContactsWindow extends JDialog {
         mainPanel.add(nextPageButton, BorderLayout.SOUTH);
     }
 
-    private static String getInitials(String name) {
+    public static String getInitials(String name) {
         Matcher m = Pattern.compile("\\b\\w").matcher(name);
         StringBuilder initials = new StringBuilder();
         while (m.find()) {
