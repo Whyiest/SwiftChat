@@ -402,8 +402,10 @@ public class UserDao {
 
                 if (rs != null && rs.next()) {
                     userId = rs.getInt("ID");
+                } else {
+                    // Return failure if the result set is empty
+                    return "LOGIN;FAILURE";
                 }
-
                 // Close the prepared statement
                 statement.close();
                 return "LOGIN;SUCCESS;" + userId;
