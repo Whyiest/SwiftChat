@@ -12,3 +12,4 @@
  serverConnexion.changeUserPermission(10, "ADMIN");
  serverConnexion.upDateLastConnectinTime(10);
  serverConnexion.banUser(10, "True");
+ serverConnexion.listMessageBetweenUsers(10, 9);

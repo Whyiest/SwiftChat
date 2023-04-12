@@ -68,8 +68,8 @@ public class MessageAnalyser {
         else {
             System.out.println("\n[>] Action requested : " + messageAction);
             switch (messageAction) {
-                case "LOGIN" -> serverResponse = logIn();  // not working
-                case "LOGOUT" -> serverResponse = logOut();  // not working
+                case "LOGIN" -> serverResponse = logIn();
+                case "LOGOUT" -> serverResponse = logOut();
 
                 case "ADD-USER" -> serverResponse = addUserToDatabase(); // working
                 case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission(); // working
@@ -95,7 +95,10 @@ public class MessageAnalyser {
                     serverResponse = "LEAVE-ACKNOWLEDGEMENT";
                     System.out.println("[!] Client is leaving");
                 }
-                default -> System.out.println("ERROR");
+                default -> {
+                    System.out.println("[!] Error : Unknown action requested : " + messageAction);
+                    serverResponse = "UNKNOWN-ACTION";
+                }
             }
             return serverResponse;
         }
@@ -119,12 +122,12 @@ public class MessageAnalyser {
      * This method allow to disconnect a user
      * Switch status to offline
      * Switch last connection time to now
-     * Message format : LOGOUT;USERNAME
+     * Message format : LOGOUT;USER_ID
      * Response format : LOGOUT;SUCCESS/FAILURE
      * @return SUCCESS if the user is disconnected, FAILURE otherwise
      */
     public String logOut () {
-        return "Not Working";
+        return userDao.logout(messageParts, message);
     }
 
     /**

@@ -97,8 +97,10 @@ public class ClientConnectionHub {
      * @param clientSocket The socket of the client to remove
      */
     public static void removeClient(Socket clientSocket) {
-        System.out.println("\n[*] Closing client socket " + clientSocket.getInetAddress() + " (" + (clientSocketList.size() - 1)  + " client(s) remaining)\n");
-        clientSocketList.remove(clientSocket);
+        if (clientSocketList.size() != 0) {
+            System.out.println("\n[*] Closing client socket " + clientSocket.getInetAddress() + " (" + (clientSocketList.size() - 1) + " client(s) remaining)\n");
+            clientSocketList.remove(clientSocket);
+        }
     }
 }
 
