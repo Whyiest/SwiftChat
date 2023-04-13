@@ -102,7 +102,8 @@ public class ResponseAnalyser {
      * This method generates a pie chart from the server response
      * @param dataToDisplay
      */
-    public void generatePieChart(int dataToDisplay){
+
+   public void generatePieChart(int dataToDisplay){
         // Create a dataset for the pie chart
         DefaultPieDataset pieDataset = new DefaultPieDataset();
 
@@ -184,7 +185,7 @@ public class ResponseAnalyser {
      *
      * @param dataToDisplay
      */
-    public void generateHistogram(int dataToDisplay){
+   public void generateHistogram(int dataToDisplay){
         // Create a dataset to store the histogram data
         HistogramDataset dataset = new HistogramDataset();
 

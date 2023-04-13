@@ -57,20 +57,23 @@ public class LoginForm extends JDialog {
                 String password = String.valueOf(passwordField.getPassword());
 
                 user = getAuthenticatedUser(username, password);
-                // If user password and ID are correct :
-                if (user != null) {
-                    // Set client to logged
-                    Client.setClientIsLogged(true);
-                    Client.setClientID(user.getId());
-                    ViewManagement.setCurrentDisplay(2);
-                    dispose();
-                } else if (isUserBanned) {
+                //If the user is not banned
+                if(isUserBanned){
                     JOptionPane.showMessageDialog(LoginForm.this, "You have been banned", "Try again", JOptionPane.ERROR_MESSAGE);
-
-                }
-                // Otherwise :
-                else {
-                    JOptionPane.showMessageDialog(LoginForm.this, "Email or password Invalid", "Try again", JOptionPane.ERROR_MESSAGE);
+                    isUserBanned=false;
+                }else{
+                    // If user password and ID are correct
+                    if (user != null) {
+                        // Set client to logged
+                        Client.setClientIsLogged(true);
+                        Client.setClientID(user.getId());
+                        ViewManagement.setCurrentDisplay(2);
+                        dispose();
+                    }
+                    // Otherwise :
+                    else {
+                        JOptionPane.showMessageDialog(LoginForm.this, "Email or password Invalid", "Try again", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });
@@ -119,24 +122,18 @@ public class LoginForm extends JDialog {
      * @return the user if the login is correct, null otherwise
      */
     public User getAuthenticatedUser(String userName, String password) {
-
         int userLoggedID;
         String serverResponse = serverConnection.login(userName,password);
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
         userLoggedID = responseAnalyser.login();
-        //Check is the user is banned
-        String serverResponseBis = serverConnection.getUserByID(userLoggedID);
-        ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponseBis);
-        User userLogginIn= responseAnalyserBis.extractUser();
         // If the login had success
-        /*if(userLogginIn.isBanned()){
-            isUserBanned=true;
-            return null;
-        }*/if (userLoggedID != -1 ) {
+        if (userLoggedID != -1 ) {
             serverResponse = serverConnection.getUserByID(userLoggedID);
             serverConnection.updateLastConnectinTime(userLoggedID);
             serverConnection.changeStatus(userLoggedID, "ONLINE");
             ResponseAnalyser responseAnalyserSecond = new ResponseAnalyser(serverResponse);
+            //Check is the user is banned
+            isUserBanned=checkUserBanned(userLoggedID);
             return responseAnalyserSecond.extractUser();
         }
         // If the login failed
@@ -144,7 +141,12 @@ public class LoginForm extends JDialog {
             return null;
         }
     }
-
+    public boolean checkUserBanned(int userID){
+        String serverResponseBis = serverConnection.getUserByID(userID);
+        ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponseBis);
+        User userLogginIn= responseAnalyserBis.extractUser();
+        return userLogginIn.isBanned();
+    }
     @Override
     public String toString() {
         return "LoginForm{" +

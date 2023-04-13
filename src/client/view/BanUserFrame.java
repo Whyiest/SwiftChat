@@ -49,7 +49,6 @@ public class BanUserFrame extends JDialog {
         // Create submit button
         submitButton = new JButton("Submit");
         submitButton.addActionListener(e -> {
-            // Go gack to contact page
             if(banRadioButton.isSelected()){
                 //System.out.println("Ban the user");
                 userChattingWith.setBanned(true);//ban the user
