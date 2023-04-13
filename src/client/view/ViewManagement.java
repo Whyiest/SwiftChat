@@ -91,7 +91,7 @@ public class ViewManagement implements Runnable {
       * Set the user you are chatting with
       * @param user the user you are chatting with
       */
-     public static void setChattingWithUserID (User user) {
+     public static void setChattingWithUser(User user) {
           chattingWithThisUser = user;
      }
 

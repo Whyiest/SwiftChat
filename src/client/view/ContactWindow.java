@@ -34,7 +34,7 @@ public class ContactWindow extends JDialog {
 
         // Setup connexion
         this.serverConnection = serverConnection;
-        this.listAllUsers = new ArrayList<User>();
+        this.listAllUsers = new ArrayList<>();
         this.userPerPage = 12;
         this.listCurrentDisplayedUsers = new User[userPerPage];
         this.currentContactPanel = 0;
@@ -145,7 +145,7 @@ public class ContactWindow extends JDialog {
                     // Allow event to be start in the button
                     int finalCurrentUserIterator = currentUserIterator;
                     contactButton.addActionListener(e -> {
-                        ViewManagement.setChattingWithUserID(listCurrentDisplayedUsers[finalCurrentUserIterator]);
+                        ViewManagement.setChattingWithUser(listCurrentDisplayedUsers[finalCurrentUserIterator]);
                         ViewManagement.setCurrentDisplay(3);
                         dispose();
                     });
@@ -160,6 +160,7 @@ public class ContactWindow extends JDialog {
                     pagePanel.add(contactCard);
                 }
             }
+
         }
 
         // Button to scroll down

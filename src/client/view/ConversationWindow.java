@@ -11,6 +11,8 @@ public class ConversationWindow extends JDialog {
     private String contactName;
     private JTextField messageField;
     private ServerConnection serverConnection;
+
+    private User chattingWithThisUser;
     private Dimension previousSize;
 
     /**
@@ -26,6 +28,7 @@ public class ConversationWindow extends JDialog {
         // SETUP
         this.previousSize = previousSize;
         this.serverConnection = serverConnection;
+        this.chattingWithThisUser = user;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(previousSize);
@@ -50,16 +53,6 @@ public class ConversationWindow extends JDialog {
         dispose();
     }
 
-    /**
-     * Link the conversation window with the user
-     * @param userID the user ID
-     */
-
-    private void linkWithUser (int userID) {
-        String serverReponse = serverConnection.getUserByID(userID);
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(String.valueOf(userID));
-        User user = responseAnalyser.extractUser();
-    }
 
     /**
      * Create the message field
@@ -161,6 +154,7 @@ public class ConversationWindow extends JDialog {
         JLabel userNameLabel = new JLabel(contactName);
         userNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userNameLabel.setForeground(Color.WHITE);
+        userNameLabel.setText(contactName = chattingWithThisUser.getFirstName() + " " + chattingWithThisUser.getLastName()); // Set text of the label
         return userNameLabel;
     }
 
