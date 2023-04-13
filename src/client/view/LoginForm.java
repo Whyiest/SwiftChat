@@ -22,6 +22,11 @@ public class LoginForm extends JDialog {
     private JButton clickToRegisterAButton;
     private final ServerConnection serverConnection;
 
+    /**
+     * Constructor
+     * @param parent the parent frame
+     * @param serverConnection the server connection
+     */
     public LoginForm(JFrame parent, ServerConnection serverConnection) {
 
         super(parent);
@@ -84,15 +89,27 @@ public class LoginForm extends JDialog {
     }
 
 
+    /**
+     * Close the login window
+     */
     public void closeLoginWindow () {
         setVisible(false);
         dispose();
     }
 
+    /**
+     * Open the login window
+     */
     public void openLoginWindow () {
         setVisible(true);
     }
 
+    /**
+     * Get the authenticated user if the login is correct
+     * @param userName the username of the user
+     * @param password the password of the user
+     * @return the user if the login is correct, null otherwise
+     */
     public User getAuthenticatedUser(String userName, String password) {
 
         int userLoggedID;

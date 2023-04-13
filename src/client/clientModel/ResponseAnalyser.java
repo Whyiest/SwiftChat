@@ -9,8 +9,6 @@ public class ResponseAnalyser {
 
     private String[] messageParts;
 
-    private String messageAction;
-
     public ResponseAnalyser (String serverResponse) {
         this.serverResponse = serverResponse;
         extractMessage();
@@ -24,7 +22,6 @@ public class ResponseAnalyser {
 
         try {
             messageParts = serverResponse.split(";");
-            messageAction = messageParts[0]; // The first part of the message is the action
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + serverResponse + "]");
             System.out.println("Incorrect syntax provided, please use : [ACTION;DATA_1;...;DATA_N]");
@@ -33,8 +30,10 @@ public class ResponseAnalyser {
 
 
 
-   // USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS
-
+    /**
+     * This method allows to create a list of users from the server response
+     * @return the list of users
+     */
     public List<User> createUserList() {
 
         List<User> userList = new ArrayList<>();
@@ -56,6 +55,10 @@ public class ResponseAnalyser {
         return userList;
     }
 
+    /**
+     * This method allow to extract a single user from the server response
+     * @return the user
+     */
     public User extractUser() {
 
         User myUser = new User(messageParts[1], messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], LocalDateTime.parse(messageParts[7]), Boolean.parseBoolean(messageParts[8]), messageParts[9]);
@@ -63,6 +66,10 @@ public class ResponseAnalyser {
         return myUser;
     }
 
+    /**
+     * This method allow to check if the login is successful
+     * @return the user id if the login is successful, -1 otherwise
+     */
     public int login () {
 
         if (messageParts[1].equals("SUCCESS")) {

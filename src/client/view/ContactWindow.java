@@ -16,14 +16,15 @@ import java.util.regex.Pattern;
 public class ContactWindow extends JDialog {
     private static Dimension previousSize = new Dimension(550, 600);
     private final ServerConnection serverConnection;
-
     private List<User> listAllUsers;
-
     private int userPerPage;
-
-
     private User[] listCurrentDisplayedUsers;
 
+    /**
+     * Constructor
+     * @param parent the parent frame
+     * @param serverConnection the server connection
+     */
     public ContactWindow(JFrame parent, ServerConnection serverConnection) {
 
         super(parent);
@@ -51,15 +52,24 @@ public class ContactWindow extends JDialog {
         });
     }
 
+    /**
+     * Open the contact window
+     */
     public void openContactWindow() {
         setVisible(true);
     }
 
+    /**
+     * Close the contact window
+     */
     public void closeContactWindow() {
         setVisible(false);
         dispose();
     }
 
+    /**
+     * Init the components
+     */
     public void initComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout());
         add(mainPanel);
@@ -143,6 +153,11 @@ public class ContactWindow extends JDialog {
         mainPanel.add(nextPageButton, BorderLayout.SOUTH);
     }
 
+    /**
+     * Get the initials of a name
+     * @param name the name
+     * @return the initials
+     */
     public static String getInitials(String name) {
         Matcher m = Pattern.compile("\\b\\w").matcher(name);
         StringBuilder initials = new StringBuilder();

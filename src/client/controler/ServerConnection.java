@@ -27,6 +27,9 @@ public class ServerConnection implements Runnable {
         this.serverIP = serverIP;
     }
 
+    /**
+     * Run the connection to the server
+     */
     public void run() {
 
         running = true;
@@ -52,6 +55,9 @@ public class ServerConnection implements Runnable {
         }
     }
 
+    /**
+     * Try to connect to the server until it is connected
+     */
     private void attemptConnect() {
 
         connected = false;
