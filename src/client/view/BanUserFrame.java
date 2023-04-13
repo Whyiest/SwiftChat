@@ -1,5 +1,6 @@
 package client.view;
 
+import client.Client;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
@@ -12,7 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class BanUserFrame extends JDialog implements ActionListener {
+public class BanUserFrame extends JDialog {
     private JRadioButton banRadioButton;
     private JRadioButton unbanRadioButton;
     private JButton submitButton;
@@ -34,6 +35,7 @@ public class BanUserFrame extends JDialog implements ActionListener {
         // Create ban radio button
         banRadioButton = new JRadioButton("Ban user");
 
+
         // Create unban radio button
         unbanRadioButton = new JRadioButton("Unban user");
 
@@ -46,7 +48,30 @@ public class BanUserFrame extends JDialog implements ActionListener {
 
         // Create submit button
         submitButton = new JButton("Submit");
-        submitButton.addActionListener(this);
+        submitButton.addActionListener(e -> {
+            // Go gack to contact page
+            if(banRadioButton.isSelected()){
+                //System.out.println("Ban the user");
+                userChattingWith.setBanned(true);//ban the user
+                String serverResponse = serverConnection.banUser(userChattingWith.getId(),"true");
+                String serverResponsebis= serverConnection.addLog(userChattingWith.getId(),"BANNED");
+                ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+                ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponsebis);
+
+
+                //System.out.println(userChattingWith);
+            }else if(unbanRadioButton.isSelected()){
+                userChattingWith.setBanned(false);// unban the user
+                String serverResponse = serverConnection.banUser(userChattingWith.getId(),"false");
+                String serverResponsebis= serverConnection.addLog(userChattingWith.getId(),"UNBANNED");
+                ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+                ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponsebis);
+               //System.out.println("NOT banned");
+                //System.out.println(userChattingWith);
+            }
+            ViewManagement.setCurrentDisplay(3);
+            closeBanWindow();
+        });
 
         // Add radio buttons and submit button to panel
         JPanel panel = new JPanel();
@@ -58,23 +83,7 @@ public class BanUserFrame extends JDialog implements ActionListener {
         // Add panel to frame
         add(panel);
     }
-    public void actionPerformed(ActionEvent e) {
-        if (submitButton.isSelected() && banRadioButton.isSelected()){
-            //Code to ban user
-            userChattingWith.setBanned(true);
-            System.out.println(userChattingWith);
-            ViewManagement.setCurrentDisplay(3);
-            closeBanWindow();
-        } else if (submitButton.isSelected() && unbanRadioButton.isSelected()) {
-            userChattingWith.setBanned(false);
-            ViewManagement.setCurrentDisplay(3);
-            closeBanWindow();
-        }else if(submitButton.isSelected()){
-            System.out.println("Worked");
-            ViewManagement.setCurrentDisplay(3);
-            closeBanWindow();
-        }
-    }
+
 
     /**
      *
@@ -93,8 +102,10 @@ public class BanUserFrame extends JDialog implements ActionListener {
     public void setInitialButtonMarked(User user){
         if(checkUserStatus(user)){
             banRadioButton.setSelected(true);
-        }else{
+            unbanRadioButton.setSelected(false);
+        }else {
             unbanRadioButton.setSelected(true);
+            banRadioButton.setSelected(false);
         }
     }
     public void openBanWindow() {

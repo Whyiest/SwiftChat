@@ -28,7 +28,7 @@ public class Client {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 
             if (serverConnection.isClientAlive()) {
-                if (clientIsLogged) {
+                if (clientIsLogged ) {
                     serverConnection.sendToServer("LOGOUT;" + clientID);
                 }
                 serverConnection.leaveSignal();
@@ -57,6 +57,12 @@ public class Client {
             }
         }
     }
+
+    /**
+     *
+     * @return the banned or not status of the client
+     */
+
 
     /**
      * Set the client ID

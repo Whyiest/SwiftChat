@@ -6,8 +6,6 @@ import server.dao.UserDao;
 import server.dao.MessageDao;
 import server.dao.LogDao;
 
-import java.util.Objects;
-
 public class MessageAnalyser {
 
     private String message;
@@ -92,7 +90,9 @@ public class MessageAnalyser {
                 case "GET-BAN-STATISTICS" -> serverResponse = getBanStatistics();
                 case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();
                 case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();
+                case "GET-MESSAGES-STATISTICS-BY-USER-ID" -> serverResponse = getMessagesStatisticsByUserId();
                 case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();
+                case "GET-CONNECTIONS-STATISTICS-BY-USER-ID" -> serverResponse = getConnectionsStatisticsByUserId();
                 case "GET-TOP-USERS" -> serverResponse = getTopUsers();
 
                 case "TEST" -> serverResponse = "[!] Test is working, received : " + messageParts[1];
@@ -299,22 +299,32 @@ public class MessageAnalyser {
      * @return The users statistics
      */
     public String getUsersStatistics(){
-        return logDao.getUsersStatistics(messageParts, message);
+        return logDao.getUsersStatistics(message);
     }
 
     /**
      * This method allow to get all the messages statistics
      * Message format : GET-MESSAGES-STATISTICS
-     * Response format : GET-MESSAGES-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_MESSAGES;NUMBER_OF_SENT_MESSAGES;NUMBER_OF_RECEIVED_MESSAGES
+     * Response format : GET-MESSAGES-STATISTICS;SUCCESS/FAILURE;TIMESTAMP
      * @return The messages statistics
      */
     public String getMessagesStatistics(){
         return logDao.getMessagesStatistics(message);
     }
 
+    /**
+     * This method allow to get all the messages statistics
+     * Message format : GET-MESSAGES-STATISTICS-BY-USER-ID;USER_ID
+     * Response format : GET-MESSAGES-STATISTICS-BY-USER-ID;SUCCESS/FAILURE;TIMESTAMP
+     * @return The messages statistics by user id
+     */
+    public String getMessagesStatisticsByUserId(){
+        return logDao.getMessagesStatisticsByUserId(messageParts, message);
+    }
+
     /** This method allow to get all the connections statistics
      * Message format : GET-CONNECTIONS-STATISTICS
-     * Response format : GET-CONNECTIONS-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_CONNECTIONS;NUMBER_OF_SUCCESSFUL_CONNECTIONS;NUMBER_OF_FAILED_CONNECTIONS
+     * Response format : GET-CONNECTIONS-STATISTICS;SUCCESS/FAILURE;TIMESTAMP
      * @return The connections statistics
      */
     public String getConnectionsStatistics(){
@@ -322,9 +332,19 @@ public class MessageAnalyser {
     }
 
     /**
+     * This method allow to get all the connections statistics
+     * Message format : GET-CONNECTIONS-STATISTICS-BY-USER-ID;USER_ID
+     * Response format : GET-CONNECTIONS-STATISTICS-BY-USER-ID;SUCCESS/FAILURE;TIMESTAMP
+     * @return The connections statistics by user id
+     */
+    public String getConnectionsStatisticsByUserId(){
+        return logDao.getConnectionsStatisticsByUserId(messageParts, message);
+    }
+
+    /**
      * This method allow to get the top users
      * Message format : GET-TOP-USERS
-     * Response format : GET-TOP-USERS;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS
+     * Response format : GET-TOP-USERS;SUCCESS/FAILURE;USER_ID;MESSAGE_COUNT
      * @return The top users
      */
     public String getTopUsers(){

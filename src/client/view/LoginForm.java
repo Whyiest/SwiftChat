@@ -21,6 +21,7 @@ public class LoginForm extends JDialog {
     private JPanel loginForm;
     private JButton clickToRegisterAButton;
     private final ServerConnection serverConnection;
+    boolean isUserBanned;
 
     /**
      * Constructor
@@ -63,6 +64,9 @@ public class LoginForm extends JDialog {
                     Client.setClientID(user.getId());
                     ViewManagement.setCurrentDisplay(2);
                     dispose();
+                } else if (isUserBanned) {
+                    JOptionPane.showMessageDialog(LoginForm.this, "You have been banned", "Try again", JOptionPane.ERROR_MESSAGE);
+
                 }
                 // Otherwise :
                 else {
@@ -120,9 +124,15 @@ public class LoginForm extends JDialog {
         String serverResponse = serverConnection.login(userName,password);
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
         userLoggedID = responseAnalyser.login();
-
+        //Check is the user is banned
+        String serverResponseBis = serverConnection.getUserByID(userLoggedID);
+        ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponseBis);
+        User userLogginIn= responseAnalyserBis.extractUser();
         // If the login had success
-        if (userLoggedID != -1) {
+        /*if(userLogginIn.isBanned()){
+            isUserBanned=true;
+            return null;
+        }*/if (userLoggedID != -1 ) {
             serverResponse = serverConnection.getUserByID(userLoggedID);
             serverConnection.updateLastConnectinTime(userLoggedID);
             serverConnection.changeStatus(userLoggedID, "ONLINE");

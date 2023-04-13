@@ -4,15 +4,15 @@ import client.clientModel.User;
 import client.controler.ServerConnection;
 
 public class ViewManagement implements Runnable {
-    public ServerConnection serverConnection;
-    public LoginForm loginForm; // LOGIN 0
-    public RegistrationForm registrationForm; /// REGISTER 1
-    public ContactWindow contactForm; // CONTACT 2
-    public ConversationWindow conversationForm; // CHAT 3
-    public BanUserFrame banUserFrame; // BAN 4
-    public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow
-    public static User chattingWithThisUser; // If you chat with someone, his user ID is here
-    public static boolean alreadyDisplay;
+     public ServerConnection serverConnection;
+     public LoginForm loginForm; // LOGIN 0
+     public RegistrationForm registrationForm; /// REGISTER 1
+     public ContactWindow contactForm; // CONTACT 2
+     public ConversationWindow conversationForm; // CHAT 3
+     public BanUserFrame banUserFrame; // BAN 4
+     public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage
+     public static User chattingWithThisUser; // If you chat with someone, his user ID is here
+     public static boolean alreadyDisplay;
 
     public User user;
 

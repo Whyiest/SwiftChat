@@ -228,7 +228,7 @@ public class LogDao {
         }
     }
 
-    public String getUsersStatistics(String[] messageParts, String message){
+    public String getUsersStatistics(String message){
 
         // Linking message parts to variables
         String logType1 = "Offline";
@@ -279,77 +279,89 @@ public class LogDao {
     public String getMessagesStatistics(String message){
 
         // Linking message parts to variables
-        String logType = "Sent-message";
+        String logType = "SENT-MESSAGE";
 
         // Create an SQL statement to get all the logs relating to a message from the database
-        String sql = "SELECT * FROM log WHERE TYPE = ?";
+        String sql = "SELECT TIMESTAMP FROM log WHERE TYPE = ?";
         String serverResponse = "";
 
         try {
-            if (!myDb.connection.isClosed()) { // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
-                statement.setString(1, logType);
-
-                ResultSet rs = statement.executeQuery();
-
-                if (rs != null && rs.next()) {
-                    // Get the first log
-                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
-                    // Get the other logs
-                    while (rs.next()) {
-                        serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
-                    }
-                }
-                statement.close();
-                return serverResponse;
-            } else {
-                // Throw an exception if the connection is closed
-                throw new SQLException("Connection to database failed.");
-            }
+            return returnTimestampFromLog(logType, sql, serverResponse);
         } catch(Exception e) {
-            System.out.println("[!] Error while getting all logs relating to message information [" + message + "]");
+            System.out.println("[!] Error while getting all timestamps relating to message information [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "GET-MESSAGES-STATISTICS;FAILURE";
+        }
+    }
+
+    public String getMessagesStatisticsByUserId(String[] messageParts, String message){
+
+        // Linking message parts to variables
+        String logType = "SENT-MESSAGE";
+        int idUser = 0;
+
+        try {
+            idUser = Integer.parseInt(messageParts[1]);
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [GET-MESSAGES-STATISTICS-BY-USER-ID;USER_ID]");
+            return "GET-MESSAGES-STATISTICS-BY-USER-ID;FAILURE";
+        }
+
+        // Create an SQL statement to get all the timestamps relating to a message by a certain user from the database
+        String sql = "SELECT TIMESTAMP FROM log WHERE TYPE = ? AND USER_ID = ?";
+        String serverResponse = "";
+
+        try{
+            return returnTimestampFromLogByUser(logType, idUser, sql, serverResponse);
+        } catch (Exception e) {
+            System.out.println("[!] Error while getting all timestamps relating to messages by a user information [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "GET-MESSAGES-STATISTICS-BY-USER-ID;FAILURE";
         }
     }
 
     public String getConnectionsStatistics(String message){
 
         // Linking message parts to variables
-        String logType1 = "Connection";
-        String logType2 = "Disconnection";
+        String logType = "CONNECTION";
 
         // Create an SQL statement to get all the logs relating to a connection from the database
-        String sql = "SELECT * FROM log WHERE TYPE IN (?, ?)";
+        String sql = "SELECT TIMESTAMP FROM log WHERE TYPE = ?";
         String serverResponse = "";
 
         try{
-            if(!myDb.connection.isClosed()){ // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
-                statement.setString(1, logType1);
-                statement.setString(2, logType2);
-
-                ResultSet rs = statement.executeQuery();
-
-                if (rs != null && rs.next()) {
-                    // Get the first log
-                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
-                    // Get the other logs
-                    while (rs.next()) {
-                        serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
-                    }
-                }
-                statement.close();
-                return serverResponse;
-            } else {
-                // Throw an exception if the connection is closed
-                throw new SQLException("Connection to database failed.");
-            }
-
+            return returnTimestampFromLog(logType, sql, serverResponse);
         } catch (Exception e){
-            System.out.println("[!] Error while getting all logs relating to connection information [" + message + "]");
+            System.out.println("[!] Error while getting all timestamps relating to connection information [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "GET-CONNECTIONS-STATISTICS;FAILURE";
+        }
+    }
+
+    public String getConnectionsStatisticsByUserId(String[] messageParts, String message){
+        // Linking message parts to variables
+        String logType = "CONNECTION";
+        int idUser = 0;
+
+        try {
+            idUser = Integer.parseInt(messageParts[1]);
+        } catch (Exception e) {
+            System.out.println("[!] Error while analysing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use : [GET-CONNECTIONS-STATISTICS-BY-USER-ID;USER_ID]");
+            return "GET-CONNECTIONS-STATISTICS-BY-USER-ID;FAILURE";
+        }
+
+        // Create an SQL statement to get all the timestamps relating to a message by a certain user from the database
+        String sql = "SELECT TIMESTAMP FROM log WHERE TYPE = ? AND USER_ID = ?";
+        String serverResponse = "";
+
+        try{
+            return returnTimestampFromLogByUser(logType, idUser, sql, serverResponse);
+        } catch (Exception e) {
+            System.out.println("[!] Error while getting all timestamps relating to messages by a user information [" + message + "]");
+            System.out.println("Statement failure : " + sql);
+            return "GET-CONNECTIONS-STATISTICS-BY-USER-ID;FAILURE";
         }
     }
 
@@ -379,10 +391,10 @@ public class LogDao {
 
                 if (rs != null && rs.next()) {
                     // Get the first user
-                    serverResponse += rs.getString("USER_ID");
+                    serverResponse += rs.getString("USER_ID") + ";" + rs.getString("MESSAGE_COUNT");
                     // Get the other users
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getString("USER_ID");
+                        serverResponse += ";" + rs.getString("USER_ID") + ";" + rs.getString("MESSAGE_COUNT");
                     }
                 }
                 statement.close();
@@ -395,8 +407,63 @@ public class LogDao {
         } catch (Exception e){
             System.out.println("[!] Error while getting top users [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "LIST-TOP-USERS;FAILURE";
+            return "GET-TOP-USERS;FAILURE";
         }
 
+    }
+
+        /**
+         * This method is used to get all the timestamps of a specific log type from the database
+         * @param logType The type of log to get the timestamps from
+         * @param sql The SQL statement to execute
+         * @param serverResponse The response to send to the client
+         * @return The response to send to the client
+         */
+    private String returnTimestampFromLog(String logType, String sql, String serverResponse) throws SQLException {
+        if (!myDb.connection.isClosed()) { // Check if the connection is open
+            PreparedStatement statement = myDb.connection.prepareStatement(sql);
+            statement.setString(1, logType);
+
+            return receiveTimestampServerResponse(serverResponse, statement);
+        } else {
+            // Throw an exception if the connection is closed
+            throw new SQLException("Connection to database failed.");
+        }
+    }
+
+    /**
+     * This method is used to get all the timestamps of a specific log type from the database
+     * @param logType The type of log to get the timestamps from
+     * @param idUser The id of the user to get the timestamps from
+     * @param sql The SQL statement to execute
+     * @param serverResponse The response to send to the client
+     * @return The response to send to the client
+     */
+    private String returnTimestampFromLogByUser(String logType, int idUser, String sql, String serverResponse) throws SQLException {
+        if (!myDb.connection.isClosed()) { // Check if the connection is open
+            PreparedStatement statement = myDb.connection.prepareStatement(sql);
+            statement.setString(1, logType);
+            statement.setInt(2, idUser);
+
+            return receiveTimestampServerResponse(serverResponse, statement);
+        } else {
+            // Throw an exception if the connection is closed
+            throw new SQLException("Connection to database failed.");
+        }
+    }
+
+    private String receiveTimestampServerResponse(String serverResponse, PreparedStatement statement) throws SQLException {
+        ResultSet rs = statement.executeQuery();
+
+        if (rs != null && rs.next()) {
+            // Get the first log
+            serverResponse += rs.getString("TIMESTAMP");
+            // Get the other logs
+            while (rs.next()) {
+                serverResponse += ";" + rs.getString("TIMESTAMP");
+            }
+        }
+        statement.close();
+        return serverResponse;
     }
 }
