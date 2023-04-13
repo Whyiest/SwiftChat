@@ -78,6 +78,7 @@ public class MessageAnalyser {
                 case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();
                 case "GET-USER-BY-ID" -> serverResponse = getUserById();
                 case "GET-USER-PERMISSION-BY-ID" -> serverResponse = getUserPermissionById();
+                case "GET-USER-BAN-STATUS-BY-ID" -> serverResponse = getUserBanStatusById();
                 case "LIST-ALL-USERS" -> serverResponse = listAllUsers();
 
                 case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
@@ -209,6 +210,16 @@ public class MessageAnalyser {
      */
     public String getUserPermissionById(){
         return userDao.getUserPermissionById(messageParts, message);
+    }
+
+    /**
+     * This method allow to get the statistics of the server
+     * Message format : GET-USER-BAN-STATUS-BY-ID;USER_ID
+     * Response format : GET-USER-BAN-STATUS-BY-ID;SUCCESS/FAILURE;IS_BANNED
+     * @return The statistics of the server
+     */
+    public String getUserBanStatusById(){
+        return userDao.getUserBanStatusById(messageParts, message);
     }
 
     /**

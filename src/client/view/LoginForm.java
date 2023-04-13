@@ -125,7 +125,7 @@ public class LoginForm extends JDialog {
         // If the login had success
         if (userLoggedID != -1) {
             serverResponse = serverConnection.getUserByID(userLoggedID);
-            serverConnection.upDateLastConnectinTime(userLoggedID);
+            serverConnection.updateLastConnectinTime(userLoggedID);
             serverConnection.changeStatus(userLoggedID, "ONLINE");
             ResponseAnalyser responseAnalyserSecond = new ResponseAnalyser(serverResponse);
             return responseAnalyserSecond.extractUser();

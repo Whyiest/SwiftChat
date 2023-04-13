@@ -88,4 +88,5 @@ public class ResponseAnalyser {
             return -1;
         }
     }
+
 }

@@ -312,8 +312,39 @@ public class ServerConnection implements Runnable {
      * @param userID the ID of the user
      * @return the response from the server
      */
-    public String upDateLastConnectinTime(int userID) {
+    public String updateLastConnectinTime(int userID) {
         return sendToServer("UPDATE-LAST-CONNECTION-TIME;" + userID);
+    }
+
+    /**
+     * Get the user by his ID
+     *
+     * @param userID the ID of the user
+     * @return the user in String format / Response format: "GET-USER-BY-ID;SUCCESS/FAILURE;ID;USERNAME;FIRST_NAME;LAST_NAME;EMAIL;PASSWORD;PERMISSION;LAST_CONNECTION_TIME;IS_BANNED;STATUS"
+     *                 } el
+     */
+    public String getUserById(int userID) {
+        return sendToServer("GET-USER-BY-ID;" + userID);
+    }
+
+    /**
+     * Get the user by his username
+     *
+     * @param userID the ID of the user
+     * @return the user in String format / Response format: "GET-USER-BY-ID;SUCCESS/FAILURE;PERMISSION"
+     */
+    public String getUserPermissionById(int userID) {
+        return sendToServer("GET-USER-PERMISSION-BY-ID;" + userID);
+    }
+
+    /**
+     * Get the user by his username
+     *
+     * @param userID the ID of the user
+     * @return the user in String format / Response format: "GET-USER-BY-ID;SUCCESS/FAILURE;IS_BANNED"
+     */
+    public String getUserBanStatusById(int userID) {
+        return sendToServer("GET-USER-BAN-STATUS-BY-ID;" + userID);
     }
 
     /**
