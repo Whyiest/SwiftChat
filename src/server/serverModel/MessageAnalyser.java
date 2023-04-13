@@ -77,6 +77,7 @@ public class MessageAnalyser {
                 case "CHANGE-BAN-STATUS" -> serverResponse = changeBanStatus();  //  working
                 case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // working
                 case "GET-USER-BY-ID" -> serverResponse = getUserById();  // working
+                case "GET-USER-PERMISSION-BY-ID" -> serverResponse = getUserPermissionById();  // working
                 case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // working
 
                 case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase(); // working
@@ -187,14 +188,30 @@ public class MessageAnalyser {
         return userDao.updateLastConnectionTime(messageParts, message);
     }
 
+    /**
+     * This method allow to get the statistics of the server
+     * Message format : GET-USER-BY-ID;USER_ID
+     * Response format : GET-USER-BY-ID;SUCCESS/FAILURE;USER_ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;STATUS;BAN_STATUS
+     * @return The statistics of the server
+     */
     public String getUserById(){
         return userDao.getUserById(messageParts, message);
     }
 
     /**
+     * This method allow to get the statistics of the server
+     * Message format : GET-USER-PERMISSION-BY-ID;USER_ID
+     * Response format : GET-USER-PERMISSION-BY-ID;SUCCESS/FAILURE;PERMISSION
+     * @return The statistics of the server
+     */
+    public String getUserPermissionById(){
+        return userDao.getUserPermissionById(messageParts, message);
+    }
+
+    /**
      * This method allow to add a message to the database
-     * Message format : SEND-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
-     * Response format : SEND-MESSAGE;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
+     * Message format : ADD-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
+     * Response format : ADD-MESSAGE;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
      * @return SUCCESS if the message is added, FAILURE otherwise
      */
     public String addMessageToDatabase() {
@@ -203,8 +220,8 @@ public class MessageAnalyser {
 
     /**
      *  This method allow to get all the messages for a user
-     *  Message format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID
-     *  Response format : GET-MESSAGE-FOR-USER;SENDER_USER_ID;RECEIVER_USER_ID;CONTENT;TIMESTAMP
+     *  Message format : LIST-MESSAGES-BETWEEN-USERS;SENDER_USER_ID;RECEIVER_USER_ID
+     *  Response format : LIST-MESSAGES-BETWEEN-USERS;SENDER_USER_ID;RECEIVER_USER_ID;CONTENT;TIMESTAMP
      *  @return The messages for a user
      */
     public String listMessagesBetweenUsers() {
@@ -213,8 +230,8 @@ public class MessageAnalyser {
 
     /**
      * This method allow to add a log to the database
-     * Message format : SEND-LOG;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
-     * Response format : SEND-LOG;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
+     * Message format : ADD-LOG;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT
+     * Response format : ADD-LOG;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
      * @return SUCCESS if the log is added, FAILURE otherwise
      */
     public String addLogToDatabase(){
@@ -223,8 +240,8 @@ public class MessageAnalyser {
 
     /**
      * This method allow to change the status of a user
-     * Message format : CHANGE-USER-STATUS;USER_ID;NEW_STATUS
-     * Response format : CHANGE-USER-STATUS;SUCCESS/FAILURE
+     * Message format : LIST-LOGS-FOR-USER;USER_ID
+     * Response format : LIST-LOGS-FOR-USER;SUCCESS/FAILURE;SENDER_ID;RECEIVER_ID;CONTENT;TIMESTAMP
      * @return SUCCESS if the status is changed, FAILURE otherwise
      */
     public String listLogsForUser(){
