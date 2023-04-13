@@ -56,12 +56,12 @@ public class LoginForm extends JDialog {
                 String password = String.valueOf(passwordField.getPassword());
 
                 user = getAuthenticatedUser(username, password);
-
                 // If user password and ID are correct :
                 if (user != null) {
                     // Set client to logged
                     Client.setClientIsLogged(true);
                     Client.setClientID(user.getId());
+                    System.out.println(user.getId());
                     ViewManagement.setCurrentDisplay(2);
                     dispose();
                 }
@@ -137,6 +137,17 @@ public class LoginForm extends JDialog {
     }
 
 
-
-
+    @Override
+    public String toString() {
+        return "LoginForm{" +
+                "user=" + user +
+                ", userNameField=" + userNameField +
+                ", passwordField=" + passwordField +
+                ", btnLogin=" + btnLogin +
+                ", btnCancel=" + btnCancel +
+                ", loginForm=" + loginForm +
+                ", clickToRegisterAButton=" + clickToRegisterAButton +
+                ", serverConnection=" + serverConnection +
+                '}';
+    }
 }

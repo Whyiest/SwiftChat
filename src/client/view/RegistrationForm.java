@@ -16,7 +16,6 @@ public class RegistrationForm extends JDialog {
     private JTextField textFieldEmail;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
-
     private ServerConnection serverConnection;
     private JButton btnRegister;
     private JButton btnCancel;

@@ -21,7 +21,7 @@ public class Client {
         boolean oneTimeCall = false;
 
         // Create basics objects
-        ServerConnection serverConnection = new ServerConnection("localhost", 5000);
+        ServerConnection serverConnection = new ServerConnection("localhost", 3000);
         ViewManagement viewApp = new ViewManagement(serverConnection);
 
         // Code to execute when the program is closed
@@ -64,6 +64,14 @@ public class Client {
      */
     public static void setClientID(int id) {
         clientID = id;
+    }
+
+    /**
+     * get client ID
+     * @return
+     */
+    public static int getClientID() {
+        return clientID;
     }
 
     /**

@@ -61,9 +61,10 @@ public class User {
      * @param lastConnectionTime The last connection time of the user
      * @param isBanned If the user is banned or not
      */
-    public User (String userName, String firstName, String lastName, String email, String password, String permission, LocalDateTime lastConnectionTime, boolean isBanned, String status) {
+    public User (int id,String userName, String firstName, String lastName, String email, String password, String permission, LocalDateTime lastConnectionTime, boolean isBanned, String status) {
         this.permission = permission;
         this.mail = email;
+        this.id=id;
         this.lastName = lastName;
         this.firstName = firstName;
         this.userName = userName;
@@ -172,7 +173,21 @@ public class User {
         return userName + ";" + firstName + ";" + lastName + ";" + mail + ";" + password + ";" + permission + ";" + lastConnectionTime + ";" + isBanned + ";" + status;
     }
 
-
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", status='" + status + '\'' +
+                ", permission='" + permission + '\'' +
+                ", mail='" + mail + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", isBanned=" + isBanned +
+                ", lastConnectionTime=" + lastConnectionTime +
+                '}';
+    }
 }
 
 

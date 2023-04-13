@@ -1,5 +1,6 @@
 package client.view;
 
+import client.Client;
 import client.clientModel.User;
 import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
@@ -103,7 +104,9 @@ public class ConversationWindow extends JDialog {
         userPanel.setBackground(Color.GRAY);
         userPanel.add(createBackButton(), BorderLayout.WEST);
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
-        userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
+        if(isModeratorOrAdmin()){
+            userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
+        }
         return userPanel;
     }
 
@@ -166,9 +169,21 @@ public class ConversationWindow extends JDialog {
     private JButton createMoreOptionsButton() {
         JButton moreOptionsButton = new JButton("...");
         moreOptionsButton.setPreferredSize(new Dimension(50, 30));
+        moreOptionsButton.addActionListener(e -> {
+            ViewManagement.setCurrentDisplay(4);
+            closeConversationWindow();
+        });
         return moreOptionsButton;
     }
-
+    public boolean isModeratorOrAdmin(){
+        String serverResponse =this.serverConnection.getUserByID(Client.getClientID());
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        User user = responseAnalyser.extractUser();
+        if(user.getPermission().equals("MODERATOR")||user.getPermission().equals("ADMIN")){
+            return true;
+        }
+        return false;
+    }
     /**
      * Create the button panel
      * @return the button panel

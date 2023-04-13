@@ -1,9 +1,9 @@
 package client.clientModel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PiePlot;
-import org.jfree.data.general.DefaultPieDataset;
+//import org.jfree.chart.ChartFactory;
+//import org.jfree.chart.ChartUtilities;
+//import org.jfree.chart.JFreeChart;
+//import org.jfree.chart.plot.PiePlot;
+//import org.jfree.data.general.DefaultPieDataset;
 
 import java.awt.*;
 import java.io.File;
@@ -69,10 +69,13 @@ public class ResponseAnalyser {
      * @return the user
      */
     public User extractUser() {
+        if(messageParts[1].equals("FAILURE")){
+            return null;
+        }else{
+            User myUser = new User(Integer.parseInt(messageParts[1]),messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], messageParts[7], LocalDateTime.parse(messageParts[8]), Boolean.parseBoolean(messageParts[9]), messageParts[10]);
+            return myUser;
 
-        User myUser = new User(messageParts[1], messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], LocalDateTime.parse(messageParts[7]), Boolean.parseBoolean(messageParts[8]), messageParts[9]);
-
-        return myUser;
+        }
     }
 
     /**

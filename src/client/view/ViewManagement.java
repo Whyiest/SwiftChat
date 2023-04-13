@@ -9,6 +9,7 @@ public class ViewManagement implements Runnable {
      public RegistrationForm registrationForm; /// REGISTER 1
      public ContactWindow contactForm; // CONTACT 2
      public ConversationWindow conversationForm; // CHAT 3
+     public BanUserFrame banUserFrame; // BAN 4
      public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow
      public static User chattingWithThisUser; // If you chat with someone, his user ID is here
      public static boolean alreadyDisplay;
@@ -59,6 +60,14 @@ public class ViewManagement implements Runnable {
                               alreadyDisplay = true;
                               this.conversationForm = new ConversationWindow(null, serverConnection, chattingWithThisUser, contactForm.getSize());
                               conversationForm.openConversationWindow();
+                         }
+                    }
+                    case 4 -> { // Ban user
+
+                         if (!alreadyDisplay) {
+                              alreadyDisplay = true;
+                              this.banUserFrame = new BanUserFrame(conversationForm, serverConnection, chattingWithThisUser);
+                              banUserFrame.openBanWindow();
                          }
                     }
                     default -> System.out.println("Invalid choice");

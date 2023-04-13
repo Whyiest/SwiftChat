@@ -333,7 +333,7 @@ public class UserDao {
 
         // Create an SQL statement to select a user based on their id
         String sql = "SELECT * FROM USER WHERE ID = ?";
-        String serverResponse = "";
+        String serverResponse = "GET-USER-BY-ID;";
 
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
