@@ -71,25 +71,28 @@ public class MessageAnalyser {
                 case "LOGIN" -> serverResponse = logIn();
                 case "LOGOUT" -> serverResponse = logOut();
 
-                case "ADD-USER" -> serverResponse = addUserToDatabase(); // working
-                case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission(); // working
-                case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus(); // working
-                case "CHANGE-BAN-STATUS" -> serverResponse = changeBanStatus();  //  working
-                case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();  // working
-                case "GET-USER-BY-ID" -> serverResponse = getUserById();  // working
-                case "GET-USER-PERMISSION-BY-ID" -> serverResponse = getUserPermissionById();  // working
-                case "LIST-ALL-USERS" -> serverResponse = listAllUsers();  // working
+                case "ADD-USER" -> serverResponse = addUserToDatabase();
+                case "CHANGE-USER-PERMISSION" -> serverResponse = changeUserPermission();
+                case "CHANGE-USER-STATUS" -> serverResponse = changeUserStatus();
+                case "CHANGE-BAN-STATUS" -> serverResponse = changeBanStatus();
+                case "UPDATE-LAST-CONNECTION-TIME" -> serverResponse = updateLastConnectionTime();
+                case "GET-USER-BY-ID" -> serverResponse = getUserById();
+                case "GET-USER-PERMISSION-BY-ID" -> serverResponse = getUserPermissionById();
+                case "LIST-ALL-USERS" -> serverResponse = listAllUsers();
 
-                case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase(); // working
-                case "LIST-MESSAGES-BETWEEN-USERS" -> serverResponse = listMessagesBetweenUsers();  // working
+                case "ADD-MESSAGE" -> serverResponse = addMessageToDatabase();
+                case "LIST-MESSAGES-BETWEEN-USERS" -> serverResponse = listMessagesBetweenUsers();
 
-                case "ADD-LOG" -> serverResponse = addLogToDatabase(); // working
-                case "LIST-LOGS-FOR-USER" -> serverResponse = listLogsForUser();  // working
+                case "ADD-LOG" -> serverResponse = addLogToDatabase();
+                case "LIST-LOGS-FOR-USER" -> serverResponse = listLogsForUser();
 
-                case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();  // working
-                case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();  // working
-                case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();  // working
-                case "GET-TOP-USERS" -> serverResponse = getTopUsers();  // working
+                case "GET-STATUS-STATISTICS" -> serverResponse = getStatusStatistics();
+                case "GET-PERMISSION-STATISTICS" -> serverResponse = getPermissionStatistics();
+                case "GET-BAN-STATISTICS" -> serverResponse = getBanStatistics();
+                case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();
+                case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();
+                case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();
+                case "GET-TOP-USERS" -> serverResponse = getTopUsers();
 
                 case "TEST" -> serverResponse = "[!] Test is working, received : " + messageParts[1];
 
@@ -246,6 +249,36 @@ public class MessageAnalyser {
      */
     public String listLogsForUser(){
         return logDao.listAllLogsForUser(messageParts, message);
+    }
+
+    /**
+     * This method allow to get all the logs statistics
+     * Message format : GET-LOGS-STATISTICS
+     * Response format : GET-LOGS-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_OFFLINE_LOGS;NUMBER_OF_ONLINE_LOGS;NUMBER_OF_AWAY_LOGS
+     * @return The status statistics
+     */
+    public String getStatusStatistics(){
+        return logDao.getStatusStatistics(message);
+    }
+
+    /**
+     * This method allow to get all the permission statistics
+     * Message format : GET-PERMISSION-STATISTICS
+     * Response format : GET-PERMISSION-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_CLASSIC_LOGS;NUMBER_OF_MODERATOR_LOGS;NUMBER_OF_ADMINISTRATOR_LOGS
+     * @return The permission statistics
+     */
+    public String getPermissionStatistics(){
+        return logDao.getPermissionStatistics(message);
+    }
+
+    /**
+     * This method allow to get all the ban statistics
+     * Message format : GET-BAN-STATISTICS
+     * Response format : GET-BAN-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_NON_BANNED_USERS;NUMBER_OF_BANNED_USERS
+     * @return The ban statistics
+     */
+    public String getBanStatistics(){
+        return logDao.getBanStatistics(message);
     }
 
     /**

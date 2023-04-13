@@ -110,6 +110,124 @@ public class LogDao {
         }
     }
 
+    /**
+     * This method allow to get all logs for a user
+     *
+     * @param message The message
+     * @return The server response
+     */
+    public String getStatusStatistics(String message) {
+        // Create an SQL statement to get all the logs relating to a user status from the database
+        String sql = "SELECT\n" +
+                "    SUM(CASE WHEN l.TYPE = 'OFFLINE' THEN 1 ELSE 0 END) AS OFFLINE_COUNT,\n" +
+                "    SUM(CASE WHEN l.TYPE = 'ONLINE' THEN 1 ELSE 0 END) AS ONLINE_COUNT,\n" +
+                "    SUM(CASE WHEN l.TYPE = 'AWAY' THEN 1 ELSE 0 END) AS AWAY_COUNT\n" +
+                "FROM\n" +
+                "    LOG l\n" +
+                "    INNER JOIN (\n" +
+                "        SELECT USER_ID, MAX(TIMESTAMP) AS MAX_TIMESTAMP\n" +
+                "        FROM LOG\n" +
+                "        GROUP BY USER_ID\n" +
+                "    ) t\n" +
+                "    ON l.USER_ID = t.USER_ID AND l.TIMESTAMP = t.MAX_TIMESTAMP;\n";
+
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) {
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    serverResponse += rs.getInt("OFFLINE_COUNT") + ";" + rs.getInt("ONLINE_COUNT") + ";" + rs.getInt("AWAY_COUNT");
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while analyzing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use: [GET-STATUS-STATISTICS]");
+            return "GET-STATUS-STATISTICS;FAILURE";
+        }
+    }
+
+    /**
+     * This method allow to get all logs for a user
+     *
+     * @param message The message
+     * @return The server response
+     */
+    public String getPermissionStatistics(String message){
+        // Create an SQL statement to get all the logs relating to a user permission from the database
+        String sql = "SELECT\n" +
+                "    SUM(CASE WHEN l.TYPE = 'CLASSIC' THEN 1 ELSE 0 END) AS CLASSIC_COUNT,\n" +
+                "    SUM(CASE WHEN l.TYPE = 'MODERATOR' THEN 1 ELSE 0 END) AS MODERATOR_COUNT,\n" +
+                "    SUM(CASE WHEN l.TYPE = 'ADMINISTRATOR' THEN 1 ELSE 0 END) AS ADMINISTRATOR_COUNT\n" +
+                "FROM\n" +
+                "    LOG l\n" +
+                "    INNER JOIN (\n" +
+                "        SELECT USER_ID, MAX(TIMESTAMP) AS MAX_TIMESTAMP\n" +
+                "        FROM LOG\n" +
+                "        GROUP BY USER_ID\n" +
+                "    ) t\n" +
+                "    ON l.USER_ID = t.USER_ID AND l.TIMESTAMP = t.MAX_TIMESTAMP;\n";
+
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) {
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    serverResponse += rs.getInt("CLASSIC_COUNT") + ";" + rs.getInt("MODERATOR_COUNT") + ";" + rs.getInt("ADMINISTRATOR_COUNT");
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while analyzing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use: [GET-PERMISSION-STATISTICS]");
+            return "GET-PERMISSION-STATISTICS;FAILURE";
+        }
+    }
+
+    /**
+     * This method allow to get all logs for a user
+     *
+     * @param message The message
+     * @return The server response
+     */
+    public String getBanStatistics(String message){
+        // Create an SQL statement to get all the logs relating to a user ban from the database
+        String sql = "SELECT \n" +
+                "    COUNT(DISTINCT CASE WHEN TYPE = 'BANNED' THEN USER_ID END) AS BANNED_COUNT,\n" +
+                "    COUNT(DISTINCT USER_ID) - COUNT(DISTINCT CASE WHEN TYPE = 'BANNED' THEN USER_ID END) AS NON_BANNED_COUNT\n" +
+                "FROM LOG;\n";
+
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) {
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    serverResponse += rs.getInt("NON_BANNED_COUNT") + ";" + rs.getInt("BANNED_COUNT");
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while analyzing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use: [GET-BAN-STATISTICS]");
+            return "GET-BAN-STATISTICS;FAILURE";
+        }
+    }
+
     public String getUsersStatistics(String[] messageParts, String message){
 
         // Linking message parts to variables

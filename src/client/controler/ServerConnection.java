@@ -392,6 +392,33 @@ public class ServerConnection implements Runnable {
     }
 
     /**
+     * List all statistics related to Status Logs for the server
+     *
+     * @return the list of all the statistics in String format
+     */
+    public String getStatusStatistics() {
+        return sendToServer("GET-STATUS-STATISTICS");
+    }
+
+    /**
+     * List all statistics related to Permission Logs for the server
+     *
+     * @return the list of all the statistics in String format
+     */
+    public String getPermissionStatistics(){
+        return sendToServer("GET-PERMISSION-STATISTICS");
+    }
+
+    /**
+     * List all statistics related to Ban Logs for the server
+     *
+     * @return the list of all the statistics in String format
+     */
+    public String getBanStatistics(){
+        return sendToServer("GET-BAN-STATISTICS");
+    }
+
+    /**
      * List all statistics related to Messages for the server
      *
      * @return the list of all the statistics in String format

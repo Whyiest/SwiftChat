@@ -3,6 +3,7 @@ import client.controler.ServerConnection;
 import client.view.ViewManagement;
 
 import javax.swing.text.View;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Client {
