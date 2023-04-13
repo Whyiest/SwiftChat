@@ -228,7 +228,6 @@ public class ContactWindow extends JDialog {
 
     public void setButtonVisibility() {
 
-        System.out.println("Changing button visibility");
         // If it's the first page, hide the back button. Minimum page : 2
         if (currentContactPanel == 0 && totalPage > 1) {
             nextPageButton.setVisible(true);
