@@ -6,7 +6,7 @@
       <xy x="20" y="20" width="666" height="461"/>
     </constraints>
     <properties>
-      <background color="-659231"/>
+      <background color="-14474426"/>
       <font name="Courier New" size="28" style="1"/>
     </properties>
     <border type="none"/>
@@ -25,8 +25,8 @@
           <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Courier New" size="48" style="1"/>
-          <foreground color="-14795431"/>
+          <font name="Impact" size="48" style="1"/>
+          <foreground color="-263173"/>
           <text value="Register"/>
         </properties>
       </component>
@@ -35,8 +35,8 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Courier New" size="24" style="1"/>
-          <foreground color="-14795431"/>
+          <font name="Impact" size="24" style="1"/>
+          <foreground color="-263173"/>
           <text value="First Name"/>
         </properties>
       </component>
@@ -47,9 +47,10 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-1"/>
+          <background color="-8424816"/>
           <font name="Courier New" size="24" style="1"/>
           <foreground color="-14795431"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="4a4c8" class="javax.swing.JLabel">
@@ -57,8 +58,8 @@
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Courier New" size="24" style="1"/>
-          <foreground color="-14795431"/>
+          <font name="Impact" size="24" style="1"/>
+          <foreground color="-263173"/>
           <text value="Last Name"/>
         </properties>
       </component>
@@ -69,7 +70,7 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-1"/>
+          <background color="-8424816"/>
           <font name="Courier New" size="24" style="1"/>
           <foreground color="-14795431"/>
         </properties>
@@ -79,8 +80,8 @@
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Courier New" size="24" style="1"/>
-          <foreground color="-14795431"/>
+          <font name="Impact" size="24" style="1"/>
+          <foreground color="-263173"/>
           <text value="Username"/>
         </properties>
       </component>
@@ -91,7 +92,7 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-1"/>
+          <background color="-8424816"/>
           <font name="Courier New" size="24" style="1"/>
           <foreground color="-14795431"/>
         </properties>
@@ -101,8 +102,9 @@
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Courier New" size="24" style="1"/>
-          <foreground color="-14795431"/>
+          <enabled value="false"/>
+          <font name="Impact" size="24" style="1"/>
+          <foreground color="-263173"/>
           <text value="Email"/>
         </properties>
       </component>
@@ -113,7 +115,7 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-1"/>
+          <background color="-8424816"/>
           <font name="Courier New" size="24" style="1"/>
           <foreground color="-14795431"/>
         </properties>
@@ -123,8 +125,8 @@
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Courier New" size="24" style="1"/>
-          <foreground color="-14795431"/>
+          <font name="Impact" size="24" style="1"/>
+          <foreground color="-263173"/>
           <text value="Password"/>
         </properties>
       </component>
@@ -135,9 +137,10 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-1"/>
+          <background color="-8424816"/>
           <font name="Courier New" size="24" style="1"/>
           <foreground color="-14795431"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="e2e35" class="javax.swing.JLabel">
@@ -145,8 +148,8 @@
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Courier New" size="24" style="1"/>
-          <foreground color="-14795431"/>
+          <font name="Impact" size="24" style="1"/>
+          <foreground color="-263173"/>
           <text value="Confirm Password"/>
         </properties>
       </component>
@@ -157,7 +160,7 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-1"/>
+          <background color="-8424816"/>
           <font name="Courier New" size="24" style="1"/>
           <foreground color="-14795431"/>
           <text value=""/>
@@ -168,9 +171,9 @@
           <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-1"/>
-          <font name="Courier New" size="20" style="1"/>
-          <foreground color="-14795431"/>
+          <background color="-8424816"/>
+          <font name="Impact" size="20" style="1"/>
+          <foreground color="-263173"/>
           <text value="Register"/>
         </properties>
       </component>
@@ -179,9 +182,9 @@
           <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-1"/>
-          <font name="Courier New" size="20" style="1"/>
-          <foreground color="-14795431"/>
+          <background color="-8424816"/>
+          <font name="Impact" size="20" style="1"/>
+          <foreground color="-263173"/>
           <text value="Cancel"/>
         </properties>
       </component>
