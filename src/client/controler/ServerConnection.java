@@ -459,12 +459,30 @@ public class ServerConnection implements Runnable {
     }
 
     /**
+     * List all statistics related to Messages and a specific User ID for the server
+     *
+     * @return the list of all the statistics in String format
+     */
+    public String getMessagesStatisticsByUserId(){
+        return sendToServer("GET-MESSAGES-STATISTICS-BY-USER-ID");
+    }
+
+    /**
      * List all statistics related to Connections for the server
      *
      * @return the list of all the statistics in String format
      */
     public String getConnectionsStatistics() {
         return sendToServer("GET-CONNECTIONS-STATISTICS");
+    }
+
+    /**
+     * List all statistics related to Connections and a specific User ID for the server
+     *
+     * @return the list of all the statistics in String format
+     */
+    public String getConnectionsStatisticsByUserId(){
+        return sendToServer("GET-CONNECTIONS-STATISTICS-BY-USER-ID");
     }
 
     /**
@@ -476,10 +494,16 @@ public class ServerConnection implements Runnable {
         return sendToServer("GET-TOP-USERS");
     }
 
+    /**
+     * Give the most active users
+     *
+     * @return the list of the most active users in String format
+     */
     public String getUserByID (int userID) {
         String serverResponse = sendToServer("GET-USER-BY-ID;" + userID);
         return serverResponse;
     }
+
     /**
      * Send a ping to the server
      *
@@ -489,22 +513,14 @@ public class ServerConnection implements Runnable {
         return sendToServer("PING");
     }
 
+    /**
+     * Send a signal to the server to leave
+     *
+     * @return the response from the server
+     */
     public String leaveSignal() {
         return sendToServer("LEAVE-SIGNAL");
     }
-
-    /**
-     * Extract the server response to get the different parts
-     *
-     * @param serverResponse the response from the server
-     * @return the different parts of the response
-     */
-
-
-
-
-
-
-    }
+}
 
 
