@@ -35,12 +35,17 @@ public class LoginForm extends JDialog {
 
         // Create the form :
         setTitle("Login Form");
-        setLocationRelativeTo(parent);
+        //setLocationRelativeTo(null);
         setContentPane(loginForm);
         setMinimumSize(new Dimension(700, 600));
         setModal(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         clickToRegisterAButton.setBorderPainted(false);
+        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+        int width=(screenSize.width - getWidth())/2;
+        int height=(screenSize.height - getHeight())/2;
+        setLocation(width, height);
+
 
         // FIELD TEXT
         btnLogin.addActionListener(new ActionListener() {
