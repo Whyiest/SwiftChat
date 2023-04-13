@@ -41,7 +41,7 @@ public class ServerConnection implements Runnable {
         while (running) {
             try {
                 // Wait 1 second before checking connection
-                Thread.sleep(1000);
+                Thread.sleep(2000);
 
                 // If connection is lost, try to reconnect
                 if (!checkConnection()) {

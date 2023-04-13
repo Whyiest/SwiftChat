@@ -1,5 +1,6 @@
 package client.view;
 
+import client.clientModel.Message;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
@@ -21,11 +22,19 @@ public class ContactWindow extends JDialog {
     private User[] listCurrentDisplayedUsers;
     private int totalPage;
     private int currentContactPanel;
+    private JButton backPageButton;
+    private JButton nextPageButton;
+    private JButton firstPageButton;
+    private JButton lastPageButton;
+
+    private JPanel contactsPanel;
+    private JPanel mainPanel;
+    private JPanel buttonPanel;
 
     /**
      * Constructor
      *
-     * @param parent           the parent frame
+     * @param parent the parent frame
      * @param serverConnection the server connection
      */
     public ContactWindow(JFrame parent, ServerConnection serverConnection) {
@@ -45,13 +54,14 @@ public class ContactWindow extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setSize(previousSize);
         setLocationRelativeTo(parent);
+
         initComponents();
 
         // CLOSING
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                dispose();
+                closeContactWindow();
             }
         });
     }
@@ -77,23 +87,77 @@ public class ContactWindow extends JDialog {
     public void initComponents() {
 
         // Init pannel objects :
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new JPanel(new BorderLayout());
         CardLayout cardLayout = new CardLayout();
-        JPanel contactsPanel = new JPanel(cardLayout);
+        contactsPanel = new JPanel(cardLayout);
 
+        buttonPanel = new JPanel(new FlowLayout());
+
+        nextPageButton = new JButton("⬇");
+        backPageButton = new JButton("⬆");
+        firstPageButton = new JButton("<<");
+        lastPageButton = new JButton(">>");
+
+        // Add parent panel to the window
         add(mainPanel);
-        mainPanel.add(contactsPanel, BorderLayout.CENTER);
+
+        // Create the next and previous buttons for the current page
+
+        // Initially, on cache les deux boutons
+        nextPageButton.setVisible(true);
+        backPageButton.setVisible(true);
+        firstPageButton.setVisible(true);
+        lastPageButton.setVisible(true);
+
+        // Button to scroll down
+        nextPageButton.addActionListener(e -> {
+            cardLayout.next(contactsPanel);
+            currentContactPanel++;
+            setButtonVisibility();
+            mainPanel.repaint();
+        });
+
+        // Button to scroll up
+        backPageButton.addActionListener(e -> {
+            cardLayout.previous(contactsPanel);
+            currentContactPanel--;
+            setButtonVisibility();
+            mainPanel.repaint();
+        });
 
 
-        // Listing all users
+        // Button to go to the first page
+        firstPageButton.addActionListener(e -> {
+            cardLayout.first(contactsPanel);
+            currentContactPanel = 0;
+            setButtonVisibility();
+            mainPanel.repaint();
+        });
+
+        // Button to go to the next page
+        lastPageButton.addActionListener(e -> {
+            cardLayout.last(contactsPanel);
+            currentContactPanel = totalPage - 1;
+            setButtonVisibility();
+            mainPanel.repaint();
+        });
+
+        // Ajout des boutons au panel
+        buttonPanel.add(nextPageButton);
+        buttonPanel.add(backPageButton);
+        buttonPanel.add(firstPageButton);
+        buttonPanel.add(lastPageButton);
+
+        // Total page :
         String serverResponse = serverConnection.listAllUsers();
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
         listAllUsers = responseAnalyser.createUserList();
-        //System.out.println(totalPage);
-        // Total page :
-        totalPage = (int) Math.ceil(((double) listAllUsers.size() - 1 )/ userPerPage);
-        //System.out.println(totalPage);
 
+        totalPage = (int) Math.ceil((double) listAllUsers.size() / userPerPage);
+
+        // Add the others panel to the main panel
+        mainPanel.add(contactsPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // For each range of 12 users displayed :
         for (int currentPage = 0; currentPage < totalPage; currentPage++) {
@@ -103,7 +167,6 @@ public class ContactWindow extends JDialog {
 
             // Add the current page number to the contacts panel
             contactsPanel.add(pagePanel, "Page " + currentPage);
-
 
             // For each user in the current page, add a contact button to the grid layout
 
@@ -159,63 +222,41 @@ public class ContactWindow extends JDialog {
                     pagePanel.add(contactCard);
                 }
             }
-            // Setting bottom arrow if we are on first page AND there is another page
-            if (currentPage == 0 && totalPage > 1) {
-                // Button to scroll down
-                // System.out.println(currentPage);
-                JButton nextPageButton = new JButton("⬇");
-                nextPageButton.addActionListener(e ->
-                        cardLayout.next(contactsPanel)
-                );
-                mainPanel.add(nextPageButton, BorderLayout.SOUTH);
-            }
-
-            // If we are between two pages
-            if (currentPage != (totalPage - 1) && currentPage != 0 && totalPage > 2) {
-                //System.out.println(currentPage);
-
-                JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
-
-                // Button to scroll down
-                JButton nextPageButton = new JButton("⬇");
-                nextPageButton.addActionListener(e -> cardLayout.next(contactsPanel));
-                buttonPanel.add(nextPageButton);
-
-                // Button to scroll up
-                JButton backPageButton = new JButton("⬆");
-                backPageButton.addActionListener(e -> cardLayout.previous(contactsPanel));
-                buttonPanel.add(backPageButton);
-
-                // Add buttonPanel to the mainPanel
-                mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-            }
-
-            // If we are at the last page
-            if (currentPage == (totalPage - 1)) {
-                //System.out.println(currentPage);
-
-                // Button to scroll down
-                JButton nextPageButton = new JButton("⬆");
-                nextPageButton.addActionListener(e ->
-                        cardLayout.next(contactsPanel)
-                );
-                mainPanel.add(nextPageButton, BorderLayout.SOUTH);
-            }
-            mainPanel.revalidate(); // actualise la mise en page
-            contactsPanel.repaint(); // actualise l'affichage
-
-
         }
-
+        setButtonVisibility();
     }
 
+    public void setButtonVisibility() {
 
-    /**
-     * Get the initials of a name
-     *
-     * @param name the name
-     * @return the initials
-     */
+        System.out.println("Changing button visibility");
+        // If it's the first page, hide the back button. Minimum page : 2
+        if (currentContactPanel == 0 && totalPage > 1) {
+            nextPageButton.setVisible(true);
+            backPageButton.setVisible(false);
+        }
+        // If it's between the first and the last page, show both buttons. Minimum page : 3
+        else if (currentContactPanel != (totalPage-1) && currentContactPanel != 0 && totalPage > 2) {
+            nextPageButton.setVisible(true);
+            backPageButton.setVisible(true);
+        }
+
+        // If it's the last page, hide the next button. Minimum page : 2
+        else if (currentContactPanel == (totalPage - 1) && totalPage > 1 && currentContactPanel < totalPage) {
+            nextPageButton.setVisible(false);
+            backPageButton.setVisible(true);
+        }
+        //If there is only one page, hide both buttons. Maximum page : 1
+        else {
+            nextPageButton.setVisible(false);
+            backPageButton.setVisible(false);
+        }
+    }
+
+        /**
+         * Get the initials of a name
+         * @param name the name
+         * @return the initials
+         */
     public static String getInitials(String name) {
         Matcher m = Pattern.compile("\\b\\w").matcher(name);
         StringBuilder initials = new StringBuilder();

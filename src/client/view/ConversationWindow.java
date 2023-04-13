@@ -27,7 +27,6 @@ public class ConversationWindow extends JDialog {
         super(parent, "SwiftChat", true);
 
         // SETUP
-        this.previousSize = previousSize;
         this.serverConnection = serverConnection;
         this.chattingWithThisUser = user;
 
