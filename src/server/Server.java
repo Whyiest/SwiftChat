@@ -6,8 +6,6 @@ public class Server {
 
 public static void main(String[] args) {
 
-
-
     // Create a connexion hub on port 5000
     ClientConnectionHub myClientConnectionHub = new ClientConnectionHub(3000);
 

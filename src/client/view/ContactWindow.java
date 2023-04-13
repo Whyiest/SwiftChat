@@ -89,9 +89,10 @@ public class ContactWindow extends JDialog {
         String serverResponse = serverConnection.listAllUsers();
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
         listAllUsers = responseAnalyser.createUserList();
-
+        //System.out.println(totalPage);
         // Total page :
-        totalPage = (int) Math.ceil((double) listAllUsers.size() - 1 / userPerPage);
+        totalPage = (int) Math.ceil(((double) listAllUsers.size() - 1 )/ userPerPage);
+        //System.out.println(totalPage);
 
 
         // For each range of 12 users displayed :
@@ -102,8 +103,6 @@ public class ContactWindow extends JDialog {
 
             // Add the current page number to the contacts panel
             contactsPanel.add(pagePanel, "Page " + currentPage);
-
-            System.out.println(listAllUsers.size());
 
 
             // For each user in the current page, add a contact button to the grid layout
@@ -160,16 +159,56 @@ public class ContactWindow extends JDialog {
                     pagePanel.add(contactCard);
                 }
             }
+            // Setting bottom arrow if we are on first page AND there is another page
+            if (currentPage == 0 && totalPage > 1) {
+                // Button to scroll down
+                // System.out.println(currentPage);
+                JButton nextPageButton = new JButton("⬇");
+                nextPageButton.addActionListener(e ->
+                        cardLayout.next(contactsPanel)
+                );
+                mainPanel.add(nextPageButton, BorderLayout.SOUTH);
+            }
+
+            // If we are between two pages
+            if (currentPage != (totalPage - 1) && currentPage != 0 && totalPage > 2) {
+                //System.out.println(currentPage);
+
+                JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+
+                // Button to scroll down
+                JButton nextPageButton = new JButton("⬇");
+                nextPageButton.addActionListener(e -> cardLayout.next(contactsPanel));
+                buttonPanel.add(nextPageButton);
+
+                // Button to scroll up
+                JButton backPageButton = new JButton("⬆");
+                backPageButton.addActionListener(e -> cardLayout.previous(contactsPanel));
+                buttonPanel.add(backPageButton);
+
+                // Add buttonPanel to the mainPanel
+                mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+            }
+
+            // If we are at the last page
+            if (currentPage == (totalPage - 1)) {
+                //System.out.println(currentPage);
+
+                // Button to scroll down
+                JButton nextPageButton = new JButton("⬆");
+                nextPageButton.addActionListener(e ->
+                        cardLayout.next(contactsPanel)
+                );
+                mainPanel.add(nextPageButton, BorderLayout.SOUTH);
+            }
+            mainPanel.revalidate(); // actualise la mise en page
+            contactsPanel.repaint(); // actualise l'affichage
+
 
         }
 
-        // Button to scroll down
-        JButton nextPageButton = new JButton("⬇");
-        nextPageButton.addActionListener(e ->
-                        cardLayout.next(contactsPanel)
-        );
-        mainPanel.add(nextPageButton, BorderLayout.SOUTH);
     }
+
 
     /**
      * Get the initials of a name

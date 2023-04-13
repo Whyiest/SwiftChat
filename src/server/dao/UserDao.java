@@ -475,10 +475,9 @@ public class UserDao {
     public String logIn(String[] messageParts, String message){
 
         // Linking message parts to variables
-        String username = "";
-        String password = "";
-        String userLastConnectionTime = LocalDateTime.now().toString();
-        int userId = 0;
+        String username;
+        String password;
+        int userId;
 
         try{
             username = messageParts[1];
