@@ -36,35 +36,35 @@ public class ViewManager implements Runnable {
                 case 0 -> { // LOGIN
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        loginForm = new LoginForm(null, serverConnection);
+                        loginForm = new LoginForm(null, serverConnection,700,600);
                         loginForm.openLoginWindow();
                     }
                 }
                 case 1 -> { // REGISTER
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.registrationForm = new RegistrationForm(null, serverConnection);
+                        this.registrationForm = new RegistrationForm(null, serverConnection,700,600);
                         registrationForm.openRegisterWindow();
                     }
                 }
                 case 2 -> { // CONTACT
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        contactForm = new ContactWindow(null, serverConnection);
+                        contactForm = new ContactWindow(null, serverConnection,700,600);
                         contactForm.openContactWindow();
                     }
                 }
                 case 3 -> { // CHAT
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.conversationForm = new ConversationWindow(null, serverConnection, chattingWithThisUser, contactForm.getSize());
+                        this.conversationForm = new ConversationWindow(null, serverConnection, chattingWithThisUser,700,600);
                         conversationForm.openConversationWindow();
                     }
                 }
                 case 4 -> { // Ban user
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.optionsWindow = new OptionsWindow(conversationForm, serverConnection, chattingWithThisUser);
+                        this.optionsWindow = new OptionsWindow(conversationForm, serverConnection, chattingWithThisUser,300,200);
                         optionsWindow.openOptionWindow();
                     }
                 }

@@ -14,10 +14,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ContactWindow extends JDialog {
-    private static final Dimension previousSize = new Dimension(550, 600);
     private final ServerConnection serverConnection;
     private List<User> listAllUsers;
     private final int userPerPage;
+    private User[][] usersPerPage;
+
     private User[] listCurrentDisplayedUsers;
     private int totalPage;
     private int currentContactPanel;
@@ -36,7 +37,7 @@ public class ContactWindow extends JDialog {
      * @param parent           the parent frame
      * @param serverConnection the server connection
      */
-    public ContactWindow(JFrame parent, ServerConnection serverConnection) {
+    public ContactWindow(JFrame parent, ServerConnection serverConnection,int width, int height) {
 
         super(parent);
 
@@ -51,8 +52,10 @@ public class ContactWindow extends JDialog {
         setTitle("Contacts");
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setSize(previousSize);
+        setSize(new Dimension(width,height));
         setLocationRelativeTo(parent);
+
+        usersPerPage = null;
 
         initComponents();
 
@@ -164,7 +167,11 @@ public class ContactWindow extends JDialog {
             }
         } while (listAllUsers.size() == 0);
 
+
         totalPage = (int) Math.ceil((double) listAllUsers.size() / userPerPage);
+        usersPerPage = new User[totalPage][userPerPage];
+
+
 
         // Add the others panel to the main panel
         mainPanel.add(contactsPanel, BorderLayout.CENTER);
@@ -190,6 +197,8 @@ public class ContactWindow extends JDialog {
                     User user = listAllUsers.get(currentUserIterator + (currentPage * userPerPage));
                     String fullName = user.getFirstName() + " " + user.getLastName();
                     listCurrentDisplayedUsers[currentUserIterator] = user;
+                    usersPerPage[currentPage][currentUserIterator] = user;
+
 
                     // Create a contact panel
                     JPanel contactCard = new JPanel(new BorderLayout());
@@ -218,7 +227,7 @@ public class ContactWindow extends JDialog {
                     // Allow event to be start in the button
                     int finalCurrentUserIterator = currentUserIterator;
                     contactButton.addActionListener(e -> {
-                        ViewManager.setChattingWithUser(listCurrentDisplayedUsers[finalCurrentUserIterator]);
+                        ViewManager.setChattingWithUser(usersPerPage[currentContactPanel][finalCurrentUserIterator]);
                         ViewManager.setCurrentDisplay(3);
                         dispose();
                     });

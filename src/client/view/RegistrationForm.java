@@ -24,7 +24,7 @@ public class RegistrationForm extends JDialog {
      * @param parent the parent frame
      * @param serverConnection the server connection
      */
-    public RegistrationForm(JFrame parent, ServerConnection serverConnection){
+    public RegistrationForm(JFrame parent, ServerConnection serverConnection,int width, int height){
         super(parent);
 
         this.serverConnection = serverConnection;
@@ -33,7 +33,7 @@ public class RegistrationForm extends JDialog {
 
         setTitle("Registration Form");
         setContentPane(registerPanel);
-        setMinimumSize(new Dimension(700,600));
+        setMinimumSize(new Dimension(width,height));
         setModal(true);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
