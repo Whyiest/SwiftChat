@@ -19,13 +19,13 @@ public class OptionsWindow extends JDialog {
     private final ServerConnection serverConnection;
     User userChattingWith;
 
-    public OptionsWindow(JDialog parent, ServerConnection serverConnection, User userChattingWith) {
+    public OptionsWindow(JDialog parent, ServerConnection serverConnection, User userChattingWith, int width, int height) {
 
         super(parent, "User option", true);
         this.serverConnection = serverConnection;
         this.userChattingWith = userChattingWith;
         setTitle("Ban User");
-        setSize(300, 200);
+        setSize(width, height);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(parent);
 

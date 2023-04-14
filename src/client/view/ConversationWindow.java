@@ -13,7 +13,8 @@ public class ConversationWindow extends JDialog {
     private JTextField messageField;
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
-    private Dimension previousSize;
+
+    private static Dimension previousSize ;
 
     /**
      * Constructor
@@ -22,7 +23,7 @@ public class ConversationWindow extends JDialog {
      * @param serverConnection the server connection
      * @param user             the user
      */
-    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user, Dimension previousSize) {
+    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user,int width,int height ) {
 
         super(parent, "SwiftChat", true);
 
@@ -31,7 +32,8 @@ public class ConversationWindow extends JDialog {
         this.chattingWithThisUser = user;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(previousSize);
+        setSize(new Dimension(width,height));
+        this.previousSize=new Dimension(width,height);
         setLocationRelativeTo(parent);
 
         try {

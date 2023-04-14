@@ -28,7 +28,7 @@ public class LoginForm extends JDialog {
      * @param parent the parent frame
      * @param serverConnection the server connection
      */
-    public LoginForm(JFrame parent, ServerConnection serverConnection) {
+    public LoginForm(JFrame parent, ServerConnection serverConnection,int width,int height) {
 
         super(parent);
 
@@ -38,14 +38,14 @@ public class LoginForm extends JDialog {
         setTitle("Login Form");
         //setLocationRelativeTo(null);
         setContentPane(loginForm);
-        setMinimumSize(new Dimension(700, 600));
+        setMinimumSize(new Dimension(width, height));
         setModal(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         clickToRegisterAButton.setBorderPainted(false);
         Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-        int width=(screenSize.width - getWidth())/2;
-        int height=(screenSize.height - getHeight())/2;
-        setLocation(width, height);
+        int widthh=(screenSize.width - getWidth())/2;
+        int heightt=(screenSize.height - getHeight())/2;
+        setLocation(widthh, heightt);
 
 
         // FIELD TEXT
