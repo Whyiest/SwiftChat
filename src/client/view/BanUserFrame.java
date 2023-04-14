@@ -50,13 +50,13 @@ public class BanUserFrame extends JDialog {
         submitButton = new JButton("Submit");
         submitButton.addActionListener(e -> {
             if(banRadioButton.isSelected()){
-                //System.out.println("Ban the user");
                 userChattingWith.setBanned(true);//ban the user
                 String serverResponse = serverConnection.banUser(userChattingWith.getId(),"true");
                 String serverResponsebis= serverConnection.addLog(userChattingWith.getId(),"BANNED");
                 ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
                 ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponsebis);
-
+                //Client.setIsClientBanned(true);//this bans the wrong user
+                System.out.println("ban work");
 
                 //System.out.println(userChattingWith);
             }else if(unbanRadioButton.isSelected()){
@@ -65,8 +65,8 @@ public class BanUserFrame extends JDialog {
                 String serverResponsebis= serverConnection.addLog(userChattingWith.getId(),"UNBANNED");
                 ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
                 ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponsebis);
-               //System.out.println("NOT banned");
-                //System.out.println(userChattingWith);
+                Client.setIsClientBanned(false);
+                System.out.println("unban work");
             }
             ViewManagement.setCurrentDisplay(3);
             closeBanWindow();
@@ -90,7 +90,10 @@ public class BanUserFrame extends JDialog {
      * @return if the user is banned beforehand
      */
     public boolean checkUserStatus (User user) {
-        return user.isBanned();
+        String serverResponse = serverConnection.getUserByID(user.getId());
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        User users =responseAnalyser.extractUser();
+        return users.isBanned();
     }
 
     /**

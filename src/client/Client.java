@@ -10,7 +10,7 @@ public class Client {
 
     private static int clientID = -1;
     private static boolean clientIsLogged = false;
-
+    private static boolean isClientBanned = false;
 
     /**
      * Main method
@@ -55,6 +55,14 @@ public class Client {
                 viewThread.start();
                 oneTimeCall = true;
             }
+            if (isClientBanned) { //kicks out the banned user and sends logout message
+                serverConnection.sendToServer("LOGOUT;" + clientID);
+                System.out.println("Server ban");
+                System.exit(0);
+                serverConnection.leaveSignal();
+                serverConnection.disconnect();
+            }
+
         }
     }
 
@@ -62,7 +70,13 @@ public class Client {
      *
      * @return the banned or not status of the client
      */
+    public static boolean isClientBanned() {
+        return isClientBanned;
+    }
 
+    public static void setIsClientBanned(boolean isClientBanned) {
+        Client.isClientBanned = isClientBanned;
+    }
 
     /**
      * Set the client ID
