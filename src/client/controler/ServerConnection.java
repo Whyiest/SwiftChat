@@ -2,7 +2,9 @@ package client.controler;
 
 import client.Client;
 import client.clientModel.Message;
+import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
+import server.serverModel.MessageAnalyser;
 
 import java.io.*;
 import java.net.*;
@@ -21,12 +23,24 @@ public class ServerConnection implements Runnable {
     private boolean running = false;
 
     private boolean connected = false;
-    private int retryDelay = 5000; // 5 seconds
+    private final int retryDelay; // 5 seconds
+
+    private final int pingDelay; // Pinging every 2 seconds
+
+    private int iteratorBeforeCheckBan; // Check if the user is banned every 10 pings
+
+    private final int checkForBanDelay;
+
+
 
 
     public ServerConnection(String serverIP, int port) {
         this.port = port;
         this.serverIP = serverIP;
+        this.retryDelay = 5000; // 5 seconds
+        this.pingDelay = 2000; // 2 seconds
+        this.iteratorBeforeCheckBan = 0;
+        this.checkForBanDelay = 3;
     }
 
     /**
@@ -43,7 +57,8 @@ public class ServerConnection implements Runnable {
         while (running) {
             try {
                 // Wait 1 second before checking connection
-                Thread.sleep(2000);
+                Thread.sleep(pingDelay);
+                iteratorBeforeCheckBan ++;
 
                 // If connection is lost, try to reconnect
                 if (!checkConnection()) {
@@ -77,7 +92,7 @@ public class ServerConnection implements Runnable {
         // Reset display
         Client.askForReload();
 
-        // Reset status
+        // Reset status when connection re-established
         if (Client.isClientLogged()) {
             changeStatus(Client.getClientID(), "ONLINE");
         }
@@ -134,38 +149,52 @@ public class ServerConnection implements Runnable {
      */
     public boolean checkConnection() {
 
+        // If the client is connected to the server, we can ping it
         if (clientSocket != null && clientSocket.isConnected()) {
 
-            String serverResponse;
+            String pingResponse;
+            String checkResponse;
+
             // Try to send and receive a message to check the connection
             try {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 writer.println("PING");
                 writer.flush();
-                serverResponse = reader.readLine();
+                pingResponse = reader.readLine();
             } catch (IOException e) {
                 System.out.println("[!] Error during ping request. Maybe the server is down.");
                 return false;
             }
 
-            String[] serverResponseParts = serverResponse.split(";");
+            // Check some times if the user is banned
+            if (iteratorBeforeCheckBan == checkForBanDelay && Client.isClientLogged()) {
 
+                User whoIAm = null;
+
+                iteratorBeforeCheckBan = 0;
+                    try {
+                        checkResponse = getUserByID(Client.getClientID());
+                        ResponseAnalyser responseAnalyser = new ResponseAnalyser(checkResponse);
+                        whoIAm = responseAnalyser.extractUser();
+
+                        if(whoIAm.isBanned()) {
+                            Client.setIsClientBanned(true);
+                        }
+
+                    } catch (Exception e) {
+                        System.out.println("[!] Error while checking if the client is banned. Cannot retrieve client information.");
+                    }
+            }
+
+            // NO RESPONSE : CONNECTION IS DEAD
+            if (pingResponse == null) {
+            }
             // NORMAL RESPONSE : CONNECTION IS ALIVE
-            if (serverResponseParts[0].equals("PONG")) {
+            else if (pingResponse.equals("PONG")) {
                 return true;
             }
-            // BAN UPDATE RESPONSE : CHECK IF WE ARE BANNED
-            else if (serverResponseParts[0].equals("BAN-UPDATE")) {
-
-                int bannedID = Integer.parseInt(serverResponseParts[1]) ;
-
-                // If we are the banned user, we set the client as banned
-                if (Client.isClientLogged() && (bannedID == Client.getClientID())) {
-                    Client.setIsClientBanned(true);
-                }
-            }
-            // NO RESPONSE : CONNECTION IS DEAD
+            // WRONG RESPONSE : CONNECTION IS DEAD
             else {
                 return false;
             }

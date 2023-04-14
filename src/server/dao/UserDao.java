@@ -1,6 +1,8 @@
 package server.dao;
 
+import server.network.ClientConnectionHub;
 import server.network.Database;
+import server.serverModel.MessageAnalyser;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -258,6 +260,7 @@ public class UserDao {
 
                 // Close the prepared statement
                 statement.close();
+
                 return "BAN-USER;SUCCESS";
             } else {
                 // Throw an exception if the connection is closed

@@ -57,6 +57,7 @@ public class Client {
             }
             if (isClientBanned) { //kicks out the banned user and sends logout message
                 System.out.println("[!] Starting logout protocol : client has been banned.");
+
                 clientID = -1;
                 clientIsLogged = false;
                 ViewManager.setCurrentDisplay(0);
@@ -66,7 +67,6 @@ public class Client {
     }
 
     /**
-     *
      * @return the banned or not status of the client
      */
     public static boolean isClientBanned() {
@@ -107,5 +107,26 @@ public class Client {
     }
     public static void askForReload () {
         viewManager.reloadDisplay();
+    }
+
+    public void logout() {
+
+        String logoutResponse = "";
+        String logResponse = "";
+        do {
+            try {
+
+                logoutResponse = serverConnection.logout(clientID);
+                logResponse = serverConnection.addLog(clientID, "LOGOUT");
+
+            } catch (Exception e) {
+                System.out.println("[!] Error while logout... Try again in 1 second.");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+            }
+        } while (logoutResponse.equals("LOGOUT;FAILURE"));
     }
 }

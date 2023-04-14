@@ -86,14 +86,19 @@ public class ClientConnectionHub {
      */
     public void closeConnexion() {
 
+        // Stop accepting new clients
+        waitingForConnection = false;
+
+        // Make all users appear offline
         UserDao myUserDao = new UserDao(myDb);
         myUserDao.disconnectAll();
 
-
-        waitingForConnection = false;
+        // Close all sockets
         for (int i = 0; i < clientManagerList.size(); i++) {
             clientManagerList.get(i).closeConnexion();
         }
+
+        // Disconnect from the database
         myDb.disconnect();
     }
 
