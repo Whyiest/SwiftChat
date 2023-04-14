@@ -4,15 +4,15 @@ import client.clientModel.User;
 import client.controler.ServerConnection;
 
 public class ViewManager implements Runnable {
-     public ServerConnection serverConnection;
-     public LoginForm loginForm; // LOGIN 0
-     public RegistrationForm registrationForm; /// REGISTER 1
-     public ContactWindow contactForm; // CONTACT 2
-     public ConversationWindow conversationForm; // CHAT 3
-     public BanUserFrame banUserFrame; // BAN 4
-     public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage
-     public static User chattingWithThisUser; // If you chat with someone, his user ID is here
-     public static boolean alreadyDisplay;
+    public ServerConnection serverConnection;
+    public LoginForm loginForm; // LOGIN 0
+    public RegistrationForm registrationForm; /// REGISTER 1
+    public ContactWindow contactForm; // CONTACT 2
+    public ConversationWindow conversationForm; // CHAT 3
+    public OptionsWindow optionsWindow; // BAN 4
+    public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage
+    public static User chattingWithThisUser; // If you chat with someone, his user ID is here
+    public static boolean alreadyDisplay;
 
     public User user;
 
@@ -64,8 +64,8 @@ public class ViewManager implements Runnable {
                 case 4 -> { // Ban user
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.banUserFrame = new BanUserFrame(conversationForm, serverConnection, chattingWithThisUser);
-                        banUserFrame.openBanWindow();
+                        this.optionsWindow = new OptionsWindow(conversationForm, serverConnection, chattingWithThisUser);
+                        optionsWindow.openOptionWindow();
                     }
                 }
                 default -> System.out.println("Invalid window");
@@ -96,8 +96,10 @@ public class ViewManager implements Runnable {
         chattingWithThisUser = user;
     }
 
-    public void reloadDisplay(){
-        System.out.println("[!] Trying to reload the display");
+    /**
+     * Reload the display
+     */
+    public void reloadDisplay() {
         alreadyDisplay = false;
     }
 

@@ -56,11 +56,10 @@ public class Client {
                 oneTimeCall = true;
             }
             if (isClientBanned) { //kicks out the banned user and sends logout message
-                serverConnection.sendToServer("LOGOUT;" + clientID);
-                System.out.println("Server ban");
-                System.exit(0);
-                serverConnection.leaveSignal();
-                serverConnection.disconnect();
+                System.out.println("[!] Starting logout protocol : client has been banned.");
+                clientID = -1;
+                clientIsLogged = false;
+                ViewManager.setCurrentDisplay(0);
             }
 
         }
@@ -98,10 +97,14 @@ public class Client {
      * Set the client isLogged value
      * @param isLogged True if the client is logged, false otherwise
      */
+
     public static void setClientIsLogged(boolean isLogged) {
         clientIsLogged = isLogged;
     }
 
+    public static boolean isClientLogged() {
+        return clientIsLogged;
+    }
     public static void askForReload () {
         viewManager.reloadDisplay();
     }

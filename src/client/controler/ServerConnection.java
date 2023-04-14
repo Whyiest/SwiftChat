@@ -7,6 +7,7 @@ import client.clientModel.User;
 import java.io.*;
 import java.net.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
@@ -73,8 +74,13 @@ public class ServerConnection implements Runnable {
                 }
             }
         }
-
+        // Reset display
         Client.askForReload();
+
+        // Reset status
+        if (Client.isClientLogged()) {
+            changeStatus(Client.getClientID(), "ONLINE");
+        }
     }
 
     /**
@@ -127,22 +133,45 @@ public class ServerConnection implements Runnable {
      * @return true if the client is connected to the server
      */
     public boolean checkConnection() {
+
         if (clientSocket != null && clientSocket.isConnected()) {
 
+            String serverResponse;
             // Try to send and receive a message to check the connection
             try {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 writer.println("PING");
                 writer.flush();
-                String response = reader.readLine();
-                return "PONG".equals(response);
+                serverResponse = reader.readLine();
             } catch (IOException e) {
                 System.out.println("[!] Error during ping request. Maybe the server is down.");
                 return false;
             }
 
+            String[] serverResponseParts = serverResponse.split(";");
+
+            // NORMAL RESPONSE : CONNECTION IS ALIVE
+            if (serverResponseParts[0].equals("PONG")) {
+                return true;
+            }
+            // BAN UPDATE RESPONSE : CHECK IF WE ARE BANNED
+            else if (serverResponseParts[0].equals("BAN-UPDATE")) {
+
+                int bannedID = Integer.parseInt(serverResponseParts[1]) ;
+
+                // If we are the banned user, we set the client as banned
+                if (Client.isClientLogged() && (bannedID == Client.getClientID())) {
+                    Client.setIsClientBanned(true);
+                }
+            }
+            // NO RESPONSE : CONNECTION IS DEAD
+            else {
+                return false;
+            }
         }
+
+        // If the client is not connected to the server, return false because the connection is dead
         return false;
     }
 
@@ -186,8 +215,7 @@ public class ServerConnection implements Runnable {
         }
         if (serverMessage.equals("LEAVE-SIGNAL")) {
             return "LEAVE-AKNOWNLEDGE";
-        }
-        else {
+        } else {
             return receiveFromServer();
         }
     }
@@ -324,7 +352,7 @@ public class ServerConnection implements Runnable {
      *
      * @param userID the ID of the user
      * @return the user in String format / Response format: "GET-USER-BY-ID;SUCCESS/FAILURE;ID;USERNAME;FIRST_NAME;LAST_NAME;EMAIL;PASSWORD;PERMISSION;LAST_CONNECTION_TIME;IS_BANNED;STATUS"
-     *                 } el
+     * } el
      */
     public String getUserById(int userID) {
         return sendToServer("GET-USER-BY-ID;" + userID);
@@ -439,7 +467,7 @@ public class ServerConnection implements Runnable {
      *
      * @return the list of all the statistics in String format
      */
-    public String getPermissionStatistics(){
+    public String getPermissionStatistics() {
         return sendToServer("GET-PERMISSION-STATISTICS");
     }
 
@@ -448,7 +476,7 @@ public class ServerConnection implements Runnable {
      *
      * @return the list of all the statistics in String format
      */
-    public String getBanStatistics(){
+    public String getBanStatistics() {
         return sendToServer("GET-BAN-STATISTICS");
     }
 
@@ -466,7 +494,7 @@ public class ServerConnection implements Runnable {
      *
      * @return the list of all the statistics in String format
      */
-    public String getMessagesStatisticsByUserId(){
+    public String getMessagesStatisticsByUserId() {
         return sendToServer("GET-MESSAGES-STATISTICS-BY-USER-ID");
     }
 
@@ -484,7 +512,7 @@ public class ServerConnection implements Runnable {
      *
      * @return the list of all the statistics in String format
      */
-    public String getConnectionsStatisticsByUserId(){
+    public String getConnectionsStatisticsByUserId() {
         return sendToServer("GET-CONNECTIONS-STATISTICS-BY-USER-ID");
     }
 
@@ -502,7 +530,7 @@ public class ServerConnection implements Runnable {
      *
      * @return the list of the most active users in String format
      */
-    public String getUserByID (int userID) {
+    public String getUserByID(int userID) {
         String serverResponse = sendToServer("GET-USER-BY-ID;" + userID);
         return serverResponse;
     }

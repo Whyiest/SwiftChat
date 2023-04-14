@@ -134,6 +134,7 @@ public class UserDao {
 
     /**
      * This method allow to get a user from the database
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
@@ -176,8 +177,9 @@ public class UserDao {
 
     /**
      * This method allow to change the user permission
+     *
      * @param messageParts The message parts
-     * @param message The message
+     * @param message      The message
      * @return The server response
      */
     public String changeUserPermission(String[] messageParts, String message) {
@@ -223,6 +225,7 @@ public class UserDao {
 
     /**
      * This method allow to ban a user from the database
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
@@ -269,6 +272,7 @@ public class UserDao {
 
     /**
      * This method allow to update the last connection time of a user
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
@@ -315,11 +319,12 @@ public class UserDao {
 
     /**
      * This method allow to get a user from the database
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
      */
-    public String getUserById(String[] messageParts, String message){
+    public String getUserById(String[] messageParts, String message) {
         // Linking message parts to variables
         String userId = "";
 
@@ -366,17 +371,18 @@ public class UserDao {
 
     /**
      * This method allow to get a user from the database
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
      */
-    public String getUserPermissionById(String[] messageParts, String message){
+    public String getUserPermissionById(String[] messageParts, String message) {
 
         // Linking message parts to variables
         String userId = "";
         String userPermission = "";
 
-        try{
+        try {
             userId = messageParts[1];
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
@@ -387,7 +393,7 @@ public class UserDao {
         // Create an SQL statement to select the status of a user based on their id
         String sql = "SELECT PERMISSION FROM USER WHERE ID = ?";
 
-        try{
+        try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setInt(1, Integer.parseInt(userId));
@@ -417,17 +423,18 @@ public class UserDao {
 
     /**
      * This method allow to get a user from the database
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
      */
-    public String getUserBanStatusById(String[] messageParts, String message){
+    public String getUserBanStatusById(String[] messageParts, String message) {
 
         // Linking message parts to variables
         String userId = "";
         String userBanStatus = "";
 
-        try{
+        try {
             userId = messageParts[1];
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
@@ -438,7 +445,7 @@ public class UserDao {
         // Create an SQL statement to select the status of a user based on their id
         String sql = "SELECT IS_BANNED FROM USER WHERE ID = ?";
 
-        try{
+        try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setInt(1, Integer.parseInt(userId));
@@ -468,18 +475,19 @@ public class UserDao {
 
     /**
      * This method allow to log a user in
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
      */
-    public String logIn(String[] messageParts, String message){
+    public String logIn(String[] messageParts, String message) {
 
         // Linking message parts to variables
         String username;
         String password;
         int userId;
 
-        try{
+        try {
             username = messageParts[1];
             password = messageParts[2];
         } catch (Exception e) {
@@ -491,7 +499,7 @@ public class UserDao {
         // Create an SQL statement to log the user in
         String sql = "SELECT ID FROM USER WHERE USERNAME = ? AND PASSWORD = ?";
 
-        try{
+        try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setString(1, username);
@@ -521,13 +529,35 @@ public class UserDao {
         }
     }
 
+    public void disconnectAll() {
+
+        String sql = "UPDATE USER SET STATUS = 'OFFLINE' WHERE STATUS = 'ONLINE'";
+        try {
+
+            if (!myDb.connection.isClosed()) { // Check if the connection is open
+
+                Statement statement = myDb.connection.createStatement();
+
+                int rowCount = statement.executeUpdate(sql);
+
+                statement.close();
+
+                System.out.println("[!] Updated " + rowCount + " status to OFFLINE in the database.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("[!] Error while updating status to OFFLINE in the database.");
+        }
+    }
+
     /**
      * This method allow an user to logout
+     *
      * @param messageParts The message parts
      * @param message      The message
      * @return The server response
      */
-    public String logOut (String[] messageParts, String message) {
+    public String logOut(String[] messageParts, String message) {
 
         // Linking message parts to variables
         String userId = "";

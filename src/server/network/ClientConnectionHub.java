@@ -1,4 +1,5 @@
 package server.network;
+import server.dao.UserDao;
 import server.serverModel.ClientManager;
 import java.io.*;
 import java.net.*;
@@ -84,6 +85,10 @@ public class ClientConnectionHub {
      * Close the connexion hub and the database
      */
     public void closeConnexion() {
+
+        UserDao myUserDao = new UserDao(myDb);
+        myUserDao.disconnectAll();
+
 
         waitingForConnection = false;
         for (int i = 0; i < clientManagerList.size(); i++) {

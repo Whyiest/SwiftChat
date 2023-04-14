@@ -17,9 +17,10 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Constructor
-     * @param parent the parent frame
+     *
+     * @param parent           the parent frame
      * @param serverConnection the server connection
-     * @param user the user
+     * @param user             the user
      */
     public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user, Dimension previousSize) {
 
@@ -59,6 +60,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the message field
+     *
      * @return the message field
      */
     private JTextField createMessageField() {
@@ -76,6 +78,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the main panel
+     *
      * @return the main panel
      */
     private JPanel createMainPanel() {
@@ -86,6 +89,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the chat panel
+     *
      * @return the chat panel
      */
     private JPanel createChatPanel() {
@@ -98,11 +102,12 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the user panel
+     *
      * @return the user panel
      */
     private JPanel createUserPanel() {
 
-        String accessGranted = "";
+        String currentPrivilege = "";
 
         JPanel userPanel = new JPanel(new BorderLayout());
         userPanel.setPreferredSize(new Dimension(550, 30));
@@ -111,10 +116,11 @@ public class ConversationWindow extends JDialog {
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
 
         do {
-            accessGranted = isModeratorOrAdmin();
-        } while (accessGranted.equals("ERROR"));
+            currentPrivilege = getClientPermission();
+        } while (currentPrivilege.equals("ERROR"));
 
-        if(accessGranted.equals("TRUE")){
+        // Create more option for moderator & admin
+        if (currentPrivilege.equals("MODERATOR") || currentPrivilege.equals("ADMIN")) {
             userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
         }
         return userPanel;
@@ -122,6 +128,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the chat scroll pane
+     *
      * @return the chat scroll pane
      */
     private JScrollPane createChatScrollPane() {
@@ -133,6 +140,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the message panel
+     *
      * @return the message panel
      */
 
@@ -145,6 +153,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the back button
+     *
      * @return the back button
      */
     private JButton createBackButton() {
@@ -161,6 +170,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the user name label
+     *
      * @return the user name label
      */
     private JLabel createUserNameLabel() {
@@ -173,6 +183,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the more options button
+     *
      * @return the more options button
      */
 
@@ -185,7 +196,13 @@ public class ConversationWindow extends JDialog {
         });
         return moreOptionsButton;
     }
-    public String isModeratorOrAdmin(){
+
+    /**
+     * This function allow to get the current privileges of an user
+     *
+     * @return the permission of the use, or error if there is an error
+     */
+    public String getClientPermission() {
 
         User user = null;
 
@@ -203,15 +220,12 @@ public class ConversationWindow extends JDialog {
             return "ERROR";
         }
 
-        if (user.getPermission().equals("MODERATOR") || user.getPermission().equals("ADMIN")) {
-            return "TRUE";
-        }
-        else {
-            return "FALSE";
-        }
+        return user.getPermission();
     }
+
     /**
      * Create the button panel
+     *
      * @return the button panel
      */
     private JPanel createButtonPanel() {
@@ -224,6 +238,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the image button
+     *
      * @return the image button
      */
 
@@ -233,6 +248,7 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the voice button
+     *
      * @return the voice button
      */
     private JButton createVoiceButton() {
@@ -241,12 +257,13 @@ public class ConversationWindow extends JDialog {
 
     /**
      * Create the send button
+     *
      * @return the send button
      */
     private JButton createSendButton() {
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
-            String message= messageField.getText();
+            String message = messageField.getText();
             System.out.println(message);
         });
         return sendButton;
