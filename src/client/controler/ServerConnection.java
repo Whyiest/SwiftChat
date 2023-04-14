@@ -189,6 +189,7 @@ public class ServerConnection implements Runnable {
 
             // NO RESPONSE : CONNECTION IS DEAD
             if (pingResponse == null) {
+                return false;
             }
             // NORMAL RESPONSE : CONNECTION IS ALIVE
             else if (pingResponse.equals("PONG")) {

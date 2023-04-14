@@ -57,9 +57,9 @@ public class Client {
             }
             if (isClientBanned) { //kicks out the banned user and sends logout message
                 System.out.println("[!] Starting logout protocol : client has been banned.");
-
                 clientID = -1;
                 clientIsLogged = false;
+                isClientBanned = false;
                 ViewManager.setCurrentDisplay(0);
             }
 
