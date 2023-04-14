@@ -1,17 +1,17 @@
 package client;
 import client.controler.ServerConnection;
-import client.view.ViewManagement;
-
-import javax.swing.text.View;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import client.view.ViewManager;
 
 public class Client {
 
     private static int clientID = -1;
     private static boolean clientIsLogged = false;
 
+    private static boolean clientIsBanned = false;
 
+    private static ServerConnection serverConnection;
+
+    private static ViewManager viewManager;
     /**
      * Main method
      * @param args Arguments of the main method
@@ -21,8 +21,8 @@ public class Client {
         boolean oneTimeCall = false;
 
         // Create basics objects
-        ServerConnection serverConnection = new ServerConnection("localhost", 3000);
-        ViewManagement viewApp = new ViewManagement(serverConnection);
+        serverConnection = new ServerConnection("localhost", 3000);
+        viewManager = new ViewManager(serverConnection);
 
         // Code to execute when the program is closed
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -51,7 +51,7 @@ public class Client {
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
             if (!oneTimeCall) {
-                Thread viewThread = new Thread(viewApp);
+                Thread viewThread = new Thread(viewManager);
                 viewThread.start();
                 oneTimeCall = true;
             }
@@ -86,5 +86,9 @@ public class Client {
      */
     public static void setClientIsLogged(boolean isLogged) {
         clientIsLogged = isLogged;
+    }
+
+    public static void askForReload () {
+        viewManager.reloadDisplay();
     }
 }

@@ -3,7 +3,7 @@ package client.view;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
-public class ViewManagement implements Runnable {
+public class ViewManager implements Runnable {
      public ServerConnection serverConnection;
      public LoginForm loginForm; // LOGIN 0
      public RegistrationForm registrationForm; /// REGISTER 1
@@ -21,7 +21,7 @@ public class ViewManagement implements Runnable {
      *
      * @param serverConnection the server connection
      */
-    public ViewManagement(ServerConnection serverConnection) {
+    public ViewManager(ServerConnection serverConnection) {
         this.serverConnection = serverConnection;
         currentWindow = 0;
         alreadyDisplay = false;
@@ -94,6 +94,11 @@ public class ViewManagement implements Runnable {
      */
     public static void setChattingWithUser(User user) {
         chattingWithThisUser = user;
+    }
+
+    public void reloadDisplay(){
+        System.out.println("[!] Trying to reload the display");
+        alreadyDisplay = false;
     }
 
 }

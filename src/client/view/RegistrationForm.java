@@ -1,8 +1,6 @@
 package client.view;
 
-import client.clientModel.User;
 import client.controler.ServerConnection;
-import server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +52,7 @@ public class RegistrationForm extends JDialog {
             public void actionPerformed(ActionEvent e) {
 
                 // Go back to login
-                ViewManagement.setCurrentDisplay(0);
+                ViewManager.setCurrentDisplay(0);
 
                 // Close the current window
                 closeRegisterWindow();
@@ -264,6 +262,7 @@ public class RegistrationForm extends JDialog {
      */
     private void registerUser() {
 
+        String serverResponse = "";
         // Get the content of all fields :
 
         String firstName= textFieldFirstname.getText();
@@ -289,10 +288,23 @@ public class RegistrationForm extends JDialog {
         }
 
         // Create an user with the provided parameter
-        serverConnection.addUser(userName, firstName, lastName, mail, password, "CLASSIC");
+        do {
+            try {
+                serverResponse = serverConnection.addUser(userName, firstName, lastName, mail, password, "CLASSIC");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e1) {
+                    return;
+                }
+                return;
+            }
+        } while (!serverResponse.equals("ADD-USER;SUCCESS"));
+
 
         // Go back to login page to log in
-        ViewManagement.setCurrentDisplay(0);
+        ViewManager.setCurrentDisplay(0);
 
         // Close the current window
          dispose();

@@ -34,7 +34,7 @@ public class LoginForm extends JDialog {
 
         this.serverConnection = serverConnection;
 
-        // Create the form :
+        // SETUP
         setTitle("Login Form");
         //setLocationRelativeTo(null);
         setContentPane(loginForm);
@@ -57,14 +57,17 @@ public class LoginForm extends JDialog {
                 String password = String.valueOf(passwordField.getPassword());
 
                 user = getAuthenticatedUser(username, password);
+
                 // If user password and ID are correct :
                 if (user != null) {
                     // Set client to logged
                     Client.setClientIsLogged(true);
                     Client.setClientID(user.getId());
-                    ViewManagement.setCurrentDisplay(2);
+                    ViewManager.setCurrentDisplay(2);
                     dispose();
-                } else if (isUserBanned) {
+                }
+                // If user password and ID are correct but user is banned :
+                else if (isUserBanned) {
                     JOptionPane.showMessageDialog(LoginForm.this, "You have been banned", "Try again", JOptionPane.ERROR_MESSAGE);
 
                 }
@@ -88,7 +91,7 @@ public class LoginForm extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Open the registration form
-                ViewManagement.setCurrentDisplay(1);
+                ViewManager.setCurrentDisplay(1);
 
                 // Close the current window
                 closeLoginWindow();
@@ -120,27 +123,65 @@ public class LoginForm extends JDialog {
      */
     public User getAuthenticatedUser(String userName, String password) {
 
-        int userLoggedID;
-        String serverResponse = serverConnection.login(userName,password);
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-        userLoggedID = responseAnalyser.login();
-        //Check is the user is banned
-        String serverResponseBis = serverConnection.getUserByID(userLoggedID);
-        ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponseBis);
-        User userLogginIn= responseAnalyserBis.extractUser();
-        // If the login had success
-        /*if(userLogginIn.isBanned()){
-            isUserBanned=true;
-            return null;
-        }*/if (userLoggedID != -1 ) {
-            serverResponse = serverConnection.getUserByID(userLoggedID);
-            serverConnection.updateLastConnectinTime(userLoggedID);
-            serverConnection.changeStatus(userLoggedID, "ONLINE");
-            ResponseAnalyser responseAnalyserSecond = new ResponseAnalyser(serverResponse);
-            return responseAnalyserSecond.extractUser();
+        int userLoggedID = -999; // -999 error, -1 wrong credentials, >= 0 user ID & success
+        User loggedUser = null;
+        String serverResponse = "";
+
+
+        // LOGIN SEQUENCE
+        do {
+            try{
+                serverResponse = serverConnection.login(userName,password);
+                ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+                userLoggedID = responseAnalyser.login();
+            } catch (Exception e) {
+                System.out.println("[!] Error while checking credentials. (Retry in 1s)");
+                JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException error) {
+                    error.printStackTrace();
+                }
+            }
+        } while (userLoggedID == -999);
+
+
+        // GET INFORMATION ABOUT THE USER
+
+        if (userLoggedID != -1) {
+            do {
+                try {
+                    // Get the user information
+                    serverResponse = serverConnection.getUserByID(userLoggedID);
+                    ResponseAnalyser responseAnalyserSecond = new ResponseAnalyser(serverResponse);
+                    loggedUser = responseAnalyserSecond.extractUser();
+                    // Set the last connection time and the status
+                    serverConnection.updateLastConnectinTime(userLoggedID);
+                    serverConnection.changeStatus(userLoggedID, "ONLINE");
+                } catch (Exception e) {
+                    System.out.println("[!] Error while getting user information after login. (Retry in 1s)");
+                    JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException error) {
+                        error.printStackTrace();
+                    }
+                }
+            } while (serverResponse.equals("ERROR"));
+
+            // If logged, check if he is banned
+
+            assert loggedUser != null;
+
+            if(loggedUser.isBanned()) {
+                isUserBanned = true;
+                return null;
+            }
+            return loggedUser;
         }
         // If the login failed
         else {
+            isUserBanned = false;
             return null;
         }
     }

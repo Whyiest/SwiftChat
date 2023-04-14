@@ -1,6 +1,5 @@
 package client.view;
 
-import client.clientModel.Message;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
@@ -34,7 +33,7 @@ public class ContactWindow extends JDialog {
     /**
      * Constructor
      *
-     * @param parent the parent frame
+     * @param parent           the parent frame
      * @param serverConnection the server connection
      */
     public ContactWindow(JFrame parent, ServerConnection serverConnection) {
@@ -149,9 +148,21 @@ public class ContactWindow extends JDialog {
         buttonPanel.add(lastPageButton);
 
         // Total page :
-        String serverResponse = serverConnection.listAllUsers();
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-        listAllUsers = responseAnalyser.createUserList();
+        do {
+            try {
+                String serverResponse = serverConnection.listAllUsers();
+                ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+                listAllUsers = responseAnalyser.createUserList();
+            } catch (Exception e) {
+                System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
+                JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } while (listAllUsers.size() == 0);
 
         totalPage = (int) Math.ceil((double) listAllUsers.size() / userPerPage);
 
@@ -207,8 +218,8 @@ public class ContactWindow extends JDialog {
                     // Allow event to be start in the button
                     int finalCurrentUserIterator = currentUserIterator;
                     contactButton.addActionListener(e -> {
-                        ViewManagement.setChattingWithUser(listCurrentDisplayedUsers[finalCurrentUserIterator]);
-                        ViewManagement.setCurrentDisplay(3);
+                        ViewManager.setChattingWithUser(listCurrentDisplayedUsers[finalCurrentUserIterator]);
+                        ViewManager.setCurrentDisplay(3);
                         dispose();
                     });
 
@@ -232,30 +243,39 @@ public class ContactWindow extends JDialog {
         if (currentContactPanel == 0 && totalPage > 1) {
             nextPageButton.setVisible(true);
             backPageButton.setVisible(false);
+            firstPageButton.setVisible(true);
+            lastPageButton.setVisible(true);
         }
         // If it's between the first and the last page, show both buttons. Minimum page : 3
-        else if (currentContactPanel != (totalPage-1) && currentContactPanel != 0 && totalPage > 2) {
+        else if (currentContactPanel != (totalPage - 1) && currentContactPanel != 0 && totalPage > 2) {
             nextPageButton.setVisible(true);
             backPageButton.setVisible(true);
+            firstPageButton.setVisible(true);
+            lastPageButton.setVisible(true);
         }
 
         // If it's the last page, hide the next button. Minimum page : 2
         else if (currentContactPanel == (totalPage - 1) && totalPage > 1 && currentContactPanel < totalPage) {
             nextPageButton.setVisible(false);
             backPageButton.setVisible(true);
+            firstPageButton.setVisible(true);
+            lastPageButton.setVisible(true);
         }
         //If there is only one page, hide both buttons. Maximum page : 1
         else {
             nextPageButton.setVisible(false);
             backPageButton.setVisible(false);
+            firstPageButton.setVisible(false);
+            lastPageButton.setVisible(false);
         }
     }
 
-        /**
-         * Get the initials of a name
-         * @param name the name
-         * @return the initials
-         */
+    /**
+     * Get the initials of a name
+     *
+     * @param name the name
+     * @return the initials
+     */
     public static String getInitials(String name) {
         Matcher m = Pattern.compile("\\b\\w").matcher(name);
         StringBuilder initials = new StringBuilder();

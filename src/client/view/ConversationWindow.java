@@ -11,9 +11,8 @@ import java.awt.*;
 public class ConversationWindow extends JDialog {
     private String contactName;
     private JTextField messageField;
-    private ServerConnection serverConnection;
-
-    private User chattingWithThisUser;
+    private final ServerConnection serverConnection;
+    private final User chattingWithThisUser;
     private Dimension previousSize;
 
     /**
@@ -34,7 +33,11 @@ public class ConversationWindow extends JDialog {
         setSize(previousSize);
         setLocationRelativeTo(parent);
 
-        initComponents();
+        try {
+            initComponents();
+        } catch (Exception e) {
+            System.out.println("[!] Error while initializing the conversation window");
+        }
 
     }
 
@@ -98,12 +101,20 @@ public class ConversationWindow extends JDialog {
      * @return the user panel
      */
     private JPanel createUserPanel() {
+
+        String accessGranted = "";
+
         JPanel userPanel = new JPanel(new BorderLayout());
         userPanel.setPreferredSize(new Dimension(550, 30));
         userPanel.setBackground(Color.GRAY);
         userPanel.add(createBackButton(), BorderLayout.WEST);
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
-        if(isModeratorOrAdmin()){
+
+        do {
+            accessGranted = isModeratorOrAdmin();
+        } while (accessGranted.equals("ERROR"));
+
+        if(accessGranted.equals("TRUE")){
             userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
         }
         return userPanel;
@@ -142,7 +153,7 @@ public class ConversationWindow extends JDialog {
         backButton.addActionListener(e -> {
             previousSize = getSize();
             // Go gack to contact page
-            ViewManagement.setCurrentDisplay(2);
+            ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
         });
         return backButton;
@@ -169,19 +180,35 @@ public class ConversationWindow extends JDialog {
         JButton moreOptionsButton = new JButton("...");
         moreOptionsButton.setPreferredSize(new Dimension(50, 30));
         moreOptionsButton.addActionListener(e -> {
-            ViewManagement.setCurrentDisplay(4);
+            ViewManager.setCurrentDisplay(4);
             closeConversationWindow();
         });
         return moreOptionsButton;
     }
-    public boolean isModeratorOrAdmin(){
-        String serverResponse =this.serverConnection.getUserByID(Client.getClientID());
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-        User user = responseAnalyser.extractUser();
-        if(user.getPermission().equals("MODERATOR")||user.getPermission().equals("ADMIN")){
-            return true;
+    public String isModeratorOrAdmin(){
+
+        User user = null;
+
+        try {
+            String serverResponse = this.serverConnection.getUserByID(Client.getClientID());
+            ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+            user = responseAnalyser.extractUser();
+        } catch (Exception e) {
+            System.out.println("[!] Error while getting user by user permission\n");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+            return "ERROR";
         }
-        return false;
+
+        if (user.getPermission().equals("MODERATOR") || user.getPermission().equals("ADMIN")) {
+            return "TRUE";
+        }
+        else {
+            return "FALSE";
+        }
     }
     /**
      * Create the button panel

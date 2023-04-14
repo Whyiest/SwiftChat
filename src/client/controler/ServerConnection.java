@@ -1,5 +1,6 @@
 package client.controler;
 
+import client.Client;
 import client.clientModel.Message;
 import client.clientModel.User;
 
@@ -72,6 +73,8 @@ public class ServerConnection implements Runnable {
                 }
             }
         }
+
+        Client.askForReload();
     }
 
     /**

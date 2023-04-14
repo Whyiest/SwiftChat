@@ -1,6 +1,5 @@
 package client.view;
 
-import client.Client;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
@@ -8,22 +7,21 @@ import client.controler.ServerConnection;
 import javax.swing.*;
 
 import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 
 public class BanUserFrame extends JDialog {
     private JRadioButton banRadioButton;
     private JRadioButton unbanRadioButton;
+    private JRadioButton setModeratorRadioButton;
+    private JRadioButton setCommonUserRadioButton;
+    private JRadioButton setAdminRadioButton;
     private JButton submitButton;
     private ServerConnection serverConnection;
     User userChattingWith;
 
     public BanUserFrame(JDialog parent, ServerConnection serverConnection, User userChattingWith) {
         super(parent, "SwiftChat", true);
-        this.serverConnection= serverConnection;
-        this.userChattingWith=userChattingWith;
+        this.serverConnection = serverConnection;
+        this.userChattingWith = userChattingWith;
         setTitle("Ban User");
         setSize(300, 200);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -31,45 +29,91 @@ public class BanUserFrame extends JDialog {
 
         initComponents(userChattingWith);
     }
+
     private void initComponents(User userChattingWith) {
+
+
+
         // Create ban radio button
         banRadioButton = new JRadioButton("Ban user");
-
 
         // Create unban radio button
         unbanRadioButton = new JRadioButton("Unban user");
 
-        //Marks the initial situation of the user
+        // Create a promote to moderator radio button
+        setModeratorRadioButton = new JRadioButton("Set moderator");
+
+        // Create a demote to user radio button
+        setModeratorRadioButton = new JRadioButton("Set common user");
+
+        // Create a promote to admin radio button
+        setAdminRadioButton = new JRadioButton("Set admin");
+
+
+
+        // Marks the initial situation of the user
         setInitialButtonMarked(userChattingWith);
+
         // Group the radio buttons
-        ButtonGroup group = new ButtonGroup();
-        group.add(banRadioButton);
-        group.add(unbanRadioButton);
+        ButtonGroup actionGroup = new ButtonGroup();
+        actionGroup.add(banRadioButton);
+        actionGroup.add(unbanRadioButton);
+
 
         // Create submit button
-        submitButton = new JButton("Submit");
+        submitButton = new JButton("Confirm");
         submitButton.addActionListener(e -> {
-            // Go gack to contact page
-            if(banRadioButton.isSelected()){
-                //System.out.println("Ban the user");
-                userChattingWith.setBanned(true);//ban the user
-                String serverResponse = serverConnection.banUser(userChattingWith.getId(),"true");
-                String serverResponsebis= serverConnection.addLog(userChattingWith.getId(),"BANNED");
-                ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-                ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponsebis);
 
+            if (banRadioButton.isSelected()) {
 
-                //System.out.println(userChattingWith);
-            }else if(unbanRadioButton.isSelected()){
+                String serverResponse = "";
+                String serverResponse2 = "";
+
+                do {
+                    try {
+
+                        serverResponse = serverConnection.banUser(userChattingWith.getId(), "true");
+                        serverResponse2 = serverConnection.addLog(userChattingWith.getId(), "BANNED");
+
+                    } catch (Exception banError) {
+                        System.out.println("[!] Error while banning an user... Try to reconnect every 1 second.");
+                        JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException interruptedException) {
+                            interruptedException.printStackTrace();
+                        }
+                    }
+                } while (serverResponse.equals("BAN-USER;FAILURE") || serverResponse2.equals("ADD-LOG;FAILURE"));
+
+                userChattingWith.setBanned(true); // Ban the user
+
+            } else if (unbanRadioButton.isSelected()) {
+
+                String serverResponse = "";
+                String serverResponse2 = "";
+
+                do {
+                    try {
+
+                        serverResponse = serverConnection.banUser(userChattingWith.getId(), "false");
+                        serverResponse2 = serverConnection.addLog(userChattingWith.getId(), "UNBANNED");
+
+                    } catch (Exception banError) {
+                        System.out.println("[!] Error while unbanning an user... Try to reconnect every 1 second.");
+                        JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException interruptedException) {
+                            interruptedException.printStackTrace();
+                        }
+                    }
+                } while (serverResponse.equals("BAN-USER;FAILURE") || serverResponse2.equals("ADD-LOG;FAILURE"));
+
                 userChattingWith.setBanned(false);// unban the user
-                String serverResponse = serverConnection.banUser(userChattingWith.getId(),"false");
-                String serverResponsebis= serverConnection.addLog(userChattingWith.getId(),"UNBANNED");
-                ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-                ResponseAnalyser responseAnalyserBis = new ResponseAnalyser(serverResponsebis);
-               //System.out.println("NOT banned");
-                //System.out.println(userChattingWith);
             }
-            ViewManagement.setCurrentDisplay(3);
+
+            ViewManager.setCurrentDisplay(3);
             closeBanWindow();
         });
 
@@ -86,28 +130,26 @@ public class BanUserFrame extends JDialog {
 
 
     /**
-     *
      * @param user
      * @return if the user is banned beforehand
      */
-    public boolean checkUserStatus (User user) {
+    public boolean checkUserStatus(User user) {
         return user.isBanned();
     }
 
     /**
-     *
-     * @param user
-     * sets the button to selected in function of the users banned status
+     * @param user sets the button to selected in function of the users banned status
      */
-    public void setInitialButtonMarked(User user){
-        if(checkUserStatus(user)){
+    public void setInitialButtonMarked(User user) {
+        if (checkUserStatus(user)) {
             banRadioButton.setSelected(true);
             unbanRadioButton.setSelected(false);
-        }else {
+        } else {
             unbanRadioButton.setSelected(true);
             banRadioButton.setSelected(false);
         }
     }
+
     public void openBanWindow() {
         setVisible(true);
     }
