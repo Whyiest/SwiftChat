@@ -202,7 +202,7 @@ public class ContactWindow extends JDialog {
 
                     // Create a contact panel
                     JPanel contactCard = new JPanel(new BorderLayout());
-                    contactCard.setBackground(new Color(245, 240, 225));
+                    contactCard.setBackground(new Color(35, 35, 70));
 
                     // Initials of the user
                     String initials = getInitials(fullName);
@@ -220,7 +220,7 @@ public class ContactWindow extends JDialog {
 
                     // Init contact button for each user
                     JButton contactButton = new JButton(fullName);
-                    contactButton.setForeground(new Color(30, 61, 89));
+                    contactButton.setForeground(new Color(255, 255, 255));
                     contactButton.setOpaque(true);
                     contactButton.setPreferredSize(new Dimension(550 - labelSize, labelSize));
 

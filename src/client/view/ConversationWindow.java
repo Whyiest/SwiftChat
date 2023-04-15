@@ -7,6 +7,8 @@ import client.controler.ServerConnection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class ConversationWindow extends JDialog {
     private String contactName;
@@ -15,6 +17,11 @@ public class ConversationWindow extends JDialog {
     private final User chattingWithThisUser;
 
     private static Dimension previousSize ;
+
+    private JTextArea chatArea;
+
+    private JScrollPane chatscrollpane ;
+
 
     /**
      * Constructor
@@ -134,10 +141,10 @@ public class ConversationWindow extends JDialog {
      * @return the chat scroll pane
      */
     private JScrollPane createChatScrollPane() {
-        JTextArea chatArea = new JTextArea();
+        chatArea = new JTextArea();
         chatArea.setEditable(false);
-        JScrollPane chatScrollPane = new JScrollPane(chatArea);
-        return chatScrollPane;
+        chatscrollpane = new JScrollPane(chatArea);
+        return chatscrollpane;
     }
 
     /**
@@ -245,8 +252,20 @@ public class ConversationWindow extends JDialog {
      */
 
     private JButton createImageButton() {
-        return new JButton("Image");
+        JButton sendButton = new JButton("image");
+        sendButton.addActionListener(e -> {
+            FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
+            dialog.setMode(FileDialog.LOAD);
+            dialog.setVisible(true);
+            String file = dialog.getFile();
+            dialog.dispose();
+            System.out.println(file + " chosen.");
+
+        });
+        return sendButton;
     }
+
+
 
     /**
      * Create the voice button
@@ -265,7 +284,10 @@ public class ConversationWindow extends JDialog {
     private JButton createSendButton() {
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
-            String message = messageField.getText();
+
+            String message= messageField.getText();
+            messageField.setText("");
+            chatArea.append(": " + message + "\n");
             System.out.println(message);
         });
         return sendButton;
