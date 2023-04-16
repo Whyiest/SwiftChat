@@ -5,10 +5,21 @@ import client.clientModel.User;
 import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class ConversationWindow extends JDialog {
     private String contactName;
@@ -18,9 +29,14 @@ public class ConversationWindow extends JDialog {
 
     private static Dimension previousSize ;
 
+    static Box vertical = Box.createVerticalBox();
+
     private JTextArea chatArea;
 
     private JScrollPane chatscrollpane ;
+    private JPanel conversationPanel;
+
+    static JFrame parent = new JFrame();
 
 
     /**
@@ -141,9 +157,12 @@ public class ConversationWindow extends JDialog {
      * @return the chat scroll pane
      */
     private JScrollPane createChatScrollPane() {
-        chatArea = new JTextArea();
-        chatArea.setEditable(false);
-        chatscrollpane = new JScrollPane(chatArea);
+
+        //chatArea = new JTextArea();
+        //chatArea.setEditable(false);
+
+        conversationPanel = new JPanel();
+        chatscrollpane = new JScrollPane(conversationPanel);
         return chatscrollpane;
     }
 
@@ -251,6 +270,29 @@ public class ConversationWindow extends JDialog {
         return buttonPanel;
     }
 
+    public static JPanel formatLabel(String out) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
+        output.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        output.setBackground(new Color(37, 211, 102));
+        output.setOpaque(true);
+        output.setBorder(new EmptyBorder(15, 15, 15, 50));
+
+        panel.add(output);
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+        JLabel time = new JLabel();
+        time.setText(sdf.format(cal.getTime()));
+
+        panel.add(time);
+
+        return panel;
+    }
+
     /**
      * Create the image button
      *
@@ -258,17 +300,48 @@ public class ConversationWindow extends JDialog {
      */
 
     private JButton createImageButton() {
-        JButton sendButton = new JButton("image");
-        sendButton.addActionListener(e -> {
-            FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
-            dialog.setMode(FileDialog.LOAD);
-            dialog.setVisible(true);
-            String file = dialog.getFile();
-            dialog.dispose();
-            System.out.println(file + " chosen.");
+        JButton imageButton = new JButton("image");
+        imageButton.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    "JPG Images", "jpg");
+            chooser.setFileFilter(filter);
+            int returnVal = chooser.showOpenDialog(null);
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                File img= chooser.getSelectedFile();
+                BufferedImage monimage;
+                try {
+                    monimage = ImageIO.read(img);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                Image dimg = monimage.getScaledInstance(250, 250, Image.SCALE_DEFAULT);
+                JLabel p = new JLabel(new ImageIcon(dimg));
+                JPanel JP = new JPanel();
+                JP.add(p);
+
+                System.out.println(img);
+                conversationPanel.setLayout(new BorderLayout());
+                JPanel right = new JPanel(new BorderLayout());
+                right.add(JP, BorderLayout.LINE_END);
+                vertical.add(right);
+                vertical.add(Box.createVerticalStrut(15));
+                conversationPanel.add(vertical, BorderLayout.PAGE_START);
+                repaint();
+                invalidate();
+                validate();
+
+                System.out.println("You chose to open this file: " +
+                        chooser.getSelectedFile().getName());
+            }
+
+
+
+
 
         });
-        return sendButton;
+        return imageButton;
     }
 
 
@@ -291,10 +364,26 @@ public class ConversationWindow extends JDialog {
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
 
-            String message= messageField.getText();
+            String out = messageField.getText();
+
+            JPanel p2 = formatLabel(out);
+
+            conversationPanel.setLayout(new BorderLayout());
+
+            JPanel left = new JPanel(new BorderLayout());
+            left.add(p2, BorderLayout.LINE_END);
+            vertical.add(left);
+            vertical.add(Box.createVerticalStrut(15));
+            conversationPanel.add(vertical, BorderLayout.PAGE_START);
             messageField.setText("");
-            chatArea.append(": " + message + "\n");
-            System.out.println(message);
+            repaint();
+            invalidate();
+            validate();
+
+            //String message= messageField.getText();
+            //messageField.setText("");
+            //chatArea.append(": " + message + "\n");
+            //System.out.println(message);
         });
         return sendButton;
     }
