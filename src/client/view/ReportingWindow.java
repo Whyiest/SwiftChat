@@ -68,10 +68,10 @@ public class ReportingWindow extends JDialog{
                         doOption7();
                         break;
                     case "Global permission statistics":
-                        doOption8();
+                        permissionStatistics();
                         break;
                     case "Global status statistics":
-                        doOption9();
+                        statusStatistics();
                         break;
                     default:
                         break;
@@ -129,8 +129,7 @@ public class ReportingWindow extends JDialog{
         String serverResponse = "";
         serverResponse = serverConnection.getConnectionsStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
-        int num = Integer.parseInt(serverResponse);
-        responseAnalyser.generateBarChart(num);
+        responseAnalyser.generateHistogram(4);
         System.out.println("Global connection statistics");
     }
     private void doOption4() {
@@ -148,11 +147,19 @@ public class ReportingWindow extends JDialog{
         System.out.println("Global users statistics");
     }
 
-    private void doOption8() {
+    private void permissionStatistics() {
+        String serverResponse = "";
+        serverResponse = serverConnection.getPermissionStatistics();
+        ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
+        responseAnalyser.generatePieChart(2);
         System.out.println("Global permission statistics");
     }
 
-    private void doOption9() {
+    private void statusStatistics() {
+        String serverResponse = "";
+        serverResponse = serverConnection.getStatusStatistics();
+        ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
+        responseAnalyser.generatePieChart(1);
         System.out.println("Global status statistics");
     }
 }

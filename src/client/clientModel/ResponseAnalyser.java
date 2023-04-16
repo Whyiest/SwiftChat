@@ -110,14 +110,14 @@ public class ResponseAnalyser {
         // Add values to the dataset according to the type of pie chart we want to generate
         switch(dataToDisplay){
             case 1:
-                pieDataset.setValue("Offline", Double.parseDouble((messageParts[1])));
-                pieDataset.setValue("Online", Double.parseDouble((messageParts[2])));
-                pieDataset.setValue("Away", Double.parseDouble((messageParts[3])));
+                pieDataset.setValue("Offline", Double.parseDouble((messageParts[0])));
+                pieDataset.setValue("Online", Double.parseDouble((messageParts[1])));
+                pieDataset.setValue("Away", Double.parseDouble((messageParts[2])));
                 break;
             case 2:
-                pieDataset.setValue("Classic user", Double.parseDouble(messageParts[1]));
-                pieDataset.setValue("Moderator", Double.parseDouble(messageParts[2]));
-                pieDataset.setValue("Administrator", Double.parseDouble((messageParts[3])));
+                pieDataset.setValue("Classic user", Double.parseDouble(messageParts[0]));
+                pieDataset.setValue("Moderator", Double.parseDouble(messageParts[1]));
+                pieDataset.setValue("Administrator", Double.parseDouble((messageParts[2])));
                 break;
             case 3:
                 pieDataset.setValue("Not banned", Double.parseDouble((messageParts[1])));
