@@ -10,7 +10,8 @@ public class ViewManager implements Runnable {
     public ContactWindow contactForm; // CONTACT 2
     public ConversationWindow conversationForm; // CHAT 3
     public OptionsWindow optionsWindow; // BAN 4
-    public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage
+    public ReportingWindow reportingWindow; //REPORTS 5
+    public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage, 5=ReportWindow
     public static User chattingWithThisUser; // If you chat with someone, his user ID is here
     public static boolean alreadyDisplay;
 
@@ -61,11 +62,18 @@ public class ViewManager implements Runnable {
                         conversationForm.openConversationWindow();
                     }
                 }
-                case 4 -> { // Ban user
+                case 4 -> { // BAN WINDOW
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
                         this.optionsWindow = new OptionsWindow(conversationForm, serverConnection, chattingWithThisUser,300,200);
                         optionsWindow.openOptionWindow();
+                    }
+                }
+                case 5-> { // REPORTS
+                    if (!alreadyDisplay) {
+                        alreadyDisplay = true;
+                        this.reportingWindow = new ReportingWindow(conversationForm, serverConnection,600,500);
+                        reportingWindow.openReportWindow();
                     }
                 }
                 default -> System.out.println("Invalid window");

@@ -207,6 +207,12 @@ public class ConversationWindow extends JDialog {
     }
 
     /**
+     * Create the reporting button
+     *
+     * @return the report button
+     */
+
+    /**
      * This function allow to get the current privileges of an user
      *
      * @return the permission of the use, or error if there is an error

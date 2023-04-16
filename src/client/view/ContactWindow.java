@@ -1,5 +1,6 @@
 package client.view;
 
+import client.Client;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
@@ -26,7 +27,6 @@ public class ContactWindow extends JDialog {
     private JButton nextPageButton;
     private JButton firstPageButton;
     private JButton lastPageButton;
-
     private JPanel contactsPanel;
     private JPanel mainPanel;
     private JPanel buttonPanel;
@@ -82,7 +82,25 @@ public class ContactWindow extends JDialog {
         setVisible(false);
         dispose();
     }
+    private JPanel createUserPanel() {
 
+        String currentPrivilege = "";
+
+        JPanel userPanel = new JPanel(new BorderLayout());
+        userPanel.setPreferredSize(new Dimension(550, 30));
+        userPanel.setBackground(Color.GRAY);
+        userPanel.add(createReportingButton(),BorderLayout.CENTER);
+        return userPanel;
+    }
+    private JButton createReportingButton() {
+        JButton createReportingButton = new JButton("Reports");
+        createReportingButton.setPreferredSize(new Dimension(50, 30));
+        createReportingButton.addActionListener(e -> {
+            ViewManager.setCurrentDisplay(5);
+            closeContactWindow();
+        });
+        return createReportingButton;
+    }
     /**
      * Init the components
      */
@@ -94,13 +112,11 @@ public class ContactWindow extends JDialog {
         contactsPanel = new JPanel(cardLayout);
 
         buttonPanel = new JPanel(new FlowLayout());
-
         nextPageButton = new JButton("⬇");
         backPageButton = new JButton("⬆");
         firstPageButton = new JButton("<<");
         lastPageButton = new JButton(">>");
 
-        // Add parent panel to the window
         add(mainPanel);
 
         // Create the next and previous buttons for the current page
@@ -145,6 +161,7 @@ public class ContactWindow extends JDialog {
         });
 
         // Ajout des boutons au panel
+
         buttonPanel.add(nextPageButton);
         buttonPanel.add(backPageButton);
         buttonPanel.add(firstPageButton);
@@ -174,6 +191,19 @@ public class ContactWindow extends JDialog {
 
 
         // Add the others panel to the main panel
+        String currentPrivilege = "";
+
+        JPanel userPanel = new JPanel(new BorderLayout());
+        userPanel.setPreferredSize(new Dimension(550, 30));
+        userPanel.setBackground(Color.GRAY);
+
+        do {
+            currentPrivilege = getClientPermission();
+        } while (currentPrivilege.equals("ERROR"));
+        if (currentPrivilege.equals("ADMIN")){
+            mainPanel.add(createUserPanel(),BorderLayout.NORTH);
+
+        }
         mainPanel.add(contactsPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -245,6 +275,27 @@ public class ContactWindow extends JDialog {
         }
         setButtonVisibility();
     }
+
+    private String getClientPermission() {
+        User user = null;
+
+        try {
+            String serverResponse = this.serverConnection.getUserByID(Client.getClientID());
+            ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+            user = responseAnalyser.extractUser();
+        } catch (Exception e) {
+            System.out.println("[!] Error while getting user by user permission\n");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+            return "ERROR";
+        }
+
+        return user.getPermission();
+    }
+
 
     public void setButtonVisibility() {
 
