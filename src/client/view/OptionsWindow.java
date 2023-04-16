@@ -16,6 +16,7 @@ public class OptionsWindow extends JDialog {
     private JRadioButton setClassicUserRadioButton;
     private JRadioButton setAdminRadioButton;
     private JButton submitButton;
+    private JButton cancelButton;
     private final ServerConnection serverConnection;
     User userChattingWith;
 
@@ -69,6 +70,13 @@ public class OptionsWindow extends JDialog {
 
         // Create submit button
         submitButton = new JButton("Confirm");
+        //Create the cancel button
+        cancelButton = new JButton("Cancel");
+
+        cancelButton.addActionListener(e -> {
+            ViewManager.setCurrentDisplay(3);
+            closeOptionWindow();
+        });
 
         submitButton.addActionListener(e -> {
 
@@ -188,19 +196,21 @@ public class OptionsWindow extends JDialog {
         // Add radio buttons and submit button to panel
         JPanel panel = new JPanel();
         if (userPermission.equals("ADMIN")) {
-            panel.setLayout(new GridLayout(6, 1));
+            panel.setLayout(new GridLayout(7, 1));
             panel.add(banRadioButton);
             panel.add(unbanRadioButton);
             panel.add(setClassicUserRadioButton);
             panel.add(setModeratorRadioButton);
             panel.add(setAdminRadioButton);
             panel.add(submitButton);
+            panel.add(cancelButton);
         }
         else {
-            panel.setLayout(new GridLayout(3, 1));
+            panel.setLayout(new GridLayout(4, 1));
             panel.add(banRadioButton);
             panel.add(unbanRadioButton);
             panel.add(submitButton);
+            panel.add(cancelButton);
         }
 
         // Default values
