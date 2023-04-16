@@ -186,7 +186,7 @@ public class ConversationWindow extends JDialog {
      */
     private JButton createBackButton() {
         JButton backButton = new JButton("←");
-        backButton.setPreferredSize(new Dimension(100, 30));
+        backButton.setPreferredSize(new Dimension(100, 25));
         backButton.addActionListener(e -> {
             previousSize = getSize();
             // Go gack to contact page
@@ -304,7 +304,7 @@ public class ConversationWindow extends JDialog {
         imageButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "JPG Images", "jpg");
+                    "JPG et PNG Images", "jpg","png");
             chooser.setFileFilter(filter);
             int returnVal = chooser.showOpenDialog(null);
             if(returnVal == JFileChooser.APPROVE_OPTION) {
