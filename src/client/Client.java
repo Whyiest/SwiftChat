@@ -1,10 +1,12 @@
 package client;
 import client.controler.ServerConnection;
 import client.view.ViewManager;
+import com.mysql.cj.jdbc.SuspendableXAConnection;
 
 public class Client {
 
     private static int clientID = -1;
+
     private static boolean clientIsLogged = false;
 
     private static boolean isClientBanned = false;
@@ -60,7 +62,10 @@ public class Client {
                 clientID = -1;
                 clientIsLogged = false;
                 isClientBanned = false;
+                ViewManager.setIsClientBanned(true);
                 ViewManager.setCurrentDisplay(0);
+                System.out.println("[!] Logout protocol finished.");
+                System.exit(100);
             }
 
         }
