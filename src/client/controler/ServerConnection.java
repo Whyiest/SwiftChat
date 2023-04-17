@@ -447,7 +447,7 @@ public class ServerConnection implements Runnable {
      * @return the list of all the messages in String format
      */
     public String listMessageBetweenUsers(int senderID, int receverID) {
-        return sendToServer("LIST-MESSAGE-BETWEEN-USERS;" + senderID + ";" + receverID);
+        return sendToServer("LIST-MESSAGES-BETWEEN-USERS;" + senderID + ";" + receverID);
     }
 
 

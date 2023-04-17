@@ -79,28 +79,36 @@ public class MessageDao{
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [GET_ALL_MESSAGES_FOR_USER;SENDER_ID;RECEIVER_ID]");
-            return "LIST_ALL_MESSAGES_FOR_USER;FAILURE";
+            e.printStackTrace(); // Ajoutez cette ligne pour afficher la trace de la pile d'erreurs
+            return "LIST-ALL-MESSAGES-FOR-USER;FAILURE";
         }
 
         // Create an SQL statement to get all the messages for a sender and a receiver from the database
-        String sql = "SELECT * FROM message WHERE SENDER_ID = ? AND RECEIVER_ID = ? ORDER BY TIMESTAMP ASC";
-        String serverResponse = "";
+        String sql = "SELECT * FROM message " + "WHERE (SENDER_ID = ? AND RECEIVER_ID = ?) OR (SENDER_ID = ? AND RECEIVER_ID = ?) " + "ORDER BY TIMESTAMP ASC";
+
+        String serverResponse = "LIST-ALL-MESSAGES-FOR-USER;";
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setInt(1, idSender);
                 statement.setInt(2, idReceiver);
+                statement.setInt(3, idReceiver);
+                statement.setInt(4, idSender);
                 ResultSet rs = statement.executeQuery();
 
                 if (rs != null && rs.next()) {
                     // Get the first result
-                    serverResponse += rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                    serverResponse +=  rs.getInt("SENDER_ID") + ";" + rs.getInt("RECEIVER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
 
                     // Get the other results
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                        serverResponse +=  ";" + rs.getInt("SENDER_ID") + ";" + rs.getInt("RECEIVER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
                     }
                 }
+                else {
+                    serverResponse += "EMPTY";
+                }
+
                 statement.close();
                 return serverResponse;
             } else {

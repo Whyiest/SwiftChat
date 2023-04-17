@@ -3,6 +3,7 @@ package client.clientModel;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -24,7 +25,7 @@ public class ResponseAnalyser {
 
     private String[] messageParts;
 
-    public ResponseAnalyser (String serverResponse) {
+    public ResponseAnalyser(String serverResponse) {
         this.serverResponse = serverResponse;
         extractMessage();
     }
@@ -44,41 +45,67 @@ public class ResponseAnalyser {
     }
 
 
-
     /**
      * This method allows to create a list of users from the server response
+     *
      * @return the list of users
      */
     public List<User> createUserList() {
 
         List<User> userList = new ArrayList<>();
         int caractPerUser = 10; // n user
-        for(int i = 1; i < messageParts.length; i += caractPerUser) {
+        for (int i = 1; i < messageParts.length; i += caractPerUser) {
             User user = new User();
             user.setId(Integer.parseInt(messageParts[i]));
-            user.setPermission(messageParts[i+1]);
-            user.setFirstName(messageParts[i+2]);
-            user.setLastName(messageParts[i+3]);
-            user.setUserName(messageParts[i+4]);
-            user.setMail(messageParts[i+5]);
-            user.setPassword(messageParts[i+6]);
-            user.setLastConnectionTime(LocalDateTime.parse(messageParts[i+7]));
-            user.setStatus(messageParts[i+8]);
-            user.setBanned(Boolean.parseBoolean(messageParts[i+9]));
+            user.setPermission(messageParts[i + 1]);
+            user.setFirstName(messageParts[i + 2]);
+            user.setLastName(messageParts[i + 3]);
+            user.setUserName(messageParts[i + 4]);
+            user.setMail(messageParts[i + 5]);
+            user.setPassword(messageParts[i + 6]);
+            user.setLastConnectionTime(LocalDateTime.parse(messageParts[i + 7]));
+            user.setStatus(messageParts[i + 8]);
+            user.setBanned(Boolean.parseBoolean(messageParts[i + 9]));
             userList.add(user);
         }
         return userList;
     }
 
+    public List<Message> createMessageList() {
+        List<Message> messageList = new ArrayList<>();
+        int caractPerMessage = 4;
+
+        if (messageParts[1].equals("EMPTY")) {
+            return null;
+        }
+        else if (messageParts.length > 2) {
+            for (int i = 1; i < messageParts.length; i += caractPerMessage) {
+                Message message = new Message();
+                message.setSenderID(Integer.parseInt(messageParts[i]));
+                message.setReceiverID(Integer.parseInt(messageParts[i + 1]));
+                message.setTimestamp(LocalDateTime.parse(messageParts[i + 2]));
+                message.setContent(messageParts[i + 3]);
+
+                messageList.add(message);
+            }
+        }
+        else {
+            System.out.println("[!] Error while analyzing message list");
+        }
+        return messageList;
+    }
+
+
     /**
      * This method allow to extract a single user from the server response
+     *
      * @return the user
      */
     public User extractUser() {
-        if(messageParts[1].equals("FAILURE")){
+        if (messageParts[1].equals("FAILURE")) {
             return null;
-        }else{
-            User myUser = new User(Integer.parseInt(messageParts[1]),messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], messageParts[7], LocalDateTime.parse(messageParts[8]), Boolean.parseBoolean(messageParts[9]), messageParts[10]);
+        } else {
+            User myUser = new User(Integer.parseInt(messageParts[1]), messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], messageParts[7], LocalDateTime.parse(messageParts[8]), Boolean.parseBoolean(messageParts[9]), messageParts[10]);
             return myUser;
 
         }
@@ -86,29 +113,30 @@ public class ResponseAnalyser {
 
     /**
      * This method allow to check if the login is successful
+     *
      * @return the user id if the login is successful, -1 otherwise
      */
-    public int login () {
+    public int login() {
 
         if (messageParts[1].equals("SUCCESS")) {
             return Integer.parseInt(messageParts[2]);
-        }
-        else {
+        } else {
             return -1;
         }
     }
 
     /**
      * This method generates a pie chart from the server response
+     *
      * @param dataToDisplay
      */
 
-   public void generatePieChart(int dataToDisplay){
+    public void generatePieChart(int dataToDisplay) {
         // Create a dataset for the pie chart
         DefaultPieDataset pieDataset = new DefaultPieDataset();
 
         // Add values to the dataset according to the type of pie chart we want to generate
-        switch(dataToDisplay){
+        switch (dataToDisplay) {
             case 1:
                 pieDataset.setValue("Offline", Double.parseDouble((messageParts[1])));
                 pieDataset.setValue("Online", Double.parseDouble((messageParts[2])));
@@ -138,8 +166,8 @@ public class ResponseAnalyser {
         );
 
         // Set custom colors for the chart and save it to a file according to the type of pie chart we want to generate
-        PiePlot p = (PiePlot)chart.getPlot();
-        switch(dataToDisplay){
+        PiePlot p = (PiePlot) chart.getPlot();
+        switch (dataToDisplay) {
             case 1:
                 p.setSectionPaint("Offline", Color.green);
                 p.setSectionPaint("Online", Color.red);
@@ -185,7 +213,7 @@ public class ResponseAnalyser {
      *
      * @param dataToDisplay
      */
-   public void generateHistogram(int dataToDisplay){
+    public void generateHistogram(int dataToDisplay) {
         // Create a dataset to store the histogram data
         HistogramDataset dataset = new HistogramDataset();
 
@@ -197,7 +225,7 @@ public class ResponseAnalyser {
 
         // Convert each date string in the messageParts array to a LocalDateTime object,
         // Then to a double value representing the day of the month, and store it in the dates array
-        for(int i = 0; i < messageParts.length; i++){
+        for (int i = 0; i < messageParts.length; i++) {
             LocalDateTime dateTime = LocalDateTime.parse(messageParts[i], formatter);
             dates[i] = Double.valueOf(dateTime.getDayOfMonth());
         }
@@ -222,7 +250,7 @@ public class ResponseAnalyser {
         chart.getPlot().setForegroundAlpha(0.9f);
 
         // Save the chart to a file according to the type of histogram we want to generate
-        switch(dataToDisplay){
+        switch (dataToDisplay) {
             case 1:
                 try {
                     ChartUtilities.saveChartAsPNG(new File("totalMessageHistogram.png"), chart, 400, 300);
@@ -266,13 +294,13 @@ public class ResponseAnalyser {
      *
      * @param dataToDisplay
      */
-    public void generateBarChart(int dataToDisplay){
+    public void generateBarChart(int dataToDisplay) {
         // Create a dataset for the bar chart
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // Add the data to the dataset
-        for(int i = 0; i < messageParts.length/2; i++){
-            dataset.setValue(Integer.parseInt(messageParts[2*i+1]), "Top users logs", "User " + messageParts[2*i]);
+        for (int i = 0; i < messageParts.length / 2; i++) {
+            dataset.setValue(Integer.parseInt(messageParts[2 * i + 1]), "Top users logs", "User " + messageParts[2 * i]);
         }
 
         // Create the chart object

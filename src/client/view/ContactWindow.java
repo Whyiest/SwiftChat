@@ -21,6 +21,8 @@ public class ContactWindow extends JDialog {
     private User[][] usersPerPage;
 
     private User[] listCurrentDisplayedUsers;
+    private final User currentUser;
+
     private int totalPage;
     private int currentContactPanel;
     private JButton backPageButton;
@@ -36,8 +38,9 @@ public class ContactWindow extends JDialog {
      *
      * @param parent           the parent frame
      * @param serverConnection the server connection
+     *
      */
-    public ContactWindow(JFrame parent, ServerConnection serverConnection,int width, int height) {
+    public ContactWindow(JFrame parent, ServerConnection serverConnection,User user, int width, int height) {
 
         super(parent);
 
@@ -47,6 +50,7 @@ public class ContactWindow extends JDialog {
         this.userPerPage = 12;
         this.listCurrentDisplayedUsers = new User[userPerPage];
         this.currentContactPanel = 0;
+        this.currentUser = user;
 
         // Setup view
         setTitle("Contacts");
@@ -343,5 +347,9 @@ public class ContactWindow extends JDialog {
             initials.append(m.group().toUpperCase());
         }
         return initials.toString();
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
     }
 }

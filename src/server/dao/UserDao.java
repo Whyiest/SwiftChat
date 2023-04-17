@@ -117,8 +117,7 @@ public class UserDao {
                         serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + rs.getString("EMAIL") + ";" + rs.getString("PASSWORD") + ";" + rs.getString("PERMISSION") + ";" + rs.getString("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
                     }
                 } else {
-                    // Throw an exception if the result set is empty
-                    throw new SQLException("No user found.");
+                    serverResponse += "EMPTY";
                 }
                 statement.close();
                 return serverResponse;

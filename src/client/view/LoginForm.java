@@ -63,6 +63,7 @@ public class LoginForm extends JDialog {
                     // Set client to logged
                     Client.setClientIsLogged(true);
                     Client.setClientID(user.getId());
+                    ViewManager.setCurrentUser(user);
                     ViewManager.setCurrentDisplay(2);
                     dispose();
                 }

@@ -3,10 +3,10 @@ import java.time.LocalDateTime;
 
 
 public class Message {
-    private final int senderID;
-    private final int receiverID;
-    private final String content;
-    private final LocalDateTime timestamp;
+    private int senderID;
+    private int receiverID;
+    private String content;
+    private LocalDateTime timestamp;
 
     /**
      * This constructor allow to create a message
@@ -21,6 +21,15 @@ public class Message {
         this.timestamp = LocalDateTime.now();;
         this.content = content;
     }
+    public Message(int senderID, int receiverID, String content,LocalDateTime timestamp) {
+        this.senderID = senderID;
+        this.receiverID = receiverID;
+        this.timestamp = timestamp;
+        this.content = content;
+    }
+
+    public Message() {
+    }
 
 
     /**
@@ -31,4 +40,35 @@ public class Message {
         return senderID + ";" + receiverID + ";" + timestamp + ";" + content;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public int getSenderID() {
+        return senderID;
+    }
+
+    public int getReceiverID() {
+        return receiverID;
+    }
+
+    public void setContent(String content){
+        this.content = content;
+    }
+
+    public void setReceiverID(int receiverID) {
+        this.receiverID = receiverID;
+    }
+
+    public void setSenderID(int senderID) {
+        this.senderID = senderID;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }
