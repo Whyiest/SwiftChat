@@ -2,12 +2,15 @@ package server.dao;
 
 import server.network.Database;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class MessageDao{
+public class GroupMessageDao {
+
     private Database myDb;
 
-    public MessageDao(Database myDb){
+    public GroupMessageDao (Database myDb){
 
         this.myDb = myDb;
     }
@@ -18,27 +21,25 @@ public class MessageDao{
      * @param message The message
      * @return The server response
      **/
-    public String addMessage(String[] messageParts, String message){
+    public String addMessageToGroup(String[] messageParts, String message){
 
         // Linking message parts to variables
         String messageSenderID = "";
-        String messageReceiverID = "";
         String messageTimestamp = "";
         String messageContent = "";
 
         try {
             messageSenderID = messageParts[1];
-            messageReceiverID = messageParts[2];
-            messageTimestamp = messageParts[3];
-            messageContent = messageParts[4];
+            messageTimestamp = messageParts[2];
+            messageContent = messageParts[3];
 
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;SENDER_ID;RECEIVER_ID;TIMESTAMP;CONTENT]");
+            System.out.println("Incorrect syntax provided, please use : [ADD-MESSAGE-GROUP;SENDER_ID;TIMESTAMP;CONTENT]");
         }
 
         // Create an SQL statement to insert the message into the database
-        String sql = "INSERT INTO MESSAGE (SENDER_ID, RECEIVER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO MESSAGE (SENDER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
         try{
@@ -46,20 +47,19 @@ public class MessageDao{
 
             // Set the parameter values for the prepared statement
             statement.setInt(1, Integer.parseInt(messageSenderID));
-            statement.setInt(2, Integer.parseInt(messageReceiverID));
-            statement.setString(3, messageTimestamp);
-            statement.setString(4, messageContent);
+            statement.setString(2, messageTimestamp);
+            statement.setString(3, messageContent);
 
             // Execute the SQL statement
             statement.executeUpdate();
 
             // Close the statement
             statement.close();
-            return "ADD-MESSAGE;SUCCESS";
+            return "ADD-MESSAGE-GROUP;SUCCESS";
         } catch (Exception e){
             System.out.println("[!] Error while creating the message [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "ADD-MESSAGE;FAILURE";
+            return "ADD-MESSAGE-GROUP;FAILURE";
         }
     }
 
@@ -67,42 +67,35 @@ public class MessageDao{
      * This method allow to get all messages for a user
      * @return The server response
      **/
-    public String listAllMessagesBetweenUsers(String[] messageParts, String message){
+    public String listAllMessagesInGroup(String[] messageParts, String message){
 
         // Linking message parts to variables
         int idSender;
-        int idReceiver;
 
         try {
             idSender = Integer.parseInt(messageParts[1]);
-            idReceiver = Integer.parseInt(messageParts[2]);
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [LIST_ALL_MESSAGES_FOR_USER;SENDER_ID;RECEIVER_ID]");
+            System.out.println("Incorrect syntax provided, please use : [LIST-ALL-MESSAGES-IN-GROUP;SENDER_ID]");
             e.printStackTrace(); // Ajoutez cette ligne pour afficher la trace de la pile d'erreurs
-            return "LIST-MESSAGES-BETWEEN-USERS;FAILURE";
+            return "LIST-ALL-MESSAGES-IN-GROUP;FAILURE";
         }
 
         // Create an SQL statement to get all the messages for a sender and a receiver from the database
-        String sql = "SELECT * FROM message " + "WHERE (SENDER_ID = ? AND RECEIVER_ID = ?) OR (SENDER_ID = ? AND RECEIVER_ID = ?) " + "ORDER BY TIMESTAMP ASC";
-
-        String serverResponse = "LIST-MESSAGES-BETWEEN-USERS;";
+        String sql = "SELECT * FROM MESSAGEGROUP";
+        String serverResponse = "LIST-ALL-MESSAGES-IN-GROUP;";
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
-                statement.setInt(1, idSender);
-                statement.setInt(2, idReceiver);
-                statement.setInt(3, idReceiver);
-                statement.setInt(4, idSender);
                 ResultSet rs = statement.executeQuery();
 
                 if (rs != null && rs.next()) {
                     // Get the first result
-                    serverResponse +=  rs.getInt("SENDER_ID") + ";" + rs.getInt("RECEIVER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                    serverResponse +=  rs.getInt("SENDER_ID") + ";"  + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
 
                     // Get the other results
                     while (rs.next()) {
-                        serverResponse +=  ";" + rs.getInt("SENDER_ID") + ";" + rs.getInt("RECEIVER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                        serverResponse +=  ";" + rs.getInt("SENDER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
                     }
                 }
                 else {
@@ -118,7 +111,7 @@ public class MessageDao{
         } catch(Exception e){
             System.out.println("[!] Error while getting all messages for user [" + message + "]");
             System.out.println("Statement failure : " + sql);
-            return "LIST-MESSAGES-BETWEEN-USERS;FAILURE";
+            return "LIST-ALL-MESSAGES-IN-GROUP;FAILURE";
         }
     }
 

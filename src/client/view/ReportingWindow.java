@@ -23,7 +23,7 @@ public class ReportingWindow extends JDialog{
         setTitle("Reports statistics");
         setSize(width, height);
         setContentPane(mainPanel);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(parent);
 
 

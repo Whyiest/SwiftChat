@@ -1,5 +1,6 @@
 package server.serverModel;
 
+import server.dao.GroupMessageDao;
 import server.network.Database;
 
 import server.dao.UserDao;
@@ -17,6 +18,7 @@ public class MessageAnalyser {
     private UserDao userDao;
     private MessageDao messageDao;
     private LogDao logDao;
+    private GroupMessageDao groupMessageDao;
 
 
     /**
@@ -30,6 +32,7 @@ public class MessageAnalyser {
         this.userDao = new UserDao(myDb);
         this.messageDao = new MessageDao(myDb);
         this.logDao = new LogDao(myDb);
+        this.groupMessageDao = new GroupMessageDao(myDb);
     }
 
     /**
@@ -95,6 +98,9 @@ public class MessageAnalyser {
             case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();
             case "GET-CONNECTIONS-STATISTICS-BY-USER-ID" -> serverResponse = getConnectionsStatisticsByUserId();
             case "GET-TOP-USERS" -> serverResponse = getTopUsers();
+
+            case "LIST-ALL-MESSAGES-IN-GROUP" -> serverResponse = listAllMessagesInGroup();
+            case "ADD-MESSAGE-IN-GROUP" -> serverResponse = addMessageToGroup();
 
             case "TEST" -> serverResponse = "[!] Test is working, received : " + messageParts[1];
 
@@ -377,6 +383,24 @@ public class MessageAnalyser {
         return logDao.getTopUsers(messageParts, message);
     }
 
+    /**
+     * This method allow to list all the messages in a group
+     * Message format : LIST-ALL-MESSAGES-IN-GROUP;
+     * Response format : LIST-ALL-MESSAGES-IN-GROUP;(FAILURE)(EMPTY);SENDER_ID;CONTENT;TIMESTAMP
+     * @return The messages in a group
+     */
+    public String listAllMessagesInGroup() {
+        return groupMessageDao.listAllMessagesInGroup(messageParts, message);
+    }
+
+    /**
+     * This method allow to add a message to a group
+     * Message format : ADD-MESSAGE-GROUP;SENDER_ID;CONTENT;TIMESTAMP
+     * @return ADD-MESSAGE-GROUP;SUCCESS if the message is added, ADD-MESSAGE-GROUP;FAILURE otherwise
+     */
+    public String addMessageToGroup() {
+        return groupMessageDao.addMessageToGroup(messageParts, message);
+    }
 
     /**
      * This method allow to respond to ping request
