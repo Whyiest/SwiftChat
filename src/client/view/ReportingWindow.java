@@ -1,5 +1,6 @@
 package client.view;
 
+import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
 
 import javax.swing.*;
@@ -39,6 +40,7 @@ public class ReportingWindow extends JDialog{
                 closeReportWindow();
             }
         });
+
         choiceBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -48,10 +50,10 @@ public class ReportingWindow extends JDialog{
                         topUsers();
                         break;
                     case "Connection statistics for one user":
-                        doOption2();
+                        connectionByID();
                         break;
                     case "Global connection statistics":
-                        doOption3();
+                        connectionStatistics();
                         break;
                     case "Messages statistics for one user":
                         doOption4();
@@ -78,6 +80,10 @@ public class ReportingWindow extends JDialog{
             }
         });
     }
+
+    /**
+     * initialize the comboBox parameters
+     */
     public void initButtons(){
         choiceBox.addItem("Top User");
         choiceBox.addItem("Connection statistics for one user");
@@ -106,15 +112,25 @@ public class ReportingWindow extends JDialog{
     private void topUsers() {
         String serverResponse = "";
         serverResponse = serverConnection.getTopUsers();
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        System.out.println(responseAnalyser);
         System.out.println(serverResponse);
         System.out.println("Top User");
     }
 
-    private void doOption2() {
+    private void connectionByID() {
+        String serverResponse = "";
+        serverResponse = serverConnection.getConnectionsStatisticsByUserId();
+        System.out.println(serverResponse);
         System.out.println("Connection statistics for one user");
     }
 
-    private void doOption3() {
+    private void connectionStatistics() {
+        String serverResponse = "";
+        serverResponse = serverConnection.getConnectionsStatistics();
+        ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
+        int num = Integer.parseInt(serverResponse);
+        responseAnalyser.generateBarChart(num);
         System.out.println("Global connection statistics");
     }
     private void doOption4() {

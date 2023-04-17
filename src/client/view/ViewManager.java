@@ -3,6 +3,8 @@ package client.view;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
+import javax.swing.*;
+
 public class ViewManager implements Runnable {
     public ServerConnection serverConnection;
     public LoginForm loginForm; // LOGIN 0
@@ -13,7 +15,10 @@ public class ViewManager implements Runnable {
     public ReportingWindow reportingWindow; //REPORTS 5
     public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage, 5=ReportWindow
     public static User chattingWithThisUser; // If you chat with someone, his user ID is here
+    public static User currentUser; // If you chat with someone, his user ID is here
+
     public static boolean alreadyDisplay;
+    public static boolean isClientBanned;   // If the client is banned, this boolean is true
 
     public User user;
 
@@ -32,6 +37,10 @@ public class ViewManager implements Runnable {
      * Run the view Thread
      */
     public void run() {
+        displayWindow();
+    }
+
+    public void displayWindow () {
         do {
             switch (currentWindow) {
                 case 0 -> { // LOGIN
@@ -51,15 +60,23 @@ public class ViewManager implements Runnable {
                 case 2 -> { // CONTACT
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        contactForm = new ContactWindow(null, serverConnection,700,600);
+                        contactForm = new ContactWindow(null, serverConnection,currentUser,700,600);
                         contactForm.openContactWindow();
+                    }
+                    if (isClientBanned) {
+                        contactForm.closeContactWindow();
+                        isClientBanned = false;
                     }
                 }
                 case 3 -> { // CHAT
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.conversationForm = new ConversationWindow(null, serverConnection, chattingWithThisUser,700,600);
+                        this.conversationForm = new ConversationWindow(null, serverConnection, chattingWithThisUser,currentUser,700,600);
                         conversationForm.openConversationWindow();
+                    }
+                    if (isClientBanned) {
+                        conversationForm.closeConversationWindow();
+                        isClientBanned = false;
                     }
                 }
                 case 4 -> { // BAN WINDOW
@@ -68,6 +85,10 @@ public class ViewManager implements Runnable {
                         this.optionsWindow = new OptionsWindow(conversationForm, serverConnection, chattingWithThisUser,300,200);
                         optionsWindow.openOptionWindow();
                     }
+                    if (isClientBanned) {
+                        optionsWindow.closeOptionWindow();
+                        isClientBanned = false;
+                    }
                 }
                 case 5-> { // REPORTS
                     if (!alreadyDisplay) {
@@ -75,14 +96,16 @@ public class ViewManager implements Runnable {
                         this.reportingWindow = new ReportingWindow(conversationForm, serverConnection,600,500);
                         reportingWindow.openReportWindow();
                     }
+                    if (isClientBanned) {
+                        reportingWindow.closeReportWindow();
+                        isClientBanned = false;
+                    }
                 }
                 default -> System.out.println("Invalid window");
             }
 
         } while (true);
-
     }
-
 
     /**
      * Set the current window to display
@@ -90,7 +113,7 @@ public class ViewManager implements Runnable {
      * @param idOfWindowToDisplay the id of the window to display
      */
 
-    public static void setCurrentDisplay(int idOfWindowToDisplay) {
+    public static void setCurrentDisplay(final int idOfWindowToDisplay) {
         alreadyDisplay = false;
         currentWindow = idOfWindowToDisplay;
     }
@@ -104,6 +127,10 @@ public class ViewManager implements Runnable {
         chattingWithThisUser = user;
     }
 
+    public static void setCurrentUser(User user){
+        currentUser = user;
+    }
+
     /**
      * Reload the display
      */
@@ -111,4 +138,7 @@ public class ViewManager implements Runnable {
         alreadyDisplay = false;
     }
 
+    public static void setIsClientBanned (boolean isClientBanned) {
+        ViewManager.isClientBanned = isClientBanned;
+    }
 }

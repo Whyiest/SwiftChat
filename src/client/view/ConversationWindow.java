@@ -1,12 +1,14 @@
 package client.view;
 
 import client.Client;
+import client.clientModel.Message;
 import client.clientModel.User;
 import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -15,6 +17,10 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -26,17 +32,21 @@ public class ConversationWindow extends JDialog {
     private JTextField messageField;
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
+    private final User currentUser;
 
-    private static Dimension previousSize ;
+    private static Dimension previousSize;
 
+    private JPanel chatPanel;
     static Box vertical = Box.createVerticalBox();
 
     private JTextArea chatArea;
 
-    private JScrollPane chatscrollpane ;
+    private JScrollPane chatscrollpane;
     private JPanel conversationPanel;
 
     static JFrame parent = new JFrame();
+
+    private List<Message> listMessageBetweenUsers;
 
 
     /**
@@ -46,17 +56,20 @@ public class ConversationWindow extends JDialog {
      * @param serverConnection the server connection
      * @param user             the user
      */
-    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user,int width,int height ) {
+    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user, User sender, int width, int height) {
 
         super(parent, "SwiftChat", true);
 
         // SETUP
         this.serverConnection = serverConnection;
         this.chattingWithThisUser = user;
+        this.currentUser = sender;
+        this.listMessageBetweenUsers = new ArrayList<>();
+
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(new Dimension(width,height));
-        this.previousSize=new Dimension(width,height);
+        setSize(new Dimension(width, height));
+        this.previousSize = new Dimension(width, height);
         setLocationRelativeTo(parent);
 
         try {
@@ -99,6 +112,30 @@ public class ConversationWindow extends JDialog {
     private void initComponents() {
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
+        try {
+            String serverResponse = serverConnection.listMessageBetweenUsers(currentUser.getId(), chattingWithThisUser.getId());
+            ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+            listMessageBetweenUsers = responseAnalyser.createMessageList();
+        } catch (Exception e) {
+            System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
+            e.printStackTrace(); // Affiche la trace de la pile d'appels pour l'exception capturée
+
+            JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        for (Message message : listMessageBetweenUsers) {
+            if (message.getSenderID() == (currentUser.getId())) {
+                // C'est un message envoyé par l'utilisateur actuel
+                addSentMessage(message.getContent());
+            } else if (message.getSenderID() == (chattingWithThisUser.getId())) {
+                // C'est un message reçu par l'utilisateur actuel
+                addReceivedMessage(message.getContent());
+            }
+        }
     }
 
     /**
@@ -157,14 +194,18 @@ public class ConversationWindow extends JDialog {
      * @return the chat scroll pane
      */
     private JScrollPane createChatScrollPane() {
+        chatPanel = new JPanel();
+        chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+        chatscrollpane = new JScrollPane(chatPanel);
 
         //chatArea = new JTextArea();
         //chatArea.setEditable(false);
 
-        conversationPanel = new JPanel();
-        chatscrollpane = new JScrollPane(conversationPanel);
+        //conversationPanel = new JPanel();
+        //chatscrollpane = new JScrollPane(conversationPanel);
         return chatscrollpane;
     }
+
 
     /**
      * Create the message panel
@@ -307,8 +348,8 @@ public class ConversationWindow extends JDialog {
                     "JPG et PNG Images", "jpg","png");
             chooser.setFileFilter(filter);
             int returnVal = chooser.showOpenDialog(null);
-            if(returnVal == JFileChooser.APPROVE_OPTION) {
-                File img= chooser.getSelectedFile();
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File img = chooser.getSelectedFile();
                 BufferedImage monimage;
                 try {
                     monimage = ImageIO.read(img);
@@ -337,13 +378,9 @@ public class ConversationWindow extends JDialog {
             }
 
 
-
-
-
         });
         return imageButton;
     }
-
 
 
     /**
@@ -364,27 +401,59 @@ public class ConversationWindow extends JDialog {
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
 
-            String out = messageField.getText();
-
-            JPanel p2 = formatLabel(out);
-
-            conversationPanel.setLayout(new BorderLayout());
-
-            JPanel left = new JPanel(new BorderLayout());
-            left.add(p2, BorderLayout.LINE_END);
-            vertical.add(left);
-            vertical.add(Box.createVerticalStrut(15));
-            conversationPanel.add(vertical, BorderLayout.PAGE_START);
+            String serverResponse = "";
+            String content = messageField.getText();
             messageField.setText("");
-            repaint();
-            invalidate();
-            validate();
 
-            //String message= messageField.getText();
-            //messageField.setText("");
-            //chatArea.append(": " + message + "\n");
-            //System.out.println(message);
+            // Allow to put this message at right side :
+            addSentMessage(content);
+
+            // Add to DB :
+            do {
+                try {
+                    serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
+
+                } catch (Exception messageError) {
+                    System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
+                    JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
+                }
+            } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+
+            serverConnection.addLog(currentUser.getId(), "Sent-message");
+
         });
         return sendButton;
     }
+
+    private void addSentMessage(String message) {
+        JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel sentMessageLabel = new JLabel(message);
+        sentMessageLabel.setBackground(Color.GREEN);
+        sentMessageLabel.setForeground(Color.WHITE);
+        sentMessageLabel.setOpaque(true);
+        sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        sentMessagePanel.add(sentMessageLabel);
+        chatPanel.add(sentMessagePanel);
+        chatPanel.revalidate();
+    }
+
+    private void addReceivedMessage(String message) {
+        JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel receivedMessageLabel = new JLabel(message);
+        receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
+        receivedMessageLabel.setOpaque(true);
+        receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        receivedMessagePanel.add(receivedMessageLabel);
+        chatPanel.add(receivedMessagePanel);
+        chatPanel.revalidate();
+    }
+
+
 }
+
+

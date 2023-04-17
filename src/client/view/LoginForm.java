@@ -58,11 +58,12 @@ public class LoginForm extends JDialog {
 
                 user = getAuthenticatedUser(username, password);
 
-                // If user password and ID are correct :
-                if (user != null) {
+                // If user password and ID are correct and user is not banned:
+                if (user != null && isUserBanned == false) {
                     // Set client to logged
                     Client.setClientIsLogged(true);
                     Client.setClientID(user.getId());
+                    ViewManager.setCurrentUser(user);
                     ViewManager.setCurrentDisplay(2);
                     dispose();
                 }
@@ -155,9 +156,18 @@ public class LoginForm extends JDialog {
                     serverResponse = serverConnection.getUserByID(userLoggedID);
                     ResponseAnalyser responseAnalyserSecond = new ResponseAnalyser(serverResponse);
                     loggedUser = responseAnalyserSecond.extractUser();
-                    // Set the last connection time and the status
-                    serverConnection.updateLastConnectinTime(userLoggedID);
-                    serverConnection.changeStatus(userLoggedID, "ONLINE");
+
+                    if (loggedUser != null && loggedUser.isBanned()) {
+                        isUserBanned = true;
+                        return null;
+                    }
+                    else if (loggedUser != null && !loggedUser.isBanned()) {
+                        isUserBanned = false;
+                        // Set the last connection time and the status
+                        serverConnection.updateLastConnectinTime(userLoggedID);
+                        serverConnection.changeStatus(userLoggedID, "ONLINE");
+                    }
+
                 } catch (Exception e) {
                     System.out.println("[!] Error while getting user information after login. (Retry in 1s)");
                     JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
@@ -169,14 +179,7 @@ public class LoginForm extends JDialog {
                 }
             } while (serverResponse.equals("ERROR"));
 
-            // If logged, check if he is banned
-
-            assert loggedUser != null;
-
-            if(loggedUser.isBanned()) {
-                isUserBanned = true;
-                return null;
-            }
+            // If logged user is not null and not banned
             return loggedUser;
         }
         // If the login failed
