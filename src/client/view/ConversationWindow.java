@@ -395,26 +395,33 @@ public class ConversationWindow extends JDialog {
             String content = messageField.getText();
             messageField.setText("");
 
-            // Allow to put this message at right side :
-            addSentMessage(content);
 
-            // Add to DB :
-            do {
-                try {
-                    serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
+            if (content.equals("")) {
+                System.out.println("[!] User tried to send empty message. Abort sending.");
+            } else {
 
-                } catch (Exception messageError) {
-                    System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
-                    JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                // Add to DB :
+                do {
                     try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                }
-            } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+                        serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
 
-            serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
+                    } catch (Exception messageError) {
+                        System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
+                        JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException interruptedException) {
+                            interruptedException.printStackTrace();
+                        }
+                    }
+                } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+
+                serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
+
+                // Allow to put this message at right side :
+                addSentMessage(content);
+            }
+
 
         });
         return sendButton;

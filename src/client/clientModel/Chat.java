@@ -2,7 +2,8 @@ package client.clientModel;
 
 import java.util.List;
 
-public class Chat {
+public class
+Chat {
     private List<Message> messageList;
     private List<User> userList;
 
