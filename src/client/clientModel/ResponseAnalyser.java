@@ -85,7 +85,6 @@ public class ResponseAnalyser {
                 message.setReceiverID(Integer.parseInt(messageParts[i + 1]));
                 message.setTimestamp(LocalDateTime.parse(messageParts[i + 2]));
                 message.setContent(messageParts[i + 3]);
-
                 messageList.add(message);
             }
         }

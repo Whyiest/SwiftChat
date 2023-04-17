@@ -27,7 +27,7 @@ public class OptionsWindow extends JDialog {
         this.userChattingWith = userChattingWith;
         setTitle("Ban User");
         setSize(width, height);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(parent);
 
         // Init all the components

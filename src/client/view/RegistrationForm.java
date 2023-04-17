@@ -36,7 +36,7 @@ public class RegistrationForm extends JDialog {
         setMinimumSize(new Dimension(width,height));
         setModal(true);
         setLocationRelativeTo(parent);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         // REGISTER BUTTON
         btnRegister.addActionListener(new ActionListener() {

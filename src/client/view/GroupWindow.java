@@ -2,51 +2,38 @@ package client.view;
 
 import client.Client;
 import client.clientModel.Message;
-import client.clientModel.User;
 import client.clientModel.ResponseAnalyser;
+import client.clientModel.User;
 import client.controler.ServerConnection;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.PlainDocument;
-import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
-public class ConversationWindow extends JDialog {
-    private String contactName;
-    private JTextField messageField;
+public class GroupWindow extends JDialog {
+
+    private final String header;
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
     private final User currentUser;
-
-    private static Dimension previousSize;
-
-    private JPanel chatPanel;
-    static Box vertical = Box.createVerticalBox();
-
-    private JTextArea chatArea;
-
-    private JScrollPane chatscrollpane;
-    private JPanel conversationPanel;
+    private List<Message> messageList;
 
     static JFrame parent = new JFrame();
-
-    private List<Message> listMessageBetweenUsers;
+    private JPanel chatPanel;
+    static Box vertical = Box.createVerticalBox();
+    private JTextField messageField;
+    private JTextArea chatArea;
+    private JScrollPane chatscrollpane;
+    private JPanel conversationPanel;
 
 
     /**
@@ -56,7 +43,7 @@ public class ConversationWindow extends JDialog {
      * @param serverConnection the server connection
      * @param user             the user
      */
-    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user, User sender, int width, int height) {
+    public GroupWindow(JFrame parent, ServerConnection serverConnection, User user, User sender, int width, int height) {
 
         super(parent, "SwiftChat", true);
 
@@ -64,12 +51,11 @@ public class ConversationWindow extends JDialog {
         this.serverConnection = serverConnection;
         this.chattingWithThisUser = user;
         this.currentUser = sender;
-        this.listMessageBetweenUsers = new ArrayList<>();
+        this.messageList = new ArrayList<>();
+        this.header = "General conversation";
 
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(new Dimension(width, height));
-        this.previousSize = new Dimension(width, height);
         setLocationRelativeTo(parent);
 
         try {
@@ -95,7 +81,6 @@ public class ConversationWindow extends JDialog {
         dispose();
     }
 
-
     /**
      * Create the message field
      *
@@ -110,12 +95,19 @@ public class ConversationWindow extends JDialog {
      * Initialize the components of the conversation window
      */
     private void initComponents() {
+
+        // Main panel that store all others components
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
+    }
+
+    private void upDateChat() {
+
+        // Getting all the messages
         try {
-            String serverResponse = serverConnection.listMessageBetweenUsers(currentUser.getId(), chattingWithThisUser.getId());
+            String serverResponse = serverConnection.listMessageInGroup(currentUser.getId());
             ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-            listMessageBetweenUsers = responseAnalyser.createMessageList();
+            messageList = responseAnalyser.createMessageList();
         } catch (Exception e) {
             System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
             e.printStackTrace(); // Affiche la trace de la pile d'appels pour l'exception capturée
@@ -127,16 +119,18 @@ public class ConversationWindow extends JDialog {
                 throw new RuntimeException(ex);
             }
         }
-        for (Message message : listMessageBetweenUsers) {
+
+        for (Message message : messageList) {
             if (message.getSenderID() == (currentUser.getId())) {
                 // C'est un message envoyé par l'utilisateur actuel
                 addSentMessage(message.getContent());
-            } else if (message.getSenderID() == (chattingWithThisUser.getId())) {
+            } else {
                 // C'est un message reçu par l'utilisateur actuel
                 addReceivedMessage(message.getContent());
             }
         }
     }
+
 
     /**
      * Create the main panel
@@ -177,14 +171,6 @@ public class ConversationWindow extends JDialog {
         userPanel.add(createBackButton(), BorderLayout.WEST);
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
 
-        do {
-            currentPrivilege = getClientPermission();
-        } while (currentPrivilege.equals("ERROR"));
-
-        // Create more option for moderator & admin
-        if (currentPrivilege.equals("MODERATOR") || currentPrivilege.equals("ADMIN")) {
-            userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
-        }
         return userPanel;
     }
 
@@ -198,11 +184,6 @@ public class ConversationWindow extends JDialog {
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatscrollpane = new JScrollPane(chatPanel);
 
-        //chatArea = new JTextArea();
-        //chatArea.setEditable(false);
-
-        //conversationPanel = new JPanel();
-        //chatscrollpane = new JScrollPane(conversationPanel);
         return chatscrollpane;
     }
 
@@ -229,7 +210,6 @@ public class ConversationWindow extends JDialog {
         JButton backButton = new JButton("←");
         backButton.setPreferredSize(new Dimension(100, 30));
         backButton.addActionListener(e -> {
-            previousSize = getSize();
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
@@ -243,66 +223,21 @@ public class ConversationWindow extends JDialog {
      * @return the user name label
      */
     private JLabel createUserNameLabel() {
-        JLabel userNameLabel = new JLabel(contactName);
+
+        JLabel userNameLabel = new JLabel(header);
         userNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userNameLabel.setForeground(Color.WHITE);
-        userNameLabel.setText(contactName = chattingWithThisUser.getFirstName() + " " + chattingWithThisUser.getLastName()); // Set text of the label
+        userNameLabel.setText("Group discussion"); // Set text of the label
         return userNameLabel;
     }
 
-    /**
-     * Create the more options button
-     *
-     * @return the more options button
-     */
-
-    private JButton createMoreOptionsButton() {
-        JButton moreOptionsButton = new JButton("...");
-        moreOptionsButton.setPreferredSize(new Dimension(50, 30));
-        moreOptionsButton.addActionListener(e -> {
-            ViewManager.setCurrentDisplay(4);
-            closeConversationWindow();
-        });
-        return moreOptionsButton;
-    }
-
-    /**
-     * Create the reporting button
-     *
-     * @return the report button
-     */
-
-    /**
-     * This function allow to get the current privileges of an user
-     *
-     * @return the permission of the use, or error if there is an error
-     */
-    public String getClientPermission() {
-
-        User user = null;
-
-        try {
-            String serverResponse = this.serverConnection.getUserByID(Client.getClientID());
-            ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-            user = responseAnalyser.extractUser();
-        } catch (Exception e) {
-            System.out.println("[!] Error while getting user by user permission\n");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
-            return "ERROR";
-        }
-
-        return user.getPermission();
-    }
 
     /**
      * Create the button panel
      *
      * @return the button panel
      */
+
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(createImageButton());
@@ -395,38 +330,36 @@ public class ConversationWindow extends JDialog {
             String content = messageField.getText();
             messageField.setText("");
 
+            // Allow to put this message at right side :
+            addSentMessage(content);
 
-            if (content.equals("")) {
-                System.out.println("[!] User tried to send empty message. Abort sending.");
-            } else {
+            // Add to DB :
+            do {
+                try {
+                    serverResponse = serverConnection.addMessageInGroup(currentUser.getId(), content);
 
-                // Add to DB :
-                do {
+                } catch (Exception messageError) {
+                    System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
+                    JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
                     try {
-                        serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
-
-                    } catch (Exception messageError) {
-                        System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
-                        JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException interruptedException) {
-                            interruptedException.printStackTrace();
-                        }
+                        Thread.sleep(1000);
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
                     }
-                } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+                }
+            } while (serverResponse.equals("ADD-MESSAGE-GROUP;FAILURE"));
 
-                serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
-
-                // Allow to put this message at right side :
-                addSentMessage(content);
-            }
-
+            serverConnection.addLog(currentUser.getId(), "SENT-GROUP-MESSAGE");
 
         });
         return sendButton;
     }
 
+    /**
+     * Allow to display the message at the right side
+     *
+     * @param message the message to display
+     */
     private void addSentMessage(String message) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JLabel sentMessageLabel = new JLabel(message);
@@ -439,6 +372,11 @@ public class ConversationWindow extends JDialog {
         chatPanel.revalidate();
     }
 
+    /**
+     * Allow to display the message at the left side
+     *
+     * @param message the message to display
+     */
     private void addReceivedMessage(String message) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel receivedMessageLabel = new JLabel(message);
