@@ -67,6 +67,7 @@ public class Database {
         try {
             populate = connection.createStatement();
 
+            /*
             // Create USER table
             String createUserTableSQL = "CREATE TABLE USER " +
                     "(ID INTEGER not NULL AUTO_INCREMENT, " +
@@ -83,6 +84,8 @@ public class Database {
 
             populate.executeUpdate(createUserTableSQL);
 
+
+
             // Create MESSAGE table
             String createMessageTableSQL = "CREATE TABLE MESSAGE " +
                     "(ID INTEGER not NULL AUTO_INCREMENT, " +
@@ -95,6 +98,21 @@ public class Database {
                     " FOREIGN KEY ( RECEIVER_ID ) REFERENCES USER(ID))";
 
             populate.executeUpdate(createMessageTableSQL);
+*/
+
+            // Create MESSAGE-GROUP table
+            String createMessageGroupTableSQL = "CREATE TABLE MESSAGEGROUP " +
+                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
+                    " SENDER_ID INTEGER," +
+                    " RECEIVER_ID INTEGER, " +
+                    " TIMESTAMP VARCHAR(255), " +
+                    " CONTENT VARCHAR(255), " +
+                    " PRIMARY KEY ( ID ), " +
+                    " FOREIGN KEY ( SENDER_ID ) REFERENCES USER(ID))";
+
+            populate.executeUpdate(createMessageGroupTableSQL);
+
+            /*
 
             // Create LOG table
             String createLogTableSQL = "CREATE TABLE LOG " +
@@ -106,6 +124,8 @@ public class Database {
                     " FOREIGN KEY ( USER_ID ) REFERENCES USER(ID))";
             populate.executeUpdate(createLogTableSQL);
             populate.close();
+
+             */
 
         } catch (SQLException se) {
             se.printStackTrace();

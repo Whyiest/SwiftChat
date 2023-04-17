@@ -6,6 +6,7 @@ import client.clientModel.User;
 import client.controler.ServerConnection;
 
 import javax.swing.*;
+import javax.swing.plaf.PanelUI;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
 
 public class ContactWindow extends JDialog {
     private final ServerConnection serverConnection;
+    private final int labelSize;
     private List<User> listAllUsers;
     private final int userPerPage;
     private User[][] usersPerPage;
@@ -32,15 +34,15 @@ public class ContactWindow extends JDialog {
     private JPanel contactsPanel;
     private JPanel mainPanel;
     private JPanel buttonPanel;
+    private CardLayout cardLayout;
 
     /**
      * Constructor
      *
      * @param parent           the parent frame
      * @param serverConnection the server connection
-     *
      */
-    public ContactWindow(JFrame parent, ServerConnection serverConnection,User user, int width, int height) {
+    public ContactWindow(JFrame parent, ServerConnection serverConnection, User user, int width, int height) {
 
         super(parent);
 
@@ -51,12 +53,14 @@ public class ContactWindow extends JDialog {
         this.listCurrentDisplayedUsers = new User[userPerPage];
         this.currentContactPanel = 0;
         this.currentUser = user;
+        this.labelSize = 600 / userPerPage;
+
 
         // Setup view
         setTitle("Contacts");
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setSize(new Dimension(width,height));
+        setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
 
         usersPerPage = null;
@@ -86,25 +90,7 @@ public class ContactWindow extends JDialog {
         setVisible(false);
         dispose();
     }
-    private JPanel createUserPanel() {
 
-        String currentPrivilege = "";
-
-        JPanel userPanel = new JPanel(new BorderLayout());
-        userPanel.setPreferredSize(new Dimension(550, 30));
-        userPanel.setBackground(Color.GRAY);
-        userPanel.add(createReportingButton(),BorderLayout.CENTER);
-        return userPanel;
-    }
-    private JButton createReportingButton() {
-        JButton createReportingButton = new JButton("Reports");
-        createReportingButton.setPreferredSize(new Dimension(50, 30));
-        createReportingButton.addActionListener(e -> {
-            ViewManager.setCurrentDisplay(5);
-            closeContactWindow();
-        });
-        return createReportingButton;
-    }
     /**
      * Init the components
      */
@@ -112,9 +98,8 @@ public class ContactWindow extends JDialog {
 
         // Init pannel objects :
         mainPanel = new JPanel(new BorderLayout());
-        CardLayout cardLayout = new CardLayout();
+        cardLayout = new CardLayout();
         contactsPanel = new JPanel(cardLayout);
-
         buttonPanel = new JPanel(new FlowLayout());
         nextPageButton = new JButton("⬇");
         backPageButton = new JButton("⬆");
@@ -122,14 +107,6 @@ public class ContactWindow extends JDialog {
         lastPageButton = new JButton(">>");
 
         add(mainPanel);
-
-        // Create the next and previous buttons for the current page
-
-        // Initially, on cache les deux boutons
-        nextPageButton.setVisible(true);
-        backPageButton.setVisible(true);
-        firstPageButton.setVisible(true);
-        lastPageButton.setVisible(true);
 
         // Button to scroll down
         nextPageButton.addActionListener(e -> {
@@ -171,7 +148,16 @@ public class ContactWindow extends JDialog {
         buttonPanel.add(firstPageButton);
         buttonPanel.add(lastPageButton);
 
-        // Total page :
+        // Add an option panel if the user is an admin
+        String currentPrivilege = getClientPermission();
+        if (currentPrivilege.equals("ADMIN")) {
+            mainPanel.add(createUserPanel(), BorderLayout.NORTH);
+        }
+        //mainPanel.add(GroupChatButtonPanel(), BorderLayout.NORTH);
+        mainPanel.add(contactsPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // List all users in DB
         do {
             try {
                 String serverResponse = serverConnection.listAllUsers();
@@ -179,7 +165,7 @@ public class ContactWindow extends JDialog {
                 listAllUsers = responseAnalyser.createUserList();
             } catch (Exception e) {
                 System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
-                JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
@@ -189,27 +175,10 @@ public class ContactWindow extends JDialog {
         } while (listAllUsers.size() == 0);
 
 
+        // Define variables
         totalPage = (int) Math.ceil((double) listAllUsers.size() / userPerPage);
         usersPerPage = new User[totalPage][userPerPage];
 
-
-
-        // Add the others panel to the main panel
-        String currentPrivilege = "";
-
-        JPanel userPanel = new JPanel(new BorderLayout());
-        userPanel.setPreferredSize(new Dimension(550, 30));
-        userPanel.setBackground(Color.GRAY);
-
-        do {
-            currentPrivilege = getClientPermission();
-        } while (currentPrivilege.equals("ERROR"));
-        if (currentPrivilege.equals("ADMIN")){
-            mainPanel.add(createUserPanel(),BorderLayout.NORTH);
-
-        }
-        mainPanel.add(contactsPanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // For each range of 12 users displayed :
         for (int currentPage = 0; currentPage < totalPage; currentPage++) {
@@ -240,23 +209,15 @@ public class ContactWindow extends JDialog {
 
                     // Initials of the user
                     String initials = getInitials(fullName);
-                    JLabel initialsLabel = new JLabel(initials);
-                    initialsLabel.setOpaque(true);
-                    initialsLabel.setBackground(Color.DARK_GRAY);
-                    initialsLabel.setForeground(Color.WHITE);
-                    initialsLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                    initialsLabel.setVerticalAlignment(SwingConstants.CENTER);
-                    int labelSize = 600 / userPerPage;
-                    initialsLabel.setPreferredSize(new Dimension(labelSize, labelSize));
-                    initialsLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-                    initialsLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                    JLabel initialsLabel = createInitialsLabel(initials);
                     contactCard.add(initialsLabel, BorderLayout.WEST);
 
                     // Init contact button for each user
-                    JButton contactButton = new JButton(fullName);
-                    contactButton.setForeground(new Color(255, 255, 255));
-                    contactButton.setOpaque(true);
-                    contactButton.setPreferredSize(new Dimension(550 - labelSize, labelSize));
+                    JButton contactButton = createContactButton(fullName);
+
+                    // Add status circle to the contact button
+                    JLabel statusCircle = createStatusCircle(user.getStatus());
+                    contactButton.add(statusCircle, BorderLayout.WEST);
 
                     // Allow event to be start in the button
                     int finalCurrentUserIterator = currentUserIterator;
@@ -266,20 +227,27 @@ public class ContactWindow extends JDialog {
                         dispose();
                     });
 
-                    contactButton.setBorderPainted(true);
-                    contactButton.setContentAreaFilled(false);
-                    contactButton.setFocusPainted(false);
-                    contactButton.setHorizontalAlignment(SwingConstants.LEFT);
-                    contactCard.add(contactButton, BorderLayout.CENTER);
 
                     // Add the current contact
+                    contactCard.add(contactButton, BorderLayout.CENTER);
                     pagePanel.add(contactCard);
                 }
             }
         }
+
+        // Visibility of the buttons
+        nextPageButton.setVisible(true);
+        backPageButton.setVisible(true);
+        firstPageButton.setVisible(true);
+        lastPageButton.setVisible(true);
         setButtonVisibility();
     }
 
+    /**
+     * Allow to get the permissions of the client
+     *
+     * @return the permission of the client
+     */
     private String getClientPermission() {
         User user = null;
 
@@ -301,6 +269,9 @@ public class ContactWindow extends JDialog {
     }
 
 
+    /**
+     * Allow to display scroll buttons depending on the current page
+     */
     public void setButtonVisibility() {
 
         // If it's the first page, hide the back button. Minimum page : 2
@@ -349,7 +320,103 @@ public class ContactWindow extends JDialog {
         return initials.toString();
     }
 
+    /**
+     * Allow to get the current user
+     *
+     * @return the current user
+     */
+
     public User getCurrentUser() {
         return currentUser;
+    }
+
+    /**
+     * Allow to create a label with the initials of the user
+     *
+     * @param initials the initials of the user
+     * @return the label
+     */
+    private JLabel createInitialsLabel(String initials) {
+        JLabel initialsLabel = new JLabel(initials);
+        initialsLabel.setOpaque(true);
+        initialsLabel.setBackground(Color.DARK_GRAY);
+        initialsLabel.setForeground(Color.WHITE);
+        initialsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        initialsLabel.setVerticalAlignment(SwingConstants.CENTER);
+        initialsLabel.setPreferredSize(new Dimension(labelSize, labelSize));
+        initialsLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+        initialsLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        return initialsLabel;
+    }
+
+    /**
+     * Allow to create a contact button for an user
+     * @return
+     */
+    private JButton createContactButton(String fullName) {
+        JButton contactButton = new JButton(fullName);
+        contactButton.setForeground(new Color(255, 255, 255));
+        contactButton.setOpaque(true);
+        contactButton.setPreferredSize(new Dimension(550 - labelSize, labelSize));
+        contactButton.setBorderPainted(true);
+        contactButton.setContentAreaFilled(false);
+        contactButton.setFocusPainted(false);
+        contactButton.setHorizontalAlignment(SwingConstants.LEFT);
+        return contactButton;
+    }
+
+
+    /**
+     * Allow to create an user panel
+     *
+     * @return the user panel
+     */
+    private JPanel createUserPanel() {
+
+        String currentPrivilege = "";
+
+        JPanel userPanel = new JPanel(new BorderLayout());
+        userPanel.setPreferredSize(new Dimension(550, 30));
+        userPanel.setBackground(Color.GRAY);
+        userPanel.add(createReportingButton(), BorderLayout.CENTER);
+        return userPanel;
+    }
+
+    /**
+     * Create the reporting button
+     *
+     * @return the reporting button
+     */
+    private JButton createReportingButton() {
+        JButton createReportingButton = new JButton("Reports");
+        createReportingButton.setPreferredSize(new Dimension(50, 30));
+        createReportingButton.addActionListener(e -> {
+            ViewManager.setCurrentDisplay(5);
+            closeContactWindow();
+        });
+        return createReportingButton;
+    }
+
+    /**
+     * Create a colored circle to represent the user status
+     *
+     * @param status the user status
+     * @return a colored circle
+     */
+    private JLabel createStatusCircle(String status) {
+        JLabel statusCircle = new JLabel();
+        int size = 10;
+        statusCircle.setPreferredSize(new Dimension(size, size));
+        statusCircle.setOpaque(true);
+        if (status.equalsIgnoreCase("ONLINE")) {
+            statusCircle.setBackground(Color.GREEN);
+        } else if (status.equalsIgnoreCase("AWAY")) {
+            statusCircle.setBackground(Color.YELLOW);
+        } else {
+            statusCircle.setBackground(Color.GRAY);
+        }
+        statusCircle.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
+
+        return statusCircle;
     }
 }

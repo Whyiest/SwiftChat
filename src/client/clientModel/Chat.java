@@ -7,9 +7,6 @@ public class Chat {
     private List<User> userList;
 
 
-    public Chat() {
-    }
-
     public List<Message> getMessageList() {
         return messageList;
     }

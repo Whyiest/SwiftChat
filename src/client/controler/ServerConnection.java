@@ -32,8 +32,6 @@ public class ServerConnection implements Runnable {
     private final int checkForBanDelay;
 
 
-
-
     public ServerConnection(String serverIP, int port) {
         this.port = port;
         this.serverIP = serverIP;
@@ -58,7 +56,7 @@ public class ServerConnection implements Runnable {
             try {
                 // Wait 1 second before checking connection
                 Thread.sleep(pingDelay);
-                iteratorBeforeCheckBan ++;
+                iteratorBeforeCheckBan++;
 
                 // If connection is lost, try to reconnect
                 if (!checkConnection()) {
@@ -171,25 +169,25 @@ public class ServerConnection implements Runnable {
             if ((iteratorBeforeCheckBan == checkForBanDelay) && Client.isClientLogged() == true) {
 
                 User whoIAm = null;
-                 try {
-                        checkResponse = getUserByID(Client.getClientID());
-                        ResponseAnalyser responseAnalyser = new ResponseAnalyser(checkResponse);
-                        whoIAm = responseAnalyser.extractUser();
+                try {
+                    checkResponse = getUserByID(Client.getClientID());
+                    ResponseAnalyser responseAnalyser = new ResponseAnalyser(checkResponse);
+                    whoIAm = responseAnalyser.extractUser();
 
-                        if(whoIAm.isBanned()) {
-                            Client.setIsClientBanned(true);
-                        }
-
-                    } catch (Exception e) {
-                        System.out.println("[!] Error while checking if the client is banned. Cannot retrieve client information.");
+                    if (whoIAm.isBanned()) {
+                        Client.setIsClientBanned(true);
                     }
+
+                } catch (Exception e) {
+                    System.out.println("[!] Error while checking if the client is banned. Cannot retrieve client information.");
+                }
             }
 
             if (iteratorBeforeCheckBan == checkForBanDelay) {
                 iteratorBeforeCheckBan = 0;
             }
 
-             // NO RESPONSE : CONNECTION IS DEAD
+            // NO RESPONSE : CONNECTION IS DEAD
             if (pingResponse == null) {
                 return false;
             }
@@ -307,6 +305,7 @@ public class ServerConnection implements Runnable {
 
         // Send it through the server
         String serverResponse = sendToServer("LOGOUT;" + userID);
+        addLog(userID, "LOGOUT");
         return serverResponse;
     }
 
@@ -566,6 +565,28 @@ public class ServerConnection implements Runnable {
         String serverResponse = sendToServer("GET-USER-BY-ID;" + userID);
         return serverResponse;
     }
+
+    /**
+     * This function allow to sen send message to general group
+     *
+     * @param senderID the ID of the sender of the message
+     * @param content  the content of the message
+     * @return the response from the server
+     */
+    public String addMessageInGroup(int senderID, String content) {
+        return sendToServer("ADD-MESSAGE-IN-GROUP;" + senderID + ";" + content);
+    }
+
+    /**
+     * This function allow to list all the messages in the general group
+     *
+     * @param senderID the ID of the sender of the message
+     * @return the response from the server
+     */
+    public String listMessageInGroup(int senderID) {
+        return sendToServer("LIST-MESSAGES-IN-GROUP;" + senderID);
+    }
+
 
     /**
      * Send a ping to the server
