@@ -168,12 +168,10 @@ public class ServerConnection implements Runnable {
             }
 
             // Check some times if the user is banned
-            if (iteratorBeforeCheckBan == checkForBanDelay && Client.isClientLogged()) {
+            if ((iteratorBeforeCheckBan == checkForBanDelay) && Client.isClientLogged() == true) {
 
                 User whoIAm = null;
-
-                iteratorBeforeCheckBan = 0;
-                    try {
+                 try {
                         checkResponse = getUserByID(Client.getClientID());
                         ResponseAnalyser responseAnalyser = new ResponseAnalyser(checkResponse);
                         whoIAm = responseAnalyser.extractUser();
@@ -187,7 +185,11 @@ public class ServerConnection implements Runnable {
                     }
             }
 
-            // NO RESPONSE : CONNECTION IS DEAD
+            if (iteratorBeforeCheckBan == checkForBanDelay) {
+                iteratorBeforeCheckBan = 0;
+            }
+
+             // NO RESPONSE : CONNECTION IS DEAD
             if (pingResponse == null) {
                 return false;
             }
