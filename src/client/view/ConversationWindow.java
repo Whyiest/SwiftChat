@@ -333,6 +333,29 @@ public class ConversationWindow extends JDialog {
         return panel;
     }
 
+    public static JPanel formatLabelreceiver(String out) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
+        output.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        output.setBackground(new Color(127, 114, 144, 255));
+        output.setOpaque(true);
+        output.setBorder(new EmptyBorder(15, 15, 15, 50));
+
+        panel.add(output);
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+        JLabel time = new JLabel();
+        time.setText(sdf.format(cal.getTime()));
+
+        panel.add(time);
+
+        return panel;
+    }
+
     /**
      * Create the image button
      *
@@ -429,23 +452,25 @@ public class ConversationWindow extends JDialog {
 
     private void addSentMessage(String message) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JLabel sentMessageLabel = new JLabel(message);
-        sentMessageLabel.setBackground(Color.GREEN);
-        sentMessageLabel.setForeground(Color.WHITE);
-        sentMessageLabel.setOpaque(true);
-        sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        sentMessagePanel.add(sentMessageLabel);
+        JPanel panel = formatLabel(message);
+        //JLabel sentMessageLabel = new JLabel(message);
+        //sentMessageLabel.setBackground(Color.GREEN);
+        //sentMessageLabel.setForeground(Color.BLACK);
+        //sentMessageLabel.setOpaque(true);
+        //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
     }
 
     private void addReceivedMessage(String message) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel receivedMessageLabel = new JLabel(message);
-        receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
-        receivedMessageLabel.setOpaque(true);
-        receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        receivedMessagePanel.add(receivedMessageLabel);
+        JPanel panel = formatLabelreceiver(message);
+        //JLabel receivedMessageLabel = new JLabel(message);
+        //receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
+        //receivedMessageLabel.setOpaque(true);
+        //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        receivedMessagePanel.add(panel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
     }
