@@ -220,9 +220,8 @@ public class ConversationWindow extends JDialog {
         return messagePanel;
     }
 
-    /**
-     * Create the back button
-     *
+
+     /** Create the back button
      * @return the back button
      */
     private JButton createBackButton() {
@@ -398,33 +397,47 @@ public class ConversationWindow extends JDialog {
      * @return the send button
      */
     private JButton createSendButton() {
+
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
+
 
             String serverResponse = "";
             String content = messageField.getText();
             messageField.setText("");
 
-            // Allow to put this message at right side :
-            addSentMessage(content);
 
-            // Add to DB :
-            do {
-                try {
-                    serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
+          if (content.equals("")) {
+              System.out.println("[!] User tried to send empty message. Abort sending.");
+          }
 
-                } catch (Exception messageError) {
-                    System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
-                    JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                }
-            } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
 
-            serverConnection.addLog(currentUser.getId(), "Sent-message");
+            else{
+
+                  // Add to DB :
+                  do {
+                      try {
+                          serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
+
+                      } catch (Exception messageError) {
+                          System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
+                          JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
+                          try {
+                              Thread.sleep(1000);
+                          } catch (InterruptedException interruptedException) {
+                              interruptedException.printStackTrace();
+                          }
+                      }
+                  } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+
+                  serverConnection.addLog(currentUser.getId(), "Sent-message");
+
+                  // Allow to put this message at right side :
+                  addSentMessage(content);
+              }
+
+
+
 
         });
         return sendButton;
