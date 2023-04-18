@@ -500,7 +500,7 @@ public class ConversationWindow extends JDialog {
                 serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
 
                 // Allow to put this message at right side :
-                addSentMessage(content, LocalDateTime.now());
+                //addSentMessage(content, LocalDateTime.now());
             }
 
 
