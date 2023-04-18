@@ -87,7 +87,7 @@ public class ViewManager implements Runnable {
                 case 4 -> { // CHAT
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.conversationForm = new ConversationWindow(null, serverConnection, currentUser, chattingWithThisUser, 700,600);
+                        this.conversationForm = new ConversationWindow(null, serverConnection, localStorage, currentUser, chattingWithThisUser, 700,600);
                         conversationForm.openConversationWindow();
                     }
                     if (isClientBanned) {

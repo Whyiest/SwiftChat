@@ -1,6 +1,7 @@
 package client.view;
 
 import client.Client;
+import client.clientModel.Data;
 import client.clientModel.Message;
 import client.clientModel.User;
 import client.clientModel.ResponseAnalyser;
@@ -9,22 +10,14 @@ import client.controler.ServerConnection;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.PlainDocument;
-import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ConversationWindow extends JDialog {
@@ -33,20 +26,19 @@ public class ConversationWindow extends JDialog {
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
     private final User currentUser;
-
     private static Dimension previousSize;
-
     private JPanel chatPanel;
     static Box vertical = Box.createVerticalBox();
-
     private JTextArea chatArea;
-
     private JScrollPane chatscrollpane;
     private JPanel conversationPanel;
-
     static JFrame parent = new JFrame();
+    private List<Message> listOfMessageBetweenUsers;
 
-    private List<Message> listMessageBetweenUsers;
+    private List<Message> alreadyDisplay;
+    private Data localStorage;
+
+    private Thread updateThread;
 
 
     /**
@@ -54,9 +46,9 @@ public class ConversationWindow extends JDialog {
      *
      * @param parent           the parent frame
      * @param serverConnection the server connection
-     * @param userChattingWith             the user
+     * @param userChattingWith the user
      */
-    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User whoIam, User userChattingWith, int width, int height) {
+    public ConversationWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User whoIam, User userChattingWith, int width, int height) {
 
         super(parent, "SwiftChat", true);
 
@@ -64,14 +56,14 @@ public class ConversationWindow extends JDialog {
         this.serverConnection = serverConnection;
         this.chattingWithThisUser = userChattingWith;
         this.currentUser = whoIam;
-        this.listMessageBetweenUsers = new ArrayList<>();
+        this.listOfMessageBetweenUsers = new ArrayList<>();
         this.previousSize = new Dimension(width, height);
-
+        this.localStorage = localStorage;
+        this.alreadyDisplay = new ArrayList<Message>();
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
-
 
         try {
             initComponents();
@@ -113,34 +105,99 @@ public class ConversationWindow extends JDialog {
     private void initComponents() {
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
-        try {
-            String serverResponse = serverConnection.listMessageBetweenUsers(currentUser.getId(), chattingWithThisUser.getId());
-            ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-            listMessageBetweenUsers = responseAnalyser.createMessageList();
-        } catch (Exception e) {
-            System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
-            JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
+        startUpdateThread();
+        upDateChat();
+    }
+
+    /**
+     * Timer task that will update the data
+     */
+    public void startUpdateThread() {
+
+        updateThread = new Thread(() -> {
+
+            boolean isBusy = false;
+            boolean isUpdated = false;
+
+            // Infinite loop to update the data
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // If no request is already in progress
+                    if (!isBusy) {
+                        do {
+                            isBusy = true;
+                            isUpdated = false;
+                            isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                        } while (!isUpdated);
+
+                        isBusy = false;
+
+                        // Wait 1 second to avoid spamming the server
+                        Thread.sleep(1000);
+
+                    }
+                    upDateChat();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // restore the interrupted status
+                }
             }
+        });
+        updateThread.start();
+    }
+
+    /**
+     * This function allow to update the messages displayed in the chat
+     * It will only display the new messages
+     */
+    private void upDateChat() {
+
+        listOfMessageBetweenUsers = localStorage.getMessageDataBetweenUser();
+
+        if (listOfMessageBetweenUsers.size() == 0) {
+            return;
         }
-        Collections.sort(listMessageBetweenUsers, new Comparator<Message>() {
+        // Getting last messages
+        List<Message> toDisplay = new ArrayList<Message>();
+        Message newMessage = null;
+
+        Collections.sort(listOfMessageBetweenUsers, new Comparator<Message>() {
             @Override
             public int compare(Message m1, Message m2) {
                 return m1.getTimestamp().compareTo(m2.getTimestamp());
             }
         });
 
-        for (Message message : listMessageBetweenUsers) {
-            if (message.getSenderID() == (currentUser.getId())) {
-                // C'est un message envoyé par l'utilisateur actuel
-                addSentMessage(message.getContent(),message.getTimestamp());
-            } else if (message.getSenderID() == (chattingWithThisUser.getId())) {
-                // C'est un message reçu par l'utilisateur actuel
-                addReceivedMessage(message.getContent(),message.getTimestamp());
+
+        if (alreadyDisplay.size() > 0) {
+            for (int i = 0; i < listOfMessageBetweenUsers.size(); i++) {
+
+                boolean isNewMessage = true;
+                for (int j = 0; j < alreadyDisplay.size(); j++) {
+                    if (listOfMessageBetweenUsers.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
+                        isNewMessage = false;
+                        break;
+                    }
+                }
+                if (isNewMessage) {
+                    newMessage = listOfMessageBetweenUsers.get(i);
+                    toDisplay.add(newMessage);
+                }
             }
+        } else {
+            toDisplay.addAll(listOfMessageBetweenUsers);
+        }
+
+
+        // Add the different messages to the UI
+        for (Message message : toDisplay) {
+            if (message.getSenderID() == currentUser.getId()) {
+                // It's a message sent by the current user
+                addSentMessage(message.getContent(), message.getTimestamp());
+            } else {
+                // It's a message received by the current user
+                addReceivedMessage(message.getContent(), message.getTimestamp());
+            }
+            alreadyDisplay.add(message);
         }
     }
 
@@ -203,12 +260,6 @@ public class ConversationWindow extends JDialog {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatscrollpane = new JScrollPane(chatPanel);
-
-        //chatArea = new JTextArea();
-        //chatArea.setEditable(false);
-
-        //conversationPanel = new JPanel();
-        //chatscrollpane = new JScrollPane(conversationPanel);
         return chatscrollpane;
     }
 
@@ -273,12 +324,6 @@ public class ConversationWindow extends JDialog {
     }
 
     /**
-     * Create the reporting button
-     *
-     * @return the report button
-     */
-
-    /**
      * This function allow to get the current privileges of an user
      *
      * @return the permission of the use, or error if there is an error
@@ -328,19 +373,16 @@ public class ConversationWindow extends JDialog {
 
         panel.add(output);
 
-       // Calendar cal = Calendar.getInstance();
-       // SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
-       // time.setText(sdf.format(cal.getTime()));
         time.setText(formattedTime);
         panel.add(time);
 
         return panel;
     }
 
-    public static JPanel formatLabelreceiver(String out,LocalDateTime localDateTime) {
+    public static JPanel formatLabelreceiver(String out, LocalDateTime localDateTime) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -352,12 +394,9 @@ public class ConversationWindow extends JDialog {
 
         panel.add(output);
 
-        //Calendar cal = Calendar.getInstance();
-        //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
-        //time.setText(sdf.format(cal.getTime()));
         time.setText(formattedTime);
         panel.add(time);
 
@@ -375,7 +414,7 @@ public class ConversationWindow extends JDialog {
         imageButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "JPG et PNG Images", "jpg","png");
+                    "JPG et PNG Images", "jpg", "png");
             chooser.setFileFilter(filter);
             int returnVal = chooser.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -450,7 +489,7 @@ public class ConversationWindow extends JDialog {
                 serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
 
                 // Allow to put this message at right side :
-                addSentMessage(content,LocalDateTime.now());
+                addSentMessage(content, LocalDateTime.now());
             }
 
 
@@ -460,24 +499,24 @@ public class ConversationWindow extends JDialog {
 
     private void addSentMessage(String message, LocalDateTime localDateTime) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JPanel panel = formatLabel(message,localDateTime);
-        //JLabel sentMessageLabel = new JLabel(message);
-        //sentMessageLabel.setBackground(Color.GREEN);
-        //sentMessageLabel.setForeground(Color.BLACK);
-        //sentMessageLabel.setOpaque(true);
-        //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JPanel panel = formatLabel(message, localDateTime);
+        JLabel sentMessageLabel = new JLabel(message);
+        sentMessageLabel.setBackground(Color.GREEN);
+        sentMessageLabel.setForeground(Color.BLACK);
+        sentMessageLabel.setOpaque(true);
+        sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
     }
 
-    private void addReceivedMessage(String message,LocalDateTime localDateTime) {
+    private void addReceivedMessage(String message, LocalDateTime localDateTime) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel panel = formatLabelreceiver(message,localDateTime);
-        //JLabel receivedMessageLabel = new JLabel(message);
-        //receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
-        //receivedMessageLabel.setOpaque(true);
-        //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JPanel panel = formatLabelreceiver(message, localDateTime);
+        JLabel receivedMessageLabel = new JLabel(message);
+        receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
+        receivedMessageLabel.setOpaque(true);
+        receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(panel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();

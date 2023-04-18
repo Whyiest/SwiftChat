@@ -1,10 +1,8 @@
 package client.view;
-
 import client.clientModel.Data;
 import client.clientModel.Message;
 import client.clientModel.User;
 import client.controler.ServerConnection;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -35,7 +33,6 @@ public class GroupWindow extends JDialog {
     private JTextArea chatArea;
     private JScrollPane chatscrollpane;
     private JPanel conversationPanel;
-
     private Thread updateThread;
 
 

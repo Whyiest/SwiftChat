@@ -20,7 +20,7 @@
         <properties>
           <background color="-8424816"/>
           <font name="Courier New" size="28" style="1"/>
-          <foreground color="-3291649"/>
+          <foreground color="-14737631"/>
           <text value=""/>
         </properties>
       </component>
@@ -33,7 +33,8 @@
         <properties>
           <background color="-8424816"/>
           <font name="Courier New" size="28" style="1"/>
-          <foreground color="-14795431"/>
+          <foreground color="-14737631"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="e572d" class="javax.swing.JButton" binding="btnLogin">

@@ -2,16 +2,14 @@ package client.clientModel;
 
 import client.Client;
 import client.controler.ServerConnection;
-import com.mysql.cj.conf.PropertyDefinitions;
 
-import javax.swing.*;
 import java.util.*;
 import java.util.Timer;
 
-public class Data  {
+public class Data {
 
     private List<User> userData;
-    private List<Message> messageData;
+    private List<Message> messageBetweenUserData;
     private List<Log> logData;
     private List<Message> groupMessageData;
     private boolean isBusy;
@@ -23,16 +21,17 @@ public class Data  {
     private Thread updateThread;
 
 
-
     public Data(ServerConnection serverConnection) {
         this.userData = new ArrayList<>();
-        this.messageData = new ArrayList<>();
+        this.messageBetweenUserData = new ArrayList<>();
         this.logData = new ArrayList<>();
         this.groupMessageData = new ArrayList<>();
         this.isBusy = false;
-        this.clientID = -1;
         this.serverConnection = serverConnection;
         this.iteratorBeforeCheckBan = 0;
+
+        // Static variables
+        clientID = -1;
 
         startUpdateThread();
     }
@@ -62,11 +61,9 @@ public class Data  {
 
         if (isBusy || !clientIsLogged || clientID == -1) {
             return;
-        }
-        else{
+        } else {
             updateUser();
             updateGroupMessage();
-            updateLog();
             checkForBan();
         }
 
@@ -96,12 +93,34 @@ public class Data  {
         } while (userData.size() == 0);
     }
 
-    /**
-     * Update the message data
-     */
-    public void updateMessage() {
-        // TODO
 
+    /**
+     * Allow to force the update of the message data
+     */
+    public boolean forceUpdateMessageBetweenUser(int userID, int userChattingWithID) {
+        String messageResponse = "";
+        boolean forceUpdateSuccess = false;
+
+        do {
+            try {
+                messageResponse = serverConnection.listMessageBetweenUsers(clientID, userChattingWithID);
+                ResponseAnalyser responseAnalyser = new ResponseAnalyser(messageResponse);
+                messageBetweenUserData = responseAnalyser.createMessageList();
+            } catch (Exception e) {
+                System.out.println("[!] Error while getting the list of messages between two users. (Retrying in 1s)");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+                return false;
+            }
+
+            if (messageBetweenUserData == null) {
+                return true;
+            }
+        } while (messageBetweenUserData.size() == 0);
+        return true;
     }
 
     /**
@@ -149,8 +168,8 @@ public class Data  {
      *
      * @return List of all message data
      */
-    public List<Message> getMessageData() {
-        return messageData;
+    public List<Message> getMessageDataBetweenUser() {
+        return messageBetweenUserData;
     }
 
     /**
@@ -199,14 +218,14 @@ public class Data  {
                 Client.setIsClientBanned(true);
             }
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
     /**
      * Allow to get an user by his ID in the list of user
+     *
      * @param id the ID of the user
      * @return the user found
      */
@@ -214,10 +233,11 @@ public class Data  {
     public User userIDLookup(int id) {
         for (User user : userData) {
             if (user.getId() == id) {
-                System.out.println("User found" + user.formalizeServerMessage());
                 return user;
             }
         }
         return null;
     }
+
+
 }

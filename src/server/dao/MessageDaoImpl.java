@@ -5,7 +5,7 @@ import server.network.Database;
 import java.sql.*;
 
 public class MessageDaoImpl implements MessageDao {
-    private Database myDb;
+    private final Database myDb;
 
     public MessageDaoImpl(Database myDb){
 
