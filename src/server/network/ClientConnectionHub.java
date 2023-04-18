@@ -1,5 +1,5 @@
 package server.network;
-import server.dao.UserDao;
+import server.dao.UserDaoImpl;
 import server.serverModel.ClientManager;
 import java.io.*;
 import java.net.*;
@@ -90,7 +90,7 @@ public class ClientConnectionHub {
         waitingForConnection = false;
 
         // Make all users appear offline
-        UserDao myUserDao = new UserDao(myDb);
+        UserDaoImpl myUserDao = new UserDaoImpl(myDb);
         myUserDao.disconnectAll();
 
         // Close all sockets

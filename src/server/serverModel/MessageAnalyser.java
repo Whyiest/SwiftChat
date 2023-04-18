@@ -1,24 +1,21 @@
 package server.serverModel;
 
-import server.dao.GroupMessageDao;
+import server.dao.GroupMessageDaoImpl;
 import server.network.Database;
 
-import server.dao.UserDao;
-import server.dao.MessageDao;
-import server.dao.LogDao;
-
-import java.util.ArrayList;
-import java.util.List;
+import server.dao.UserDaoImpl;
+import server.dao.MessageDaoImpl;
+import server.dao.LogDaoImpl;
 
 public class MessageAnalyser {
 
     private String message;
     private String[] messageParts;
     private String messageAction;
-    private UserDao userDao;
-    private MessageDao messageDao;
-    private LogDao logDao;
-    private GroupMessageDao groupMessageDao;
+    private UserDaoImpl userDao;
+    private MessageDaoImpl messageDao;
+    private LogDaoImpl logDao;
+    private GroupMessageDaoImpl groupMessageDao;
 
 
     /**
@@ -29,10 +26,10 @@ public class MessageAnalyser {
     public MessageAnalyser(String message, Database myDb) {
 
         this.message = message;
-        this.userDao = new UserDao(myDb);
-        this.messageDao = new MessageDao(myDb);
-        this.logDao = new LogDao(myDb);
-        this.groupMessageDao = new GroupMessageDao(myDb);
+        this.userDao = new UserDaoImpl(myDb);
+        this.messageDao = new MessageDaoImpl(myDb);
+        this.logDao = new LogDaoImpl(myDb);
+        this.groupMessageDao = new GroupMessageDaoImpl(myDb);
     }
 
     /**
