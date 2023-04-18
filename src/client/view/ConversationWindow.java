@@ -40,6 +40,8 @@ public class ConversationWindow extends JDialog {
 
     private Thread updateThread;
 
+    public boolean messageLoaded = false;
+
 
     /**
      * Constructor
@@ -60,6 +62,7 @@ public class ConversationWindow extends JDialog {
         this.previousSize = new Dimension(width, height);
         this.localStorage = localStorage;
         this.alreadyDisplay = new ArrayList<Message>();
+        this.messageLoaded = false;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
@@ -105,14 +108,14 @@ public class ConversationWindow extends JDialog {
     private void initComponents() {
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
-        startUpdateThread();
+        startUpdateThread(this);
         upDateChat();
     }
 
     /**
      * Timer task that will update the data
      */
-    public void startUpdateThread() {
+    public void startUpdateThread(ConversationWindow conversationWindow) {
 
         updateThread = new Thread(() -> {
 
@@ -124,19 +127,12 @@ public class ConversationWindow extends JDialog {
                 try {
                     // If no request is already in progress
                     if (!isBusy) {
-                        do {
-                            isBusy = true;
-                            isUpdated = false;
-                            isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
-                        } while (!isUpdated);
-
-                        isBusy = false;
-
+                        localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
                         // Wait 1 second to avoid spamming the server
+                        upDateChat();
                         Thread.sleep(1000);
 
                     }
-                    upDateChat();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // restore the interrupted status
                 }
@@ -151,9 +147,24 @@ public class ConversationWindow extends JDialog {
      */
     private void upDateChat() {
 
+        if (!messageLoaded) {
+            boolean isUpdated = false;
+
+            do {
+                isUpdated = false;
+                isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (!isUpdated);
+            messageLoaded = true;
+        }
+
         listOfMessageBetweenUsers = localStorage.getMessageDataBetweenUser();
 
-        if (listOfMessageBetweenUsers.size() == 0) {
+        if (listOfMessageBetweenUsers == null || listOfMessageBetweenUsers.size() == 0) {
             return;
         }
         // Getting last messages
@@ -522,7 +533,9 @@ public class ConversationWindow extends JDialog {
         chatPanel.revalidate();
     }
 
-
+    public void setMessageLoaded(boolean messageLoaded) {
+        this.messageLoaded = messageLoaded;
+    }
 }
 
 
