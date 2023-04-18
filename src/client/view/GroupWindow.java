@@ -1,9 +1,7 @@
 package client.view;
 
-import client.Client;
 import client.clientModel.Data;
 import client.clientModel.Message;
-import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
@@ -16,10 +14,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Observer;
 
 public class GroupWindow extends JDialog {
 
@@ -37,6 +35,8 @@ public class GroupWindow extends JDialog {
     private JTextArea chatArea;
     private JScrollPane chatscrollpane;
     private JPanel conversationPanel;
+
+    private Thread updateThread;
 
 
     /**
@@ -62,6 +62,7 @@ public class GroupWindow extends JDialog {
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
 
+        startUpdateThread();
         try {
             initComponents();
         } catch (Exception e) {
@@ -69,6 +70,24 @@ public class GroupWindow extends JDialog {
             System.out.println("[!] Error while initializing the conversation window");
         }
 
+    }
+
+
+    /**
+     * Timer task that will update the data
+     */
+    public void startUpdateThread() {
+        updateThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(1000);
+                    upDateChat();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // restore the interrupted status
+                }
+            }
+        });
+        updateThread.start();
     }
 
     /**
@@ -108,41 +127,42 @@ public class GroupWindow extends JDialog {
     }
 
     private void upDateChat() {
-
         // Getting last messages
         messageList = localStorage.getGroupMessageData();
 
         // Copy all the messages
-        ArrayList<Message> toDisplay = new ArrayList<Message>(messageList);
+        List<Message> toDisplay = new ArrayList<>(messageList);
 
         // Remove the messages already displayed
         if (alreadyDisplay != null) {
+
+            // Remove already displayed messages
             toDisplay.removeAll(alreadyDisplay);
+
             for (Message message : toDisplay) {
-                if (message.getSenderID() == (currentUser.getId())) {
-                    // C'est un message envoyé par l'utilisateur actuel
-                    addSentMessage(message.getContent());
+                if (message.getSenderID() == currentUser.getId()) {
+                    // It's a message sent by the current user
+                    addSentMessage(message);
                 } else {
-                    // C'est un message reçu par l'utilisateur actuel
-                    addReceivedMessage(message.getContent());
+                    // It's a message received by the current user
+                    addReceivedMessage(message);
                 }
-                alreadyDisplay.add(message);
             }
-        }
-        // If we currently don't have displayed messages
-        else {
+        } else {
+            // If we currently don't have displayed messages
             for (Message message : messageList) {
                 if (message.getSenderID() == (currentUser.getId())) {
                     // C'est un message envoyé par l'utilisateur actuel
-                    addSentMessage(message.getContent());
+                    addSentMessage(message);
                 } else {
                     // C'est un message reçu par l'utilisateur actuel
-                    addReceivedMessage(message.getContent());
+                    addReceivedMessage(message);
                 }
                 alreadyDisplay.add(message);
             }
         }
     }
+
 
 
     /**
@@ -341,9 +361,6 @@ public class GroupWindow extends JDialog {
             String content = messageField.getText();
             messageField.setText("");
 
-            // Allow to put this message at right side :
-            addSentMessage(content);
-
             // Add to DB :
             do {
                 try {
@@ -371,35 +388,56 @@ public class GroupWindow extends JDialog {
      *
      * @param message the message to display
      */
-    private void addSentMessage(String message) {
+    private void addSentMessage(Message message) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JLabel sentMessageLabel = new JLabel(message);
+        JLabel sentMessageSenderLabel = new JLabel(currentUser.getFirstName() + " " + currentUser.getLastName());
+        JLabel sentMessageLabel = new JLabel(message.getContent());
         sentMessageLabel.setBackground(Color.GREEN);
         sentMessageLabel.setForeground(Color.WHITE);
         sentMessageLabel.setOpaque(true);
         sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        sentMessagePanel.add(sentMessageSenderLabel);
         sentMessagePanel.add(sentMessageLabel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
     }
+
 
     /**
      * Allow to display the message at the left side
      *
      * @param message the message to display
      */
-    private void addReceivedMessage(String message) {
+    private void addReceivedMessage(Message message) {
+
+        String firstName = "";
+        String lastName = "";
+
+        for (User user : localStorage.getUserData()) {
+            if (user.getId() == message.getSenderID()) {
+                firstName = user.getFirstName();
+                lastName = user.getLastName();}
+        }
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel receivedMessageLabel = new JLabel(message);
+        JLabel receivedMessageSenderLabel = new JLabel(firstName + " " + lastName);
+        JLabel receivedMessageLabel = new JLabel(message.getContent());
         receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
         receivedMessageLabel.setOpaque(true);
         receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        receivedMessagePanel.add(receivedMessageSenderLabel);
         receivedMessagePanel.add(receivedMessageLabel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
     }
 
 
+
+
+
 }
+
+
+
+
 
 

@@ -11,25 +11,6 @@
     </properties>
     <border type="none"/>
     <children>
-      <component id="54531" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <icon value="client/view/images/login.png"/>
-          <text value=""/>
-        </properties>
-      </component>
-      <component id="49adc" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="Impact" size="28" style="1"/>
-          <foreground color="-263173"/>
-          <text value="Username"/>
-        </properties>
-      </component>
       <component id="42c28" class="javax.swing.JTextField" binding="userNameField">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
@@ -39,17 +20,8 @@
         <properties>
           <background color="-8424816"/>
           <font name="Courier New" size="28" style="1"/>
-          <foreground color="-14795431"/>
-        </properties>
-      </component>
-      <component id="58a53" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="Impact" size="28" style="1"/>
-          <foreground color="-263173"/>
-          <text value="Password"/>
+          <foreground color="-3291649"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="54f16" class="javax.swing.JPasswordField" binding="passwordField">
@@ -69,10 +41,10 @@
           <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-8424816"/>
-          <font name="Impact" size="24" style="1"/>
+          <background color="-14737631"/>
+          <font name="Yu Gothic UI Semibold" size="22" style="1"/>
           <foreground color="-263173"/>
-          <text value="Login"/>
+          <text value="LOGIN"/>
         </properties>
       </component>
       <component id="3c3ee" class="javax.swing.JButton" binding="btnCancel">
@@ -80,10 +52,10 @@
           <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-8424816"/>
-          <font name="Impact" size="24" style="1"/>
+          <background color="-14737631"/>
+          <font name="Yu Gothic UI Semibold" size="22" style="1"/>
           <foreground color="-263173"/>
-          <text value="Cancel"/>
+          <text value="CANCEL"/>
         </properties>
       </component>
       <component id="e3f67" class="javax.swing.JButton" binding="clickToRegisterAButton" default-binding="true">
@@ -91,10 +63,10 @@
           <grid row="8" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-8424816"/>
-          <font name="Impact" size="18" style="1"/>
+          <background color="-14737631"/>
+          <font name="Yu Gothic UI Semibold" size="18" style="1"/>
           <foreground color="-263173"/>
-          <text value="Click to register a new user"/>
+          <text value="REGISTER"/>
         </properties>
         <clientProperties>
           <hideActionText class="java.lang.Boolean" value="false"/>
@@ -120,16 +92,6 @@
           <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
-      <hspacer id="6ed27">
-        <constraints>
-          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
-      <hspacer id="f7dec">
-        <constraints>
-          <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
       <vspacer id="30745">
         <constraints>
           <grid row="7" column="4" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -137,14 +99,53 @@
       </vspacer>
       <component id="4eeeb" class="javax.swing.JLabel">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Impact" size="48" style="1"/>
+          <font name="Segoe UI Black" size="48" style="1"/>
           <foreground color="-263173"/>
-          <text value="Login to Swiftchat"/>
+          <text value="Swiftchat"/>
         </properties>
       </component>
+      <component id="54531" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <icon value="client/view/images/login.png"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="49adc" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Segoe UI Black" size="24" style="1"/>
+          <foreground color="-263173"/>
+          <text value="USERNAME"/>
+        </properties>
+      </component>
+      <component id="58a53" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Segoe UI Black" size="24" style="1"/>
+          <foreground color="-263173"/>
+          <text value="PASSWORD"/>
+        </properties>
+      </component>
+      <hspacer id="35b17">
+        <constraints>
+          <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <hspacer id="15e94">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
     </children>
   </grid>
 </form>
