@@ -2,7 +2,7 @@ package client.clientModel;
 import java.time.LocalDateTime;
 
 
-public class Message {
+public class Message implements Comparable<Message> {
     private int senderID;
     private int receiverID;
     private String content;
@@ -70,5 +70,19 @@ public class Message {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public int compareTo(Message otherMessage) {
+
+        if (otherMessage.getSenderID() == this.getSenderID() && otherMessage.getReceiverID() == this.getReceiverID() && otherMessage.getTimestamp().equals(this.getTimestamp()) && otherMessage.getContent().equals(this.getContent())) {
+            return 0;
+        }
+        else if (otherMessage.getTimestamp().isAfter(this.getTimestamp())) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
     }
 }

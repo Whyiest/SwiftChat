@@ -14,9 +14,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class GroupWindow extends JDialog {
@@ -24,7 +24,7 @@ public class GroupWindow extends JDialog {
     private final String header;
     private final ServerConnection serverConnection;
     private final User currentUser;
-    private List<Message> messageList;
+    private List<Message> groupMessageList;
     private List<Message> alreadyDisplay;
     private Data localStorage;
 
@@ -54,9 +54,9 @@ public class GroupWindow extends JDialog {
         this.serverConnection = serverConnection;
         this.localStorage = localStorage;
         this.currentUser = sender;
-        this.messageList = new ArrayList<>();
+        this.groupMessageList = new ArrayList<>();
         this.header = "General conversation";
-        this.alreadyDisplay = new ArrayList<>();
+        this.alreadyDisplay = new ArrayList<Message>();
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
@@ -127,42 +127,43 @@ public class GroupWindow extends JDialog {
     }
 
     private void upDateChat() {
+
         // Getting last messages
-        messageList = localStorage.getGroupMessageData();
+        groupMessageList = localStorage.getGroupMessageData();
+        List<Message> toDisplay = new ArrayList<Message>();
+        Message newMessage = null;
 
-        // Copy all the messages
-        List<Message> toDisplay = new ArrayList<>(messageList);
-
-        // Remove the messages already displayed
-        if (alreadyDisplay != null) {
-
-            // Remove already displayed messages
-            toDisplay.removeAll(alreadyDisplay);
-
-            for (Message message : toDisplay) {
-                if (message.getSenderID() == currentUser.getId()) {
-                    // It's a message sent by the current user
-                    addSentMessage(message);
-                } else {
-                    // It's a message received by the current user
-                    addReceivedMessage(message);
+        if (alreadyDisplay.size() > 0) {
+            for (int i = 0; i < groupMessageList.size(); i++) {
+                boolean isNewMessage = true;
+                for (int j = 0; j < alreadyDisplay.size(); j++) {
+                    if (groupMessageList.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
+                        isNewMessage = false;
+                        break;
+                    }
+                }
+                if (isNewMessage) {
+                    newMessage = groupMessageList.get(i);
+                    toDisplay.add(newMessage);
                 }
             }
         } else {
-            // If we currently don't have displayed messages
-            for (Message message : messageList) {
-                if (message.getSenderID() == (currentUser.getId())) {
-                    // C'est un message envoyé par l'utilisateur actuel
-                    addSentMessage(message);
-                } else {
-                    // C'est un message reçu par l'utilisateur actuel
-                    addReceivedMessage(message);
-                }
-                alreadyDisplay.add(message);
+            toDisplay.addAll(groupMessageList);
+        }
+
+
+        // Add the different messages to the UI
+        for (Message message : toDisplay) {
+            if (message.getSenderID() == currentUser.getId()) {
+                // It's a message sent by the current user
+                addSentMessage(message);
+            } else {
+                // It's a message received by the current user
+                addReceivedMessage(message);
             }
+            alreadyDisplay.add(message);
         }
     }
-
 
 
     /**
@@ -416,7 +417,8 @@ public class GroupWindow extends JDialog {
         for (User user : localStorage.getUserData()) {
             if (user.getId() == message.getSenderID()) {
                 firstName = user.getFirstName();
-                lastName = user.getLastName();}
+                lastName = user.getLastName();
+            }
         }
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel receivedMessageSenderLabel = new JLabel(firstName + " " + lastName);
@@ -429,9 +431,6 @@ public class GroupWindow extends JDialog {
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
     }
-
-
-
 
 
 }
