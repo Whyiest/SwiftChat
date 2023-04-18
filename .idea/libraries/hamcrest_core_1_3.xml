@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="hamcrest-core-1.3">
+    <CLASSES>
+      <root url="jar://D:/Dev/lib/JfreeChart/hamcrest-core-1.3.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/jcommon-1.0.23.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/jfreechart-1.0.19-experimental.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/jfreechart-1.0.19-swt.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/jfreechart-1.0.19.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/jfreesvg-2.0.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/junit-4.11.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/orsoncharts-1.4-eval-nofx.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/orsonpdf-1.6-eval.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/servlet.jar!/" />
+      <root url="jar://D:/Dev/lib/JfreeChart/swtgraphics2d.jar!/" />
+      <root url="file://$PROJECT_DIR$" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/src" />
+    </SOURCES>
+  </library>
+</component>
