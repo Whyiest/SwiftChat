@@ -324,7 +324,7 @@ public class LogDaoImpl implements LogDao {
     public String getConnectionsStatistics(String message){
 
         // Linking message parts to variables
-        String logType = "CONNECTION";
+        String logType = "LOGIN";
 
         // Create an SQL statement to get all the logs relating to a connection from the database
         String sql = "SELECT TIMESTAMP FROM log WHERE TYPE = ?";
@@ -341,7 +341,7 @@ public class LogDaoImpl implements LogDao {
 
     public String getConnectionsStatisticsByUserId(String[] messageParts, String message){
         // Linking message parts to variables
-        String logType = "CONNECTION";
+        String logType = "LOGIN";
         int idUser = 0;
 
         try {
