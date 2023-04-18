@@ -1,6 +1,7 @@
 package client.view;
 
 import client.Client;
+import client.clientModel.Data;
 import client.clientModel.Message;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
@@ -18,14 +19,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Observer;
 
 public class GroupWindow extends JDialog {
 
     private final String header;
     private final ServerConnection serverConnection;
-    private final User chattingWithThisUser;
     private final User currentUser;
     private List<Message> messageList;
+    private List<Message> alreadyDisplay;
+    private Data localStorage;
 
     static JFrame parent = new JFrame();
     private JPanel chatPanel;
@@ -43,24 +46,26 @@ public class GroupWindow extends JDialog {
      * @param serverConnection the server connection
      * @param user             the user
      */
-    public GroupWindow(JFrame parent, ServerConnection serverConnection, User user, User sender, int width, int height) {
+    public GroupWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User sender, int width, int height) {
 
         super(parent, "SwiftChat", true);
 
         // SETUP
         this.serverConnection = serverConnection;
-        this.chattingWithThisUser = user;
+        this.localStorage = localStorage;
         this.currentUser = sender;
         this.messageList = new ArrayList<>();
         this.header = "General conversation";
+        this.alreadyDisplay = new ArrayList<>();
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
 
         try {
             initComponents();
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("[!] Error while initializing the conversation window");
         }
 
@@ -98,35 +103,43 @@ public class GroupWindow extends JDialog {
 
         // Main panel that store all others components
         JPanel mainPanel = createMainPanel();
+        upDateChat();
         add(mainPanel);
     }
 
     private void upDateChat() {
 
-        // Getting all the messages
-        try {
-            String serverResponse = serverConnection.listMessageInGroup(currentUser.getId());
-            ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-            messageList = responseAnalyser.createMessageList();
-        } catch (Exception e) {
-            System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
-            e.printStackTrace(); // Affiche la trace de la pile d'appels pour l'exception capturée
+        // Getting last messages
+        messageList = localStorage.getGroupMessageData();
 
-            JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
+        // Copy all the messages
+        ArrayList<Message> toDisplay = new ArrayList<Message>(messageList);
+
+        // Remove the messages already displayed
+        if (alreadyDisplay != null) {
+            toDisplay.removeAll(alreadyDisplay);
+            for (Message message : toDisplay) {
+                if (message.getSenderID() == (currentUser.getId())) {
+                    // C'est un message envoyé par l'utilisateur actuel
+                    addSentMessage(message.getContent());
+                } else {
+                    // C'est un message reçu par l'utilisateur actuel
+                    addReceivedMessage(message.getContent());
+                }
+                alreadyDisplay.add(message);
             }
         }
-
-        for (Message message : messageList) {
-            if (message.getSenderID() == (currentUser.getId())) {
-                // C'est un message envoyé par l'utilisateur actuel
-                addSentMessage(message.getContent());
-            } else {
-                // C'est un message reçu par l'utilisateur actuel
-                addReceivedMessage(message.getContent());
+        // If we currently don't have displayed messages
+        else {
+            for (Message message : messageList) {
+                if (message.getSenderID() == (currentUser.getId())) {
+                    // C'est un message envoyé par l'utilisateur actuel
+                    addSentMessage(message.getContent());
+                } else {
+                    // C'est un message reçu par l'utilisateur actuel
+                    addReceivedMessage(message.getContent());
+                }
+                alreadyDisplay.add(message);
             }
         }
     }
@@ -310,8 +323,6 @@ public class GroupWindow extends JDialog {
                 System.out.println("You chose to open this file: " +
                         chooser.getSelectedFile().getName());
             }
-
-
         });
         return imageButton;
     }

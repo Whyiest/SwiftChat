@@ -56,21 +56,22 @@ public class ConversationWindow extends JDialog {
      * @param serverConnection the server connection
      * @param user             the user
      */
-    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User user, User sender, int width, int height) {
+    public ConversationWindow(JFrame parent, ServerConnection serverConnection, User whoIam, User userChattingWith, int width, int height) {
 
         super(parent, "SwiftChat", true);
 
         // SETUP
         this.serverConnection = serverConnection;
-        this.chattingWithThisUser = user;
-        this.currentUser = sender;
+        this.chattingWithThisUser = userChattingWith;
+        this.currentUser = whoIam;
         this.listMessageBetweenUsers = new ArrayList<>();
+        this.previousSize = new Dimension(width, height);
 
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
-        this.previousSize = new Dimension(width, height);
         setLocationRelativeTo(parent);
+
 
         try {
             initComponents();
@@ -118,8 +119,6 @@ public class ConversationWindow extends JDialog {
             listMessageBetweenUsers = responseAnalyser.createMessageList();
         } catch (Exception e) {
             System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
-            e.printStackTrace(); // Affiche la trace de la pile d'appels pour l'exception capturée
-
             JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
             try {
                 Thread.sleep(1000);
@@ -260,7 +259,7 @@ public class ConversationWindow extends JDialog {
         JButton moreOptionsButton = new JButton("...");
         moreOptionsButton.setPreferredSize(new Dimension(50, 30));
         moreOptionsButton.addActionListener(e -> {
-            ViewManager.setCurrentDisplay(4);
+            ViewManager.setCurrentDisplay(5);
             closeConversationWindow();
         });
         return moreOptionsButton;

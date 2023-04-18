@@ -1,6 +1,7 @@
 package client.view;
 
 import client.Client;
+import client.clientModel.Data;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
@@ -63,6 +64,8 @@ public class LoginForm extends JDialog {
                     // Set client to logged
                     Client.setClientIsLogged(true);
                     Client.setClientID(user.getId());
+                    Data.setClientIsLogged(true);
+                    Data.setClientID(user.getId());
                     serverConnection.addLog(user.getId(), "LOGIN");
                     ViewManager.setCurrentUser(user);
                     ViewManager.setCurrentDisplay(2);

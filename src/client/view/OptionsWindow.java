@@ -74,7 +74,7 @@ public class OptionsWindow extends JDialog {
         cancelButton = new JButton("Cancel");
 
         cancelButton.addActionListener(e -> {
-            ViewManager.setCurrentDisplay(3);
+            ViewManager.setCurrentDisplay(4);
             closeOptionWindow();
         });
 
@@ -189,7 +189,7 @@ public class OptionsWindow extends JDialog {
                     }
                 } while (serverResponse.equals("CHANGE-USER-PERMISSION;FAILURE") || serverResponse2.equals("ADD-LOG;FAILURE"));
             }
-            ViewManager.setCurrentDisplay(3);
+            ViewManager.setCurrentDisplay(4);
             closeOptionWindow();
         });
 

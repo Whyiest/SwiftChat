@@ -1,12 +1,12 @@
 package client.view;
 
 import client.Client;
+import client.clientModel.Data;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
 import javax.swing.*;
-import javax.swing.plaf.PanelUI;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 
 public class ContactWindow extends JDialog {
     private final ServerConnection serverConnection;
+    private Data localStorage;
+
     private final int labelSize;
     private List<User> listAllUsers;
     private final int userPerPage;
@@ -42,7 +44,7 @@ public class ContactWindow extends JDialog {
      * @param parent           the parent frame
      * @param serverConnection the server connection
      */
-    public ContactWindow(JFrame parent, ServerConnection serverConnection, User user, int width, int height) {
+    public ContactWindow(JFrame parent, ServerConnection serverConnection, User user, int width, int height, Data localStorage) {
 
         super(parent);
 
@@ -54,6 +56,7 @@ public class ContactWindow extends JDialog {
         this.currentContactPanel = 0;
         this.currentUser = user;
         this.labelSize = 600 / userPerPage;
+        this.localStorage = localStorage;
 
 
         // Setup view
@@ -153,26 +156,13 @@ public class ContactWindow extends JDialog {
         if (currentPrivilege.equals("ADMIN")) {
             mainPanel.add(createUserPanel(), BorderLayout.NORTH);
         }
-        //mainPanel.add(GroupChatButtonPanel(), BorderLayout.NORTH);
+        mainPanel.add(createGroupChatButtonPanel(), BorderLayout.NORTH);
         mainPanel.add(contactsPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // List all users in DB
-        do {
-            try {
-                String serverResponse = serverConnection.listAllUsers();
-                ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-                listAllUsers = responseAnalyser.createUserList();
-            } catch (Exception e) {
-                System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
-                JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        } while (listAllUsers.size() == 0);
+        localStorage.updateAll();
+        listAllUsers = localStorage.getUserData();
 
 
         // Define variables
@@ -223,7 +213,7 @@ public class ContactWindow extends JDialog {
                     int finalCurrentUserIterator = currentUserIterator;
                     contactButton.addActionListener(e -> {
                         ViewManager.setChattingWithUser(usersPerPage[currentContactPanel][finalCurrentUserIterator]);
-                        ViewManager.setCurrentDisplay(3);
+                        ViewManager.setCurrentDisplay(4);
                         dispose();
                     });
 
@@ -391,7 +381,7 @@ public class ContactWindow extends JDialog {
         JButton createReportingButton = new JButton("Reports");
         createReportingButton.setPreferredSize(new Dimension(50, 30));
         createReportingButton.addActionListener(e -> {
-            ViewManager.setCurrentDisplay(5);
+            ViewManager.setCurrentDisplay(6);
             closeContactWindow();
         });
         return createReportingButton;
@@ -418,5 +408,23 @@ public class ContactWindow extends JDialog {
         statusCircle.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
 
         return statusCircle;
+    }
+    private JPanel createGroupChatButtonPanel() {
+
+        JPanel groupChatPanel = new JPanel(new BorderLayout());
+        groupChatPanel.setPreferredSize(new Dimension(550, 30));
+        groupChatPanel.setBackground(Color.cyan);
+        groupChatPanel.add(createGroupChatButton(), BorderLayout.CENTER);
+        return groupChatPanel;
+    }
+
+    private JButton createGroupChatButton() {
+        JButton groupChatButton = new JButton("Global Discussion");
+        groupChatButton.setPreferredSize(new Dimension(50, 30));
+        groupChatButton.addActionListener(e -> {
+            ViewManager.setCurrentDisplay(3);
+            closeContactWindow();
+        });
+        return groupChatButton;
     }
 }

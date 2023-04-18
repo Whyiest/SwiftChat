@@ -1,5 +1,6 @@
 package client.view;
 
+import client.clientModel.Data;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
@@ -8,11 +9,14 @@ import javax.swing.*;
 public class ViewManager implements Runnable {
     public ServerConnection serverConnection;
     public LoginForm loginForm; // LOGIN 0
-    public RegistrationForm registrationForm; /// REGISTER 1
-    public ContactWindow contactForm; // CONTACT 2
-    public ConversationWindow conversationForm; // CHAT 3
-    public OptionsWindow optionsWindow; // BAN 4
-    public ReportingWindow reportingWindow; //REPORTS 5
+    private RegistrationForm registrationForm; /// REGISTER 1
+    private ContactWindow contactForm; // CONTACT 2
+    private GroupWindow groupWindow; //GROUP 3
+    private ConversationWindow conversationForm; // CHAT 4
+    private OptionsWindow optionsWindow; // BAN 5
+    private ReportingWindow reportingWindow; //REPORTS 6
+
+    private Data localStorage;
     public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage, 5=ReportWindow
     public static User chattingWithThisUser; // If you chat with someone, his user ID is here
     public static User currentUser; // If you chat with someone, his user ID is here
@@ -27,8 +31,9 @@ public class ViewManager implements Runnable {
      *
      * @param serverConnection the server connection
      */
-    public ViewManager(ServerConnection serverConnection) {
+    public ViewManager(ServerConnection serverConnection, Data localStorage) {
         this.serverConnection = serverConnection;
+        this.localStorage = localStorage;
         currentWindow = 0;
         alreadyDisplay = false;
     }
@@ -60,7 +65,7 @@ public class ViewManager implements Runnable {
                 case 2 -> { // CONTACT
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        contactForm = new ContactWindow(null, serverConnection,currentUser,700,600);
+                        contactForm = new ContactWindow(null, serverConnection,currentUser,700,600, localStorage);
                         contactForm.openContactWindow();
                     }
                     if (isClientBanned) {
@@ -68,10 +73,21 @@ public class ViewManager implements Runnable {
                         isClientBanned = false;
                     }
                 }
-                case 3 -> { // CHAT
+                case 3 -> { // GROUP
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.conversationForm = new ConversationWindow(null, serverConnection, chattingWithThisUser,currentUser,700,600);
+                        this.groupWindow = new GroupWindow(null, serverConnection, localStorage, currentUser, 700,600);
+                        groupWindow.openConversationWindow();
+                    }
+                    if (isClientBanned) {
+                        conversationForm.closeConversationWindow();
+                        isClientBanned = false;
+                    }
+                }
+                case 4 -> { // CHAT
+                    if (!alreadyDisplay) {
+                        alreadyDisplay = true;
+                        this.conversationForm = new ConversationWindow(null, serverConnection, currentUser, chattingWithThisUser, 700,600);
                         conversationForm.openConversationWindow();
                     }
                     if (isClientBanned) {
@@ -79,7 +95,7 @@ public class ViewManager implements Runnable {
                         isClientBanned = false;
                     }
                 }
-                case 4 -> { // BAN WINDOW
+                case 5 -> { // BAN WINDOW
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
                         this.optionsWindow = new OptionsWindow(conversationForm, serverConnection, chattingWithThisUser,300,200);
@@ -90,7 +106,7 @@ public class ViewManager implements Runnable {
                         isClientBanned = false;
                     }
                 }
-                case 5-> { // REPORTS
+                case 6-> { // REPORTS
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
                         this.reportingWindow = new ReportingWindow(conversationForm, serverConnection,600,500);

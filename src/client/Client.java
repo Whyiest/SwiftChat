@@ -1,7 +1,10 @@
 package client;
+import client.clientModel.Data;
 import client.controler.ServerConnection;
 import client.view.ViewManager;
 import com.mysql.cj.jdbc.SuspendableXAConnection;
+
+import java.util.Timer;
 
 public class Client {
 
@@ -14,6 +17,11 @@ public class Client {
     private static ServerConnection serverConnection;
 
     private static ViewManager viewManager;
+
+    private static Data localStorage;
+
+    private static Timer timer;
+
     /**
      * Main method
      * @param args Arguments of the main method
@@ -24,7 +32,8 @@ public class Client {
 
         // Create basics objects
         serverConnection = new ServerConnection("localhost", 3000);
-        viewManager = new ViewManager(serverConnection);
+        localStorage = new Data(serverConnection);
+        viewManager = new ViewManager(serverConnection, localStorage);
 
         // Code to execute when the program is closed
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -38,6 +47,7 @@ public class Client {
             }
         }));
 
+        // Starting the server connection thread
         Thread connexionServerThread = new Thread(serverConnection);
         connexionServerThread.start();
 
@@ -52,12 +62,16 @@ public class Client {
 
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
+
+            // This is a one time call to start the view manager or perform test
             if (!oneTimeCall) {
+                localStorage.updateAll();
                 Thread viewThread = new Thread(viewManager);
                 viewThread.start();
                 oneTimeCall = true;
             }
-            if (isClientBanned) { //kicks out the banned user and sends logout message
+            if (isClientBanned == true) {
+                // Kicks out the banned user and sends logout message
                 System.out.println("[!] Starting logout protocol : client has been banned.");
                 clientID = -1;
                 clientIsLogged = false;
@@ -67,7 +81,6 @@ public class Client {
                 System.out.println("[!] Logout protocol finished.");
                 System.exit(100);
             }
-
         }
     }
 
