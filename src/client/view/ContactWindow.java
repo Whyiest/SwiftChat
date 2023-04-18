@@ -151,6 +151,7 @@ public class ContactWindow extends JDialog {
         buttonPanel.add(lastPageButton);
 
 
+        // Adding panel
         mainPanel.add(createTopPanel(), BorderLayout.NORTH);
         mainPanel.add(contactsPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -170,7 +171,7 @@ public class ContactWindow extends JDialog {
 
             // Create a new grid layout for each page to display 12 users
             JPanel pagePanel = new JPanel(new GridLayout(userPerPage, 1));
-
+            pagePanel.setBackground(new Color(32, 32, 32));
             // Add the current page number to the contacts panel
             contactsPanel.add(pagePanel, "Page " + currentPage);
 
@@ -190,7 +191,8 @@ public class ContactWindow extends JDialog {
 
                     // Create a contact panel
                     JPanel contactCard = new JPanel(new BorderLayout());
-                    contactCard.setBackground(new Color(35, 35, 70));
+                    contactCard.setBackground(new Color(31, 13, 48));
+                    contactCard.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
                     // Initials of the user
                     String initials = getInitials(fullName);
@@ -324,12 +326,12 @@ public class ContactWindow extends JDialog {
     private JLabel createInitialsLabel(String initials) {
         JLabel initialsLabel = new JLabel(initials);
         initialsLabel.setOpaque(true);
-        initialsLabel.setBackground(Color.DARK_GRAY);
-        initialsLabel.setForeground(Color.WHITE);
+        initialsLabel.setBackground(new Color(160, 142, 255));
+        initialsLabel.setForeground(new Color(32, 32, 32));
+        initialsLabel.setBorder(BorderFactory.createLineBorder(new Color(32, 32, 32), 2));
         initialsLabel.setHorizontalAlignment(SwingConstants.CENTER);
         initialsLabel.setVerticalAlignment(SwingConstants.CENTER);
         initialsLabel.setPreferredSize(new Dimension(labelSize, labelSize));
-        initialsLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         initialsLabel.setFont(new Font("Arial", Font.BOLD, 20));
         return initialsLabel;
     }
