@@ -2,6 +2,8 @@ package client.view;
 
 import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,6 +16,7 @@ public class ReportingWindow extends JDialog{
     private JPanel mainPanel;
     private JLabel title;
     private JButton cancelButton;
+    private JPanel chartPanel;
     private final ServerConnection serverConnection;
 
     public ReportingWindow(JDialog parent, ServerConnection serverConnection, int width, int height) {
@@ -44,6 +47,7 @@ public class ReportingWindow extends JDialog{
         choiceBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
+                removeChartFromPanel();
                 String actionChoice = (String) choiceBox.getSelectedItem();
                 switch (actionChoice) {
                     case "Top User":
@@ -52,25 +56,25 @@ public class ReportingWindow extends JDialog{
                     case "Connection statistics for one user":
                         connectionByID();
                         break;
-                    case "Global connection statistics":
+                    case "Global connection statistics": //works
                         connectionStatistics();
                         break;
                     case "Messages statistics for one user":
                         doOption4();
                         break;
-                    case "Global messages statistics":
+                    case "Global messages statistics"://works
                         messageStatistics();
                         break;
-                    case "Global ban statistics":
+                    case "Global ban statistics": //need to fix piechart
                         doOption6();
                         break;
                     case "Global users statistics":
                         doOption7();
                         break;
-                    case "Global permission statistics":
+                    case "Global permission statistics": //need to fix piechart
                         permissionStatistics();
                         break;
-                    case "Global status statistics":
+                    case "Global status statistics": //nedd to fix piechart
                         statusStatistics();
                         break;
                     default:
@@ -130,8 +134,9 @@ public class ReportingWindow extends JDialog{
         String serverResponse = "";
         serverResponse = serverConnection.getConnectionsStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
-        responseAnalyser.generateHistogram(3);
-        System.out.println("Global connection statistics");
+        JFreeChart freeChart =responseAnalyser.generateHistogram(3);
+        ChartPanel chart = new ChartPanel(freeChart);
+        chartPanel.add(chart);
     }
     private void doOption4() {
         System.out.println("Messages statistics for one user");
@@ -141,7 +146,9 @@ public class ReportingWindow extends JDialog{
         String serverResponse = "";
         serverResponse = serverConnection.getMessagesStatistics();
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-        responseAnalyser.generateHistogram(1);
+        JFreeChart freeChart = responseAnalyser.generateHistogram(1);
+        ChartPanel chart = new ChartPanel(freeChart);
+        chartPanel.add(chart);
     }
 
     private void doOption6() {
@@ -156,7 +163,6 @@ public class ReportingWindow extends JDialog{
         serverResponse = serverConnection.getPermissionStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
         responseAnalyser.generatePieChart(2);
-        System.out.println("Global permission statistics");
     }
 
     private void statusStatistics() {
@@ -166,4 +172,11 @@ public class ReportingWindow extends JDialog{
         responseAnalyser.generatePieChart(1);
         System.out.println("Global status statistics");
     }
+
+    private void removeChartFromPanel() {
+        chartPanel.removeAll();
+        chartPanel.revalidate();
+        chartPanel.repaint();
+    }
+
 }

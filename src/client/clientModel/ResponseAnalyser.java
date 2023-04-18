@@ -215,7 +215,7 @@ public class ResponseAnalyser {
      *
      * @param dataToDisplay
      */
-    public void generateHistogram(int dataToDisplay) {
+    public JFreeChart generateHistogram(int dataToDisplay) {
         // Create a dataset to store the histogram data
         HistogramDataset dataset = new HistogramDataset();
 
@@ -263,7 +263,7 @@ public class ResponseAnalyser {
         chart.getPlot().setForegroundAlpha(0.9f);
 
         // Save the chart to a file according to the type of histogram we want to generate
-        switch (dataToDisplay) {
+        /*switch (dataToDisplay) {
             case 1:
                 try {
                     ChartUtilities.saveChartAsPNG(new File("totalMessageHistogram.png"), chart, 400, 300);
@@ -300,6 +300,8 @@ public class ResponseAnalyser {
                 System.out.println("Cannot generate histogram, please use a correct number according to the data you want to display");
                 break;
         }
+    }*/
+        return chart;
     }
 
     /**
