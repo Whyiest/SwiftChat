@@ -36,10 +36,11 @@ public class GroupMessageDao {
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [ADD-MESSAGE-GROUP;SENDER_ID;TIMESTAMP;CONTENT]");
+            return "ADD-MESSAGE-GROUP;FAILURE";
         }
 
         // Create an SQL statement to insert the message into the database
-        String sql = "INSERT INTO MESSAGE (SENDER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO MESSAGEGROUP (SENDER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
         try{
@@ -70,16 +71,7 @@ public class GroupMessageDao {
     public String listAllMessagesInGroup(String[] messageParts, String message){
 
         // Linking message parts to variables
-        int idSender;
 
-        try {
-            idSender = Integer.parseInt(messageParts[1]);
-        } catch (Exception e) {
-            System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [LIST-ALL-MESSAGES-IN-GROUP;SENDER_ID]");
-            e.printStackTrace(); // Ajoutez cette ligne pour afficher la trace de la pile d'erreurs
-            return "LIST-ALL-MESSAGES-IN-GROUP;FAILURE";
-        }
 
         // Create an SQL statement to get all the messages for a sender and a receiver from the database
         String sql = "SELECT * FROM MESSAGEGROUP";

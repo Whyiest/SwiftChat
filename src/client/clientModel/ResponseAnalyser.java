@@ -57,29 +57,33 @@ public class ResponseAnalyser {
         for (int i = 1; i < messageParts.length; i += caractPerUser) {
             User user = new User();
             user.setId(Integer.parseInt(messageParts[i]));
-            user.setPermission(messageParts[i + 1]);
+            user.setUserName(messageParts[i + 1]);
             user.setFirstName(messageParts[i + 2]);
             user.setLastName(messageParts[i + 3]);
-            user.setUserName(messageParts[i + 4]);
-            user.setMail(messageParts[i + 5]);
-            user.setPassword(messageParts[i + 6]);
+            user.setMail(messageParts[i + 4]);
+            user.setPassword(messageParts[i + 5]);
+            user.setPermission(messageParts[i + 6]);
             user.setLastConnectionTime(LocalDateTime.parse(messageParts[i + 7]));
-            user.setStatus(messageParts[i + 8]);
-            user.setBanned(Boolean.parseBoolean(messageParts[i + 9]));
+            user.setBanned(Boolean.parseBoolean(messageParts[i + 8]));
+            user.setStatus(messageParts[i + 9]);
             userList.add(user);
         }
         return userList;
     }
 
+    /**
+     * This method allows to create a list of messages from the server response
+     *
+     * @return the list of messages
+     */
     public List<Message> createMessageList() {
         List<Message> messageList = new ArrayList<>();
-        int caractPerMessage = 4;
+        int parametersInResponse = 4;
 
         if (messageParts[1].equals("EMPTY")) {
             return null;
-        }
-        else if (messageParts.length > 2) {
-            for (int i = 1; i < messageParts.length; i += caractPerMessage) {
+        } else if (messageParts.length > 2) {
+            for (int i = 1; i < messageParts.length; i += parametersInResponse) {
                 Message message = new Message();
                 message.setSenderID(Integer.parseInt(messageParts[i]));
                 message.setReceiverID(Integer.parseInt(messageParts[i + 1]));
@@ -87,8 +91,7 @@ public class ResponseAnalyser {
                 message.setContent(messageParts[i + 3]);
                 messageList.add(message);
             }
-        }
-        else {
+        } else {
             System.out.println("[!] Error while analyzing message list");
         }
         return messageList;
@@ -326,4 +329,23 @@ public class ResponseAnalyser {
         }
     }
 
+    public List<Message> createGroupMessageList() {
+        List<Message> messageList = new ArrayList<>();
+        int parametersInResponse = 3;
+
+        if (messageParts[1].equals("EMPTY")) {
+            return null;
+        } else if (messageParts.length > 2) {
+            for (int i = 1; i < messageParts.length; i += parametersInResponse) {
+                Message message = new Message();
+                message.setSenderID(Integer.parseInt(messageParts[i]));
+                message.setTimestamp(LocalDateTime.parse(messageParts[i + 1]));
+                message.setContent(messageParts[i + 2]);
+                messageList.add(message);
+            }
+        } else {
+            System.out.println("[!] Error while analyzing message list");
+        }
+        return messageList;
+    }
 }

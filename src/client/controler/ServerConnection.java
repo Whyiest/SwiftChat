@@ -9,6 +9,7 @@ import server.serverModel.MessageAnalyser;
 import java.io.*;
 import java.net.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -27,9 +28,6 @@ public class ServerConnection implements Runnable {
 
     private final int pingDelay; // Pinging every 2 seconds
 
-    private int iteratorBeforeCheckBan; // Check if the user is banned every 10 pings
-
-    private final int checkForBanDelay;
 
 
     public ServerConnection(String serverIP, int port) {
@@ -37,8 +35,7 @@ public class ServerConnection implements Runnable {
         this.serverIP = serverIP;
         this.retryDelay = 5000; // 5 seconds
         this.pingDelay = 2000; // 2 seconds
-        this.iteratorBeforeCheckBan = 0;
-        this.checkForBanDelay = 3;
+
     }
 
     /**
@@ -56,7 +53,6 @@ public class ServerConnection implements Runnable {
             try {
                 // Wait 1 second before checking connection
                 Thread.sleep(pingDelay);
-                iteratorBeforeCheckBan++;
 
                 // If connection is lost, try to reconnect
                 if (!checkConnection()) {
@@ -163,28 +159,6 @@ public class ServerConnection implements Runnable {
             } catch (IOException e) {
                 System.out.println("[!] Error during ping request. Maybe the server is down.");
                 return false;
-            }
-
-            // Check some times if the user is banned
-            if ((iteratorBeforeCheckBan == checkForBanDelay) && Client.isClientLogged() == true) {
-
-                User whoIAm = null;
-                try {
-                    checkResponse = getUserByID(Client.getClientID());
-                    ResponseAnalyser responseAnalyser = new ResponseAnalyser(checkResponse);
-                    whoIAm = responseAnalyser.extractUser();
-
-                    if (whoIAm.isBanned()) {
-                        Client.setIsClientBanned(true);
-                    }
-
-                } catch (Exception e) {
-                    System.out.println("[!] Error while checking if the client is banned. Cannot retrieve client information.");
-                }
-            }
-
-            if (iteratorBeforeCheckBan == checkForBanDelay) {
-                iteratorBeforeCheckBan = 0;
             }
 
             // NO RESPONSE : CONNECTION IS DEAD
@@ -574,7 +548,8 @@ public class ServerConnection implements Runnable {
      * @return the response from the server
      */
     public String addMessageInGroup(int senderID, String content) {
-        return sendToServer("ADD-MESSAGE-IN-GROUP;" + senderID + ";" + content);
+        LocalDateTime timestamp = LocalDateTime.now();
+        return sendToServer("ADD-MESSAGE-IN-GROUP;" + senderID + ";" + timestamp + ";" + content);
     }
 
     /**
@@ -583,8 +558,8 @@ public class ServerConnection implements Runnable {
      * @param senderID the ID of the sender of the message
      * @return the response from the server
      */
-    public String listMessageInGroup(int senderID) {
-        return sendToServer("LIST-MESSAGES-IN-GROUP;" + senderID);
+    public String listMessageInGroup() {
+        return sendToServer("LIST-ALL-MESSAGES-IN-GROUP");
     }
 
 
