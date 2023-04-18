@@ -452,11 +452,11 @@ public class ConversationWindow extends JDialog {
     private void addSentMessage(String message) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JPanel panel = formatLabel(message);
-        //JLabel sentMessageLabel = new JLabel(message);
-        //sentMessageLabel.setBackground(Color.GREEN);
-        //sentMessageLabel.setForeground(Color.BLACK);
-        //sentMessageLabel.setOpaque(true);
-        //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JLabel sentMessageLabel = new JLabel(message);
+        sentMessageLabel.setBackground(Color.GREEN);
+        sentMessageLabel.setForeground(Color.BLACK);
+        sentMessageLabel.setOpaque(true);
+        sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
@@ -465,10 +465,10 @@ public class ConversationWindow extends JDialog {
     private void addReceivedMessage(String message) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel panel = formatLabelreceiver(message);
-        //JLabel receivedMessageLabel = new JLabel(message);
-        //receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
-        //receivedMessageLabel.setOpaque(true);
-        //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JLabel receivedMessageLabel = new JLabel(message);
+        receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
+        receivedMessageLabel.setOpaque(true);
+        receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(panel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
