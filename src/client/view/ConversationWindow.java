@@ -18,14 +18,14 @@ import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.List;
 
 public class ConversationWindow extends JDialog {
     private String contactName;
@@ -54,7 +54,7 @@ public class ConversationWindow extends JDialog {
      *
      * @param parent           the parent frame
      * @param serverConnection the server connection
-     * @param user             the user
+     * @param userChattingWith             the user
      */
     public ConversationWindow(JFrame parent, ServerConnection serverConnection, User whoIam, User userChattingWith, int width, int height) {
 
@@ -126,13 +126,20 @@ public class ConversationWindow extends JDialog {
                 throw new RuntimeException(ex);
             }
         }
+        Collections.sort(listMessageBetweenUsers, new Comparator<Message>() {
+            @Override
+            public int compare(Message m1, Message m2) {
+                return m1.getTimestamp().compareTo(m2.getTimestamp());
+            }
+        });
+
         for (Message message : listMessageBetweenUsers) {
             if (message.getSenderID() == (currentUser.getId())) {
                 // C'est un message envoyé par l'utilisateur actuel
-                addSentMessage(message.getContent());
+                addSentMessage(message.getContent(),message.getTimestamp());
             } else if (message.getSenderID() == (chattingWithThisUser.getId())) {
                 // C'est un message reçu par l'utilisateur actuel
-                addReceivedMessage(message.getContent());
+                addReceivedMessage(message.getContent(),message.getTimestamp());
             }
         }
     }
@@ -309,7 +316,7 @@ public class ConversationWindow extends JDialog {
         return buttonPanel;
     }
 
-    public static JPanel formatLabel(String out) {
+    public static JPanel formatLabel(String out, LocalDateTime localDateTime) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -321,18 +328,19 @@ public class ConversationWindow extends JDialog {
 
         panel.add(output);
 
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
+       // Calendar cal = Calendar.getInstance();
+       // SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
-        time.setText(sdf.format(cal.getTime()));
-
+       // time.setText(sdf.format(cal.getTime()));
+        time.setText(formattedTime);
         panel.add(time);
 
         return panel;
     }
 
-    public static JPanel formatLabelreceiver(String out) {
+    public static JPanel formatLabelreceiver(String out,LocalDateTime localDateTime) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -344,12 +352,13 @@ public class ConversationWindow extends JDialog {
 
         panel.add(output);
 
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
+        //Calendar cal = Calendar.getInstance();
+        //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
-        time.setText(sdf.format(cal.getTime()));
-
+        //time.setText(sdf.format(cal.getTime()));
+        time.setText(formattedTime);
         panel.add(time);
 
         return panel;
@@ -441,7 +450,7 @@ public class ConversationWindow extends JDialog {
                 serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
 
                 // Allow to put this message at right side :
-                addSentMessage(content);
+                addSentMessage(content,LocalDateTime.now());
             }
 
 
@@ -449,26 +458,26 @@ public class ConversationWindow extends JDialog {
         return sendButton;
     }
 
-    private void addSentMessage(String message) {
+    private void addSentMessage(String message, LocalDateTime localDateTime) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JPanel panel = formatLabel(message);
-        JLabel sentMessageLabel = new JLabel(message);
-        sentMessageLabel.setBackground(Color.GREEN);
-        sentMessageLabel.setForeground(Color.BLACK);
-        sentMessageLabel.setOpaque(true);
-        sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JPanel panel = formatLabel(message,localDateTime);
+        //JLabel sentMessageLabel = new JLabel(message);
+        //sentMessageLabel.setBackground(Color.GREEN);
+        //sentMessageLabel.setForeground(Color.BLACK);
+        //sentMessageLabel.setOpaque(true);
+        //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
     }
 
-    private void addReceivedMessage(String message) {
+    private void addReceivedMessage(String message,LocalDateTime localDateTime) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel panel = formatLabelreceiver(message);
-        JLabel receivedMessageLabel = new JLabel(message);
-        receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
-        receivedMessageLabel.setOpaque(true);
-        receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JPanel panel = formatLabelreceiver(message,localDateTime);
+        //JLabel receivedMessageLabel = new JLabel(message);
+        //receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
+        //receivedMessageLabel.setOpaque(true);
+        //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(panel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();

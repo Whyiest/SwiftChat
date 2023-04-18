@@ -8,6 +8,8 @@ import client.controler.ServerConnection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -18,15 +20,12 @@ import java.util.regex.Pattern;
 public class ContactWindow extends JDialog {
     private final ServerConnection serverConnection;
     private Data localStorage;
-
     private final int labelSize;
     private List<User> listAllUsers;
     private final int userPerPage;
     private User[][] usersPerPage;
-
     private User[] listCurrentDisplayedUsers;
     private final User currentUser;
-
     private int totalPage;
     private int currentContactPanel;
     private JButton backPageButton;
@@ -151,12 +150,8 @@ public class ContactWindow extends JDialog {
         buttonPanel.add(firstPageButton);
         buttonPanel.add(lastPageButton);
 
-        // Add an option panel if the user is an admin
-        String currentPrivilege = getClientPermission();
-        if (currentPrivilege.equals("ADMIN")) {
-            mainPanel.add(createUserPanel(), BorderLayout.NORTH);
-        }
-        mainPanel.add(createGroupChatButtonPanel(), BorderLayout.NORTH);
+
+        mainPanel.add(createTopPanel(), BorderLayout.NORTH);
         mainPanel.add(contactsPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -355,27 +350,47 @@ public class ContactWindow extends JDialog {
         return contactButton;
     }
 
-
     /**
-     * Allow to create an user panel
-     *
-     * @return the user panel
+     * Top panel with 3 or 2 button depending on the status of the user
+     * @return the top panel
      */
-    private JPanel createUserPanel() {
-
+    private JPanel createTopPanel() {
         String currentPrivilege = "";
+        JPanel userPanel = new JPanel(new GridBagLayout());
+        userPanel.setPreferredSize(new Dimension(50, 30));
 
-        JPanel userPanel = new JPanel(new BorderLayout());
-        userPanel.setPreferredSize(new Dimension(550, 30));
-        userPanel.setBackground(Color.GRAY);
-        userPanel.add(createReportingButton(), BorderLayout.CENTER);
+        // Create GridBagConstraints for the "General" button with weightx = 0.5
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weightx = 0.75;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Set a maximum width for the "General" button
+        JButton generalButton = createGeneralButton();
+        userPanel.add(generalButton, gbc);
+
+        do {
+            currentPrivilege = getClientPermission();
+        } while (currentPrivilege.equals("ERROR"));
+
+        if (currentPrivilege.equals("ADMIN")) {
+            // Add the "Reports" button to the right of the "General" button
+            gbc.gridx++;
+            gbc.weightx = 0.5;
+            userPanel.add(createReportingButton(), gbc);
+        }
+
+        // Add the "Log out" button to the right of the "Reports" or "General" button
+        gbc.gridx++;
+        gbc.weightx = 0.25;
+        userPanel.add(createLogOutButton(), gbc);
+
         return userPanel;
     }
 
     /**
-     * Create the reporting button
-     *
-     * @return the reporting button
+     * Create the reporting button for admins
+     * @return the report button
      */
     private JButton createReportingButton() {
         JButton createReportingButton = new JButton("Reports");
@@ -387,6 +402,34 @@ public class ContactWindow extends JDialog {
         return createReportingButton;
     }
 
+    /**
+     * Create the general button for the main group salon
+     * @return general button
+     */
+    private JButton createGeneralButton() {
+        JButton createGeneralButton = new JButton("Global Discussion");
+        createGeneralButton.setPreferredSize(new Dimension(50, 30));
+        createGeneralButton.addActionListener(e -> {
+            ViewManager.setCurrentDisplay(3);
+            closeContactWindow();
+        });
+        return createGeneralButton;
+    }
+
+    /**
+     * Log out button
+     * @return logoutButton
+     */
+    private JButton createLogOutButton(){
+        JButton createLogOutButton = new JButton("Sign out");
+        createLogOutButton.setPreferredSize(new Dimension(50, 30));
+        createLogOutButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, "Logout successful");
+            ViewManager.setCurrentDisplay(0);
+            closeContactWindow();
+        });
+        return createLogOutButton;
+    }
     /**
      * Create a colored circle to represent the user status
      *
@@ -408,23 +451,5 @@ public class ContactWindow extends JDialog {
         statusCircle.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
 
         return statusCircle;
-    }
-    private JPanel createGroupChatButtonPanel() {
-
-        JPanel groupChatPanel = new JPanel(new BorderLayout());
-        groupChatPanel.setPreferredSize(new Dimension(550, 30));
-        groupChatPanel.setBackground(Color.cyan);
-        groupChatPanel.add(createGroupChatButton(), BorderLayout.CENTER);
-        return groupChatPanel;
-    }
-
-    private JButton createGroupChatButton() {
-        JButton groupChatButton = new JButton("Global Discussion");
-        groupChatButton.setPreferredSize(new Dimension(50, 30));
-        groupChatButton.addActionListener(e -> {
-            ViewManager.setCurrentDisplay(3);
-            closeContactWindow();
-        });
-        return groupChatButton;
     }
 }
