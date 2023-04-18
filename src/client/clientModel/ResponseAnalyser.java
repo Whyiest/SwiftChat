@@ -220,7 +220,7 @@ public class ResponseAnalyser {
         HistogramDataset dataset = new HistogramDataset();
 
         // Define the date formatter to convert the dates to a double value
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         // Create an array to store the dates as double values
         double[] dates = new double[messageParts.length];
@@ -228,8 +228,19 @@ public class ResponseAnalyser {
         // Convert each date string in the messageParts array to a LocalDateTime object,
         // Then to a double value representing the day of the month, and store it in the dates array
         for (int i = 0; i < messageParts.length; i++) {
-            LocalDateTime dateTime = LocalDateTime.parse(messageParts[i], formatter);
-            dates[i] = Double.valueOf(dateTime.getDayOfMonth());
+            // Get the date String from the messageParts array in the wanted format
+            String output = getStringUntilDot(messageParts[i]);
+
+            // Parse input String to LocalDateTime with custom formatter
+            LocalDateTime dateTime = LocalDateTime.parse(output, formatter);
+
+            // Get the day and month of the timestamp to create a String representing the day and month
+            String day = dateTime.getDayOfMonth() + "";
+            String month = dateTime.getMonthValue() + "";
+            String dayAndMonth = month + day;
+
+            // Convert the date to a double value representing the day and month of the timestamp
+            dates[i] = Double.parseDouble(dayAndMonth);
         }
 
         // Add the histogram data to the dataset, along with a label and the number of bins
@@ -347,5 +358,23 @@ public class ResponseAnalyser {
             System.out.println("[!] Error while analyzing message list");
         }
         return messageList;
+    }
+
+    /**
+     * This method returns the string sent as input until the first dot
+     *
+     * @param input String
+     * @return output String
+     */
+    public static String getStringUntilDot(String input) {
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '.') {
+                break;
+            }
+            output.append(c);
+        }
+        return output.toString();
     }
 }

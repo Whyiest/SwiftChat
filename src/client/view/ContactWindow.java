@@ -8,10 +8,7 @@ import client.controler.ServerConnection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -204,7 +201,7 @@ public class ContactWindow extends JDialog {
 
                     // Add status circle to the contact button
                     JLabel statusCircle = createStatusCircle(user.getStatus());
-                    contactButton.add(statusCircle, BorderLayout.WEST);
+                    //contactButton.add(statusCircle, BorderLayout.WEST);
 
                     // Allow event to be start in the button
                     int finalCurrentUserIterator = currentUserIterator;
@@ -359,37 +356,101 @@ public class ContactWindow extends JDialog {
     private JPanel createTopPanel() {
         String currentPrivilege = "";
         JPanel userPanel = new JPanel(new GridBagLayout());
-        userPanel.setPreferredSize(new Dimension(50, 30));
+        userPanel.setPreferredSize(new Dimension(50, 60)); // Increase height to allow for two lines
 
-        // Create GridBagConstraints for the "General" button with weightx = 0.5
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.weightx = 0.75;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // Create GridBagConstraints for the "General" button with weightx = 1.0 and fill = BOTH
+        GridBagConstraints gbcGeneral = new GridBagConstraints();
+        gbcGeneral.gridx = 0;
+        gbcGeneral.gridy = 0; // Put the button in the first row
+        gbcGeneral.weightx = 1.0;
+        gbcGeneral.fill = GridBagConstraints.BOTH;
 
         // Set a maximum width for the "General" button
-        JButton generalButton = createGeneralButton();
-        userPanel.add(generalButton, gbc);
+        JComboBox statusButton = createStatusComboBox();
+        userPanel.add(statusButton, gbcGeneral);
 
         do {
             currentPrivilege = getClientPermission();
         } while (currentPrivilege.equals("ERROR"));
 
         if (currentPrivilege.equals("ADMIN")) {
-            // Add the "Reports" button to the right of the "General" button
-            gbc.gridx++;
-            gbc.weightx = 0.5;
-            userPanel.add(createReportingButton(), gbc);
+            // Add the "Reports" button to the right of the "General" button in the second row
+            GridBagConstraints gbcReports = new GridBagConstraints();
+            gbcReports.gridx = 1;
+            gbcReports.gridy = 0; // Put the button in the first row
+            gbcReports.weightx = 0.5;
+            gbcReports.fill = GridBagConstraints.HORIZONTAL;
+            userPanel.add(createReportingButton(), gbcReports);
         }
 
-        // Add the "Log out" button to the right of the "Reports" or "General" button
-        gbc.gridx++;
-        gbc.weightx = 0.25;
-        userPanel.add(createLogOutButton(), gbc);
+        // Add a button that takes up the entire second row
+        JButton fullRowButton = new JButton("Full Row Button");
+        GridBagConstraints gbcFullRowButton = new GridBagConstraints();
+        gbcFullRowButton.gridx = 0;
+        gbcFullRowButton.gridy = 1; // Put the button in the second row
+        gbcFullRowButton.gridwidth = GridBagConstraints.REMAINDER; // Make the button take up the entire row
+        gbcFullRowButton.fill = GridBagConstraints.BOTH;
+        userPanel.add(createGeneralButton(), gbcFullRowButton);
+
+        // Add the "Log out" button to the right of the "Reports" or "General" button in the second row
+        GridBagConstraints gbcLogOut = new GridBagConstraints();
+        gbcLogOut.gridx = 2;
+        gbcLogOut.gridy = 0; // Put the button in the second row
+        gbcLogOut.weightx = 0.25;
+        gbcLogOut.fill = GridBagConstraints.HORIZONTAL;
+        userPanel.add(createLogOutButton(), gbcLogOut);
 
         return userPanel;
     }
 
+
+    private JPanel createGeneralPanel(){
+        JPanel generalPanel = new JPanel(new GridBagLayout());
+        generalPanel.setPreferredSize(new Dimension(50, 30));
+        JButton generalButton = createGeneralButton();
+        generalPanel.add(generalButton);
+        return generalPanel;
+    }
+    private JComboBox createStatusComboBox(){
+        String[] options = {"ONLINE", "OFFLINE", "AWAY"};
+        JComboBox<String> createStatusComboBox = new JComboBox<>(options);
+        createStatusComboBox.setPreferredSize(new Dimension(50, 30));
+        createStatusComboBox.addItemListener(new ItemListener() {
+            //bsd le status du mec
+            public void itemStateChanged(ItemEvent e) {
+                String actionChoice = (String) createStatusComboBox.getSelectedItem();
+                switch (actionChoice) {
+                    case "ONLINE":
+                        setOnline();
+                        break;
+                    case "OFFLINE":
+                        setOffline();
+                        break;
+                    case "AWAY":
+                        setAway();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        return createStatusComboBox;
+    }
+    void setOnline(){
+        String serverResponse = "";
+        serverResponse = serverConnection.changeStatus(this.currentUser.getId(),"ONLINE");
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+    }
+    void setOffline(){
+        String serverResponse = "";
+        serverResponse = serverConnection.changeStatus(this.currentUser.getId(),"OFFLINE");
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+    }
+    void setAway(){
+        String serverResponse = "";
+        serverResponse = serverConnection.changeStatus(this.currentUser.getId(),"AWAY");
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+    }
     /**
      * Create the reporting button for admins
      * @return the report button
@@ -410,7 +471,7 @@ public class ContactWindow extends JDialog {
      */
     private JButton createGeneralButton() {
         JButton createGeneralButton = new JButton("Global Discussion");
-        createGeneralButton.setPreferredSize(new Dimension(50, 30));
+        createGeneralButton.setPreferredSize(new Dimension(100, 100));
         createGeneralButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(3);
             closeContactWindow();

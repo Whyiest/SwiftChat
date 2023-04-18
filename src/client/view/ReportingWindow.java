@@ -59,7 +59,7 @@ public class ReportingWindow extends JDialog{
                         doOption4();
                         break;
                     case "Global messages statistics":
-                        doOption5();
+                        messageStatistics();
                         break;
                     case "Global ban statistics":
                         doOption6();
@@ -121,7 +121,8 @@ public class ReportingWindow extends JDialog{
     private void connectionByID() {
         String serverResponse = "";
         serverResponse = serverConnection.getConnectionsStatisticsByUserId();
-        System.out.println(serverResponse);
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        responseAnalyser.generateHistogram(4);
         System.out.println("Connection statistics for one user");
     }
 
@@ -129,15 +130,18 @@ public class ReportingWindow extends JDialog{
         String serverResponse = "";
         serverResponse = serverConnection.getConnectionsStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
-        responseAnalyser.generateHistogram(4);
+        responseAnalyser.generateHistogram(3);
         System.out.println("Global connection statistics");
     }
     private void doOption4() {
         System.out.println("Messages statistics for one user");
     }
 
-    private void doOption5() {
-        System.out.println("Global messages statistics");
+    private void messageStatistics() {
+        String serverResponse = "";
+        serverResponse = serverConnection.getMessagesStatistics();
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        responseAnalyser.generateHistogram(1);
     }
 
     private void doOption6() {
