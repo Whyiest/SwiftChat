@@ -417,21 +417,21 @@ public class ContactWindow extends JDialog {
         createStatusComboBox.setPreferredSize(new Dimension(50, 30));
         createStatusComboBox.addItemListener(new ItemListener() {
             //bsd le status du mec
-                    public void itemStateChanged(ItemEvent e) {
-                        String actionChoice = (String) createStatusComboBox.getSelectedItem();
-                        switch (actionChoice) {
-                            case "ONLINE":
-                                setOnline();
-                                break;
-                            case "OFFLINE":
-                                setOffline();
-                                break;
-                            case "AWAY":
-                                setAway();
-                                break;
-                            default:
-                                break;
-                        }
+            public void itemStateChanged(ItemEvent e) {
+                String actionChoice = (String) createStatusComboBox.getSelectedItem();
+                switch (actionChoice) {
+                    case "ONLINE":
+                        setOnline();
+                        break;
+                    case "OFFLINE":
+                        setOffline();
+                        break;
+                    case "AWAY":
+                        setAway();
+                        break;
+                    default:
+                        break;
+                }
             }
         });
         return createStatusComboBox;
