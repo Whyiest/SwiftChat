@@ -210,7 +210,6 @@ public class ResponseAnalyser {
         }
     }
 
-
     /**
      * This method generates a histogram from the server response
      *
@@ -237,7 +236,7 @@ public class ResponseAnalyser {
 
             // Get the day and month of the timestamp to create a String representing the day and month
             String day = dateTime.getDayOfMonth() + "";
-            String month = dateTime.getMonth() + "";
+            String month = dateTime.getMonthValue() + "";
             String dayAndMonth = month + day;
 
             // Convert the date to a double value representing the day and month of the timestamp

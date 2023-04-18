@@ -2,8 +2,6 @@ package client;
 import client.clientModel.Data;
 import client.controler.ServerConnection;
 import client.view.ViewManager;
-import com.mysql.cj.jdbc.SuspendableXAConnection;
-
 import java.util.Timer;
 
 public class Client {
