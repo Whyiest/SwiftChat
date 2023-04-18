@@ -36,6 +36,8 @@ public class GroupWindow extends JDialog {
     private JScrollPane chatscrollpane;
     private JPanel conversationPanel;
 
+    private Thread updateThread;
+
 
     /**
      * Constructor
@@ -60,6 +62,7 @@ public class GroupWindow extends JDialog {
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
 
+        startUpdateThread();
         try {
             initComponents();
         } catch (Exception e) {
@@ -67,6 +70,24 @@ public class GroupWindow extends JDialog {
             System.out.println("[!] Error while initializing the conversation window");
         }
 
+    }
+
+
+    /**
+     * Timer task that will update the data
+     */
+    public void startUpdateThread() {
+        updateThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(1000);
+                    upDateChat();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // restore the interrupted status
+                }
+            }
+        });
+        updateThread.start();
     }
 
     /**
@@ -106,29 +127,29 @@ public class GroupWindow extends JDialog {
     }
 
     private void upDateChat() {
-
         // Getting last messages
         messageList = localStorage.getGroupMessageData();
 
         // Copy all the messages
-        ArrayList<Message> toDisplay = new ArrayList<Message>(messageList);
+        List<Message> toDisplay = new ArrayList<>(messageList);
 
         // Remove the messages already displayed
         if (alreadyDisplay != null) {
+
+            // Remove already displayed messages
             toDisplay.removeAll(alreadyDisplay);
+
             for (Message message : toDisplay) {
-                if (message.getSenderID() == (currentUser.getId())) {
-                    // C'est un message envoyé par l'utilisateur actuel
+                if (message.getSenderID() == currentUser.getId()) {
+                    // It's a message sent by the current user
                     addSentMessage(message);
                 } else {
-                    // C'est un message reçu par l'utilisateur actuel
+                    // It's a message received by the current user
                     addReceivedMessage(message);
                 }
-                alreadyDisplay.add(message);
             }
-        }
-        // If we currently don't have displayed messages
-        else {
+        } else {
+            // If we currently don't have displayed messages
             for (Message message : messageList) {
                 if (message.getSenderID() == (currentUser.getId())) {
                     // C'est un message envoyé par l'utilisateur actuel
@@ -141,6 +162,7 @@ public class GroupWindow extends JDialog {
             }
         }
     }
+
 
 
     /**
@@ -407,6 +429,7 @@ public class GroupWindow extends JDialog {
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
     }
+
 
 
 
