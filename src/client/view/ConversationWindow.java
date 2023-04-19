@@ -1,11 +1,24 @@
 package client.view;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Scanner;
+
 import client.Client;
 import client.clientModel.Data;
 import client.clientModel.Message;
 import client.clientModel.User;
 import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
+
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -34,12 +47,10 @@ public class ConversationWindow extends JDialog {
     private JPanel conversationPanel;
     static JFrame parent = new JFrame();
     private List<Message> listOfMessageBetweenUsers;
-
     private List<Message> alreadyDisplay;
     private Data localStorage;
-
     private Thread updateThread;
-
+    private boolean talkingToOpenAI = false;
     public boolean messageLoaded = false;
 
 
@@ -50,7 +61,7 @@ public class ConversationWindow extends JDialog {
      * @param serverConnection the server connection
      * @param userChattingWith the user
      */
-    public ConversationWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User whoIam, User userChattingWith, int width, int height) {
+    public ConversationWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User whoIam, User userChattingWith, int width, int height, boolean talkingToOpenAI) {
 
         super(parent, "SwiftChat", true);
 
@@ -63,6 +74,7 @@ public class ConversationWindow extends JDialog {
         this.localStorage = localStorage;
         this.alreadyDisplay = new ArrayList<Message>();
         this.messageLoaded = false;
+        this.talkingToOpenAI = talkingToOpenAI;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
@@ -108,8 +120,10 @@ public class ConversationWindow extends JDialog {
     private void initComponents() {
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
-        startUpdateThread(this);
-        upDateChat();
+        if (!talkingToOpenAI) {
+            startUpdateThread(this);
+            upDateChat();
+        }
     }
 
     /**
@@ -148,6 +162,7 @@ public class ConversationWindow extends JDialog {
     private void upDateChat() {
 
         if (!messageLoaded) {
+
             boolean isUpdated = false;
 
             do {
@@ -203,10 +218,10 @@ public class ConversationWindow extends JDialog {
         for (Message message : toDisplay) {
             if (message.getSenderID() == currentUser.getId()) {
                 // It's a message sent by the current user
-                addSentMessage(message.getContent(), message.getTimestamp());
+                addSentMessage(message);
             } else {
                 // It's a message received by the current user
-                addReceivedMessage(message.getContent(), message.getTimestamp());
+                addReceivedMessage(message);
             }
             alreadyDisplay.add(message);
         }
@@ -229,6 +244,7 @@ public class ConversationWindow extends JDialog {
      * @return the chat panel
      */
     private JPanel createChatPanel() {
+
         JPanel chatPanel = new JPanel(new BorderLayout());
         chatPanel.add(createUserPanel(), BorderLayout.NORTH);
         chatPanel.add(createChatScrollPane(), BorderLayout.CENTER);
@@ -248,16 +264,19 @@ public class ConversationWindow extends JDialog {
         JPanel userPanel = new JPanel(new BorderLayout());
         userPanel.setPreferredSize(new Dimension(550, 30));
         userPanel.setBackground(Color.GRAY);
+
         userPanel.add(createBackButton(), BorderLayout.WEST);
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
 
-        do {
-            currentPrivilege = getClientPermission();
-        } while (currentPrivilege.equals("ERROR"));
+        if (!talkingToOpenAI) {
+            do {
+                currentPrivilege = getClientPermission();
+            } while (currentPrivilege.equals("ERROR"));
 
-        // Create more option for moderator & admin
-        if (currentPrivilege.equals("MODERATOR") || currentPrivilege.equals("ADMIN")) {
-            userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
+            // Create more option for moderator & admin
+            if (currentPrivilege.equals("MODERATOR") || currentPrivilege.equals("ADMIN")) {
+                userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
+            }
         }
         return userPanel;
     }
@@ -311,10 +330,15 @@ public class ConversationWindow extends JDialog {
      * @return the user name label
      */
     private JLabel createUserNameLabel() {
+        if (!talkingToOpenAI) {
+            contactName = chattingWithThisUser.getFirstName() + " " + chattingWithThisUser.getLastName();
+        } else {
+            contactName = "OpenAI";
+        }
         JLabel userNameLabel = new JLabel(contactName);
         userNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userNameLabel.setForeground(Color.WHITE);
-        userNameLabel.setText(contactName = chattingWithThisUser.getFirstName() + " " + chattingWithThisUser.getLastName()); // Set text of the label
+        userNameLabel.setText(contactName);
         return userNameLabel;
     }
 
@@ -337,27 +361,11 @@ public class ConversationWindow extends JDialog {
     /**
      * This function allow to get the current privileges of an user
      *
-     * @return the permission of the use, or error if there is an error
+     * @return the permission of the use
      */
     public String getClientPermission() {
-
-        User user = null;
-
-        try {
-            String serverResponse = this.serverConnection.getUserByID(Client.getClientID());
-            ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-            user = responseAnalyser.extractUser();
-        } catch (Exception e) {
-            System.out.println("[!] Error while getting user by user permission\n");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
-            return "ERROR";
-        }
-
-        return user.getPermission();
+        User whoAmI = localStorage.userIDLookup(Client.getClientID());
+        return whoAmI.getPermission();
     }
 
     /**
@@ -367,7 +375,9 @@ public class ConversationWindow extends JDialog {
      */
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(createImageButton());
+        if (!talkingToOpenAI) {
+            buttonPanel.add(createImageButton());
+        }
         buttonPanel.add(createSendButton());
         return buttonPanel;
     }
@@ -392,6 +402,14 @@ public class ConversationWindow extends JDialog {
 
         return panel;
     }
+
+    /**
+     * Create the message field
+     *
+     * @param out           the message
+     * @param localDateTime the time of the message
+     * @return the message field
+     */
 
     public static JPanel formatLabelreceiver(String out, LocalDateTime localDateTime) {
         JPanel panel = new JPanel();
@@ -456,8 +474,6 @@ public class ConversationWindow extends JDialog {
                 System.out.println("You chose to open this file: " +
                         chooser.getSelectedFile().getName());
             }
-
-
         });
         return imageButton;
     }
@@ -469,49 +485,64 @@ public class ConversationWindow extends JDialog {
      * @return the send button
      */
     private JButton createSendButton() {
+
         JButton sendButton = new JButton("Send");
-        sendButton.addActionListener(e -> {
 
-            String serverResponse = "";
-            String content = messageField.getText();
-            messageField.setText("");
+        if (!talkingToOpenAI) {
+            System.out.println("Not talking to OpenAI");
+            sendButton.addActionListener(e -> {
 
-
-            if (content.equals("")) {
-                System.out.println("[!] User tried to send empty message. Abort sending.");
-            } else {
-
-                // Add to DB :
-                do {
-                    try {
-                        serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
-
-                    } catch (Exception messageError) {
-                        System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
-                        JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException interruptedException) {
-                            interruptedException.printStackTrace();
-                        }
-                    }
-                } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
-
-                serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
+                String serverResponse = "";
+                String content = messageField.getText();
+                messageField.setText("");
 
                 // Allow to put this message at right side :
-                //addSentMessage(content, LocalDateTime.now());
-            }
+                Message newMessage = new Message(currentUser.getId(), chattingWithThisUser.getId(), content, LocalDateTime.now());
+                alreadyDisplay.add(newMessage);
+                addSentMessage(newMessage);
 
+                if (content.equals("")) {
+                    System.out.println("[!] User tried to send empty message. Abort sending.");
+                } else {
 
-        });
-        return sendButton;
+                    // Add to DB :
+                    do {
+                        try {
+                            serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
+
+                        } catch (Exception messageError) {
+                            System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
+                            JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException interruptedException) {
+                                interruptedException.printStackTrace();
+                            }
+                        }
+                    } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+                    serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
+                }
+            });
+            return sendButton;
+        } else {
+
+            sendButton.addActionListener(e -> {
+                String askThis = messageField.getText();
+                if (askThis.equals("")) {
+                    System.out.println("[!] User tried to send empty message. Abort sending.");
+                } else {
+                    askToOpenAI(askThis);
+                    messageField.setText("");
+                }
+            });
+            return sendButton;
+        }
     }
 
-    private void addSentMessage(String message, LocalDateTime localDateTime) {
+    private void addSentMessage(Message newMessage) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JPanel panel = formatLabel(message, localDateTime);
-        JLabel sentMessageLabel = new JLabel(message);
+        JPanel panel = formatLabel(newMessage.getContent(), newMessage.getTimestamp());
+        JLabel sentMessageLabel = new JLabel(newMessage.getContent());
         sentMessageLabel.setBackground(Color.GREEN);
         sentMessageLabel.setForeground(Color.BLACK);
         sentMessageLabel.setOpaque(true);
@@ -521,10 +552,10 @@ public class ConversationWindow extends JDialog {
         chatPanel.revalidate();
     }
 
-    private void addReceivedMessage(String message, LocalDateTime localDateTime) {
+    private void addReceivedMessage(Message newMessage) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel panel = formatLabelreceiver(message, localDateTime);
-        JLabel receivedMessageLabel = new JLabel(message);
+        JPanel panel = formatLabelreceiver(newMessage.getContent(), newMessage.getTimestamp());
+        JLabel receivedMessageLabel = new JLabel(newMessage.getContent());
         receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
         receivedMessageLabel.setOpaque(true);
         receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -536,6 +567,64 @@ public class ConversationWindow extends JDialog {
     public void setMessageLoaded(boolean messageLoaded) {
         this.messageLoaded = messageLoaded;
     }
+
+    /**
+     * Allow to ask a question to chatGPT from Open AI and add the response to the view
+     *
+     * @param askThis the question to ask
+     */
+    public void askToOpenAI(String askThis) {
+
+        Message newMessage = new Message(currentUser.getId(), currentUser.getId(), askThis, LocalDateTime.now());
+        addSentMessage(newMessage);
+
+        try {
+            String response = sendRequestToOpenAI(askThis);
+            Message newResponse = new Message(currentUser.getId(), currentUser.getId(), response, LocalDateTime.now());
+            addReceivedMessage(newResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Send a request to Open AI API
+     *
+     * @param askThis the question to ask
+     * @return the response from Open AI
+     */
+    public String sendRequestToOpenAI(String askThis) throws IOException, JSONException {
+
+        String url = "https://api.openai.com/v1/completions";
+        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Authorization", "Bearer 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");
+
+        JSONObject data = new JSONObject();
+        data.put("model", "text-davinci-003");
+        data.put("prompt", askThis);
+        data.put("max_tokens", 50);
+        data.put("temperature", 0.5);
+
+        con.setDoOutput(true);
+        con.getOutputStream().write(data.toString().getBytes());
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String line;
+        StringBuilder response = new StringBuilder();
+        while ((line = in.readLine()) != null) {
+            response.append(line);
+        }
+        in.close();
+
+        JSONObject json = new JSONObject(response.toString());
+        String text = json.getJSONArray("choices").getJSONObject(0).getString("text");
+        return text;
+    }
+
 }
+
 
 

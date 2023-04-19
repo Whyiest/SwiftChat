@@ -185,7 +185,6 @@ public class ContactWindow extends JDialog {
                     listCurrentDisplayedUsers[currentUserIterator] = user;
                     usersPerPage[currentPage][currentUserIterator] = user;
 
-
                     // Create a contact panel
                     JPanel contactCard = new JPanel(new BorderLayout());
                     contactCard.setBackground(new Color(31, 13, 48));
@@ -210,7 +209,6 @@ public class ContactWindow extends JDialog {
                         ViewManager.setCurrentDisplay(4);
                         dispose();
                     });
-
 
                     // Add the current contact
                     contactCard.add(contactButton, BorderLayout.CENTER);
@@ -335,6 +333,7 @@ public class ContactWindow extends JDialog {
 
     /**
      * Allow to create a contact button for an user
+     *
      * @return
      */
     private JButton createContactButton(String fullName) {
@@ -351,16 +350,18 @@ public class ContactWindow extends JDialog {
 
     /**
      * Top panel with 3 or 2 button depending on the status of the user
+     *
      * @return the top panel
      */
     private JPanel createTopPanel() {
+
         String currentPrivilege = "";
         JPanel userPanel = new JPanel(new GridBagLayout());
         userPanel.setPreferredSize(new Dimension(50, 60)); // Increase height to allow for two lines
 
         // Create GridBagConstraints for the "General" button with weightx = 1.0 and fill = BOTH
         GridBagConstraints gbcGeneral = new GridBagConstraints();
-        gbcGeneral.gridx = 0;
+        gbcGeneral.gridx = 0; // Put the button in the first column
         gbcGeneral.gridy = 0; // Put the button in the first row
         gbcGeneral.weightx = 1.0;
         gbcGeneral.fill = GridBagConstraints.BOTH;
@@ -376,42 +377,56 @@ public class ContactWindow extends JDialog {
         if (currentPrivilege.equals("ADMIN")) {
             // Add the "Reports" button to the right of the "General" button in the second row
             GridBagConstraints gbcReports = new GridBagConstraints();
-            gbcReports.gridx = 1;
+            gbcReports.gridx = 1; // Put the button in the second column
             gbcReports.gridy = 0; // Put the button in the first row
             gbcReports.weightx = 0.5;
             gbcReports.fill = GridBagConstraints.HORIZONTAL;
             userPanel.add(createReportingButton(), gbcReports);
         }
-
-        // Add a button that takes up the entire second row
-        JButton fullRowButton = new JButton("Full Row Button");
-        GridBagConstraints gbcFullRowButton = new GridBagConstraints();
-        gbcFullRowButton.gridx = 0;
-        gbcFullRowButton.gridy = 1; // Put the button in the second row
-        gbcFullRowButton.gridwidth = GridBagConstraints.REMAINDER; // Make the button take up the entire row
-        gbcFullRowButton.fill = GridBagConstraints.BOTH;
-        userPanel.add(createGeneralButton(), gbcFullRowButton);
-
         // Add the "Log out" button to the right of the "Reports" or "General" button in the second row
         GridBagConstraints gbcLogOut = new GridBagConstraints();
-        gbcLogOut.gridx = 2;
-        gbcLogOut.gridy = 0; // Put the button in the second row
+        gbcLogOut.gridx = 2; // Put the button is third line
+        gbcLogOut.gridy = 0; // Put the button in first line
         gbcLogOut.weightx = 0.25;
         gbcLogOut.fill = GridBagConstraints.HORIZONTAL;
         userPanel.add(createLogOutButton(), gbcLogOut);
 
+        // Add a button that takes up the half second row
+        JButton fullRowButton = new JButton("Full Row Button");
+
+        GridBagConstraints gbcGeneralButton = new GridBagConstraints();
+        gbcGeneralButton.gridx = 0; // Put the button in the first column
+        gbcGeneralButton.gridy = 1; // Put the button in the second line
+        gbcLogOut.weightx = 0.5;
+        gbcGeneralButton.fill = GridBagConstraints.BOTH;
+        userPanel.add(createGeneralButton(), gbcGeneralButton);
+
+        // Add a button that takes up the half second row
+        GridBagConstraints gbcOpenAIButton = new GridBagConstraints();
+        gbcOpenAIButton.gridx = 1; // Put the button is third line
+        gbcOpenAIButton.gridy = 1; // Put the button in first line
+        gbcOpenAIButton.weightx = 0.5;
+        gbcOpenAIButton.fill = GridBagConstraints.HORIZONTAL;
+        userPanel.add(createOpenAIButton(), gbcOpenAIButton);
+
+
         return userPanel;
     }
 
-
-    private JPanel createGeneralPanel(){
+    /**
+     * Create the general panel
+     *
+     * @return the general panel
+     */
+    private JPanel createGeneralPanel() {
         JPanel generalPanel = new JPanel(new GridBagLayout());
         generalPanel.setPreferredSize(new Dimension(50, 30));
         JButton generalButton = createGeneralButton();
         generalPanel.add(generalButton);
         return generalPanel;
     }
-    private JComboBox createStatusComboBox(){
+
+    private JComboBox createStatusComboBox() {
         String[] options = {"ONLINE", "OFFLINE", "AWAY"};
         JComboBox<String> createStatusComboBox = new JComboBox<>(options);
         createStatusComboBox.setPreferredSize(new Dimension(50, 30));
@@ -436,23 +451,37 @@ public class ContactWindow extends JDialog {
         });
         return createStatusComboBox;
     }
-    void setOnline(){
+
+    /**
+     * Set the status of the user to online
+     */
+    void setOnline() {
         String serverResponse = "";
-        serverResponse = serverConnection.changeStatus(this.currentUser.getId(),"ONLINE");
+        serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "ONLINE");
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
     }
-    void setOffline(){
+
+    /**
+     * Set the status of the user to offline
+     */
+    void setOffline() {
         String serverResponse = "";
-        serverResponse = serverConnection.changeStatus(this.currentUser.getId(),"OFFLINE");
+        serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "OFFLINE");
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
     }
-    void setAway(){
+
+    /**
+     * Set the status of the user to away
+     */
+    void setAway() {
         String serverResponse = "";
-        serverResponse = serverConnection.changeStatus(this.currentUser.getId(),"AWAY");
+        serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "AWAY");
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
     }
+
     /**
      * Create the reporting button for admins
+     *
      * @return the report button
      */
     private JButton createReportingButton() {
@@ -467,11 +496,12 @@ public class ContactWindow extends JDialog {
 
     /**
      * Create the general button for the main group salon
+     *
      * @return general button
      */
     private JButton createGeneralButton() {
-        JButton createGeneralButton = new JButton("Global Discussion");
-        createGeneralButton.setPreferredSize(new Dimension(100, 100));
+        JButton createGeneralButton = new JButton("Global Chat");
+        createGeneralButton.setPreferredSize(new Dimension(50, 100));
         createGeneralButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(3);
             closeContactWindow();
@@ -481,9 +511,10 @@ public class ContactWindow extends JDialog {
 
     /**
      * Log out button
+     *
      * @return logoutButton
      */
-    private JButton createLogOutButton(){
+    private JButton createLogOutButton() {
         JButton createLogOutButton = new JButton("Sign out");
         createLogOutButton.setPreferredSize(new Dimension(50, 30));
         createLogOutButton.addActionListener(e -> {
@@ -493,6 +524,17 @@ public class ContactWindow extends JDialog {
         });
         return createLogOutButton;
     }
+
+    private JButton createOpenAIButton() {
+        JButton createOpenAIButton = new JButton("OpenAI");
+        createOpenAIButton.setPreferredSize(new Dimension(50, 30));
+        createOpenAIButton.addActionListener(e -> {
+            ViewManager.setCurrentDisplay(7);
+            closeContactWindow();
+        });
+        return createOpenAIButton;
+    }
+
     /**
      * Create a colored circle to represent the user status
      *

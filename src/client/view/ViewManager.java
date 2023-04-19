@@ -87,7 +87,7 @@ public class ViewManager implements Runnable {
                 case 4 -> { // CHAT
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.conversationForm = new ConversationWindow(null, serverConnection, localStorage, currentUser, chattingWithThisUser, 700,600);
+                        this.conversationForm = new ConversationWindow(null, serverConnection, localStorage, currentUser, chattingWithThisUser, 700,600, false);
                         conversationForm.openConversationWindow();
                     }
                     if (isClientBanned) {
@@ -111,6 +111,17 @@ public class ViewManager implements Runnable {
                         alreadyDisplay = true;
                         this.reportingWindow = new ReportingWindow(conversationForm, serverConnection,600,500);
                         reportingWindow.openReportWindow();
+                    }
+                    if (isClientBanned) {
+                        reportingWindow.closeReportWindow();
+                        isClientBanned = false;
+                    }
+                }
+                case 7 -> { // OPENAI
+                    if (!alreadyDisplay) {
+                        alreadyDisplay = true;
+                        this.conversationForm = new ConversationWindow(null, serverConnection, localStorage, currentUser, chattingWithThisUser, 700,600, true);
+                        conversationForm.openConversationWindow();
                     }
                     if (isClientBanned) {
                         reportingWindow.closeReportWindow();
