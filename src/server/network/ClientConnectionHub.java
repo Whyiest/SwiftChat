@@ -1,9 +1,14 @@
 package server.network;
-import server.dao.UserDaoImpl;
+
+import client.clientModel.Message;
+import server.dao.*;
 import server.serverModel.ClientManager;
+import server.serverModel.MessageAnalyser;
+
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientConnectionHub {
 
@@ -13,7 +18,7 @@ public class ClientConnectionHub {
 
     private boolean waitingForConnection = true;
 
-    private final Database myDb;
+    private Database myDb;
 
     private static ArrayList<Socket> clientSocketList = new ArrayList<>();
 
@@ -21,6 +26,7 @@ public class ClientConnectionHub {
 
     /**
      * Constructor of the ClientConnexionHub class
+     *
      * @param openPort Port to open
      */
     public ClientConnectionHub(int openPort) {
@@ -36,17 +42,18 @@ public class ClientConnectionHub {
             System.err.println("Could not retrieve IP address: " + error.getMessage());
         }
 
+    }
+
+    public void connectDatabase(String serverAddress, String databaseName, String username, String password) {
         // Link a database
-        myDb = new Database("swiftchatserver.mysql.database.azure.com", "swiftchatdb", "siwftchat", "Ines123#");
+        myDb = new Database(serverAddress, databaseName, username, password);
+        myDb.connect();
     }
 
     /**
      * Open the connexion hub and the database
      */
     public void openConnexion() {
-
-        // Connect to the database
-        myDb.connect();
 
         // Start the connexion hub
         System.out.println("\n----------STARTING CONNECTION HUB----------");
@@ -67,7 +74,7 @@ public class ClientConnectionHub {
 
                 // Create a new thread for the client and start it
                 clientManagerList.add(new ClientManager(newClientSocket, myDb));
-                Thread connexionThread = new Thread(clientManagerList.get(clientManagerList.size()-1));
+                Thread connexionThread = new Thread(clientManagerList.get(clientManagerList.size() - 1));
                 connexionThread.start();
 
                 // Display the client connexion
@@ -104,6 +111,7 @@ public class ClientConnectionHub {
 
     /**
      * Remove a client from the list
+     *
      * @param clientSocket The socket of the client to remove
      */
     public static void removeClient(Socket clientSocket) {
@@ -111,6 +119,33 @@ public class ClientConnectionHub {
             System.out.println("\n[*] Closing client socket " + clientSocket.getInetAddress() + " (" + (clientSocketList.size() - 1) + " client(s) remaining)\n");
             clientSocketList.remove(clientSocket);
         }
+    }
+
+    /**
+     * CAUTION : Make sure the database is empty before creating it
+     * DO NOT USE IN PRODUCTION
+     * Create the database from scratch. NOT POPULATED
+     */
+    public void createDatabase() {
+        myDb.createDB();
+    }
+
+    /**
+     * Fill the database with test data
+     * DO NOT USE IN PRODUCTION
+     */
+
+
+    public void populateDatabase() {
+        List<String> testMessages = new ArrayList<>();
+
+        testMessages.add("ADD-USER;este;Esteban;Magnon;");
+
+        for (int i = 0; i < testMessages.size(); i++) {
+            MessageAnalyser myMessageAnalyser = new MessageAnalyser(testMessages.get(i), myDb);
+            myMessageAnalyser.redirectMessage();
+        }
+
     }
 }
 

@@ -14,6 +14,14 @@ public class Server {
             System.out.println("\n[!] Starting safe shutdown of server...");
             myClientConnectionHub.closeConnexion();
         }));
+
+        // Connect to the database
+        myClientConnectionHub.connectDatabase("swiftchatserver.mysql.database.azure.com", "swiftchatdb", "siwftchat", "Ines123#");
+
+        // POPULATE - TEST ONLY - DO NOT USE IN PRODUCTION
+        //myClientConnectionHub.createDatabase();
+        //myClientConnectionHub.populateDatabase();
+
         // Open the connexion hub
         myClientConnectionHub.openConnexion();
 

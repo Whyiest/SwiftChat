@@ -122,7 +122,14 @@ public class ConversationWindow extends JDialog {
         add(mainPanel);
         if (!talkingToSimpleQuestionAI) {
             startUpdateThread(this);
+            if (!messageLoaded) {
+                boolean isUpdated = false;
+                isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                messageLoaded = true;
+            }
             upDateChat();
+
+            updateThread.start();
         }
     }
 
@@ -144,7 +151,7 @@ public class ConversationWindow extends JDialog {
                         localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
                         // Wait 1 second to avoid spamming the server
                         upDateChat();
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
 
                     }
                 } catch (InterruptedException e) {
@@ -152,7 +159,6 @@ public class ConversationWindow extends JDialog {
                 }
             }
         });
-        updateThread.start();
     }
 
     /**
@@ -161,21 +167,6 @@ public class ConversationWindow extends JDialog {
      */
     private void upDateChat() {
 
-        if (!messageLoaded) {
-
-            boolean isUpdated = false;
-
-            do {
-                isUpdated = false;
-                isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while (!isUpdated);
-            messageLoaded = true;
-        }
 
         listOfMessageBetweenUsers = localStorage.getMessageDataBetweenUser();
 
@@ -185,14 +176,9 @@ public class ConversationWindow extends JDialog {
         // Getting last messages
         List<Message> toDisplay = new ArrayList<Message>();
         Message newMessage = null;
+        System.out.println("Already DIsplay in function : " + alreadyDisplay.toString());
 
-        Collections.sort(listOfMessageBetweenUsers, new Comparator<Message>() {
-            @Override
-            public int compare(Message m1, Message m2) {
-                return m1.getTimestamp().compareTo(m2.getTimestamp());
-            }
-        });
-
+        System.out.println("Message between user in fonction: " + listOfMessageBetweenUsers.toString());
 
         if (alreadyDisplay.size() > 0) {
             for (int i = 0; i < listOfMessageBetweenUsers.size(); i++) {
@@ -212,6 +198,7 @@ public class ConversationWindow extends JDialog {
         } else {
             toDisplay.addAll(listOfMessageBetweenUsers);
         }
+        System.out.println("To display : " + toDisplay.toString());
 
 
         // Add the different messages to the UI
@@ -268,6 +255,7 @@ public class ConversationWindow extends JDialog {
         userPanel.add(createBackButton(), BorderLayout.WEST);
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
 
+        // If the user is not talking to the simple question AI
         if (!talkingToSimpleQuestionAI) {
             do {
                 currentPrivilege = getClientPermission();
@@ -302,6 +290,7 @@ public class ConversationWindow extends JDialog {
 
     private JPanel createMessagePanel() {
         JPanel messagePanel = new JPanel(new BorderLayout());
+        // add buttons
         messagePanel.add(createMessageField(), BorderLayout.CENTER);
         messagePanel.add(createButtonPanel(), BorderLayout.EAST);
         return messagePanel;
@@ -317,11 +306,14 @@ public class ConversationWindow extends JDialog {
         backButton.setPreferredSize(new Dimension(100, 25));
         backButton.addActionListener(e -> {
             previousSize = getSize();
-            //updateThread.stop(); Chelouu
+
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
-
+            if (!talkingToSimpleQuestionAI) {
+                // Stop updating message with other user
+                stopThread();
+            }
         });
         return backButton;
     }
@@ -419,17 +411,22 @@ public class ConversationWindow extends JDialog {
      */
 
     public static JPanel formatLabelreceiver(String out, LocalDateTime localDateTime) {
+
+        // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+        // Create and setup the message
         JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
         output.setBackground(new Color(127, 114, 144, 255));
         output.setOpaque(true);
         output.setBorder(new EmptyBorder(15, 15, 15, 50));
 
+        // Add the message to the panel
         panel.add(output);
 
+        // Add the time to the panel
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
@@ -496,7 +493,7 @@ public class ConversationWindow extends JDialog {
         JButton sendButton = new JButton("Send");
 
         if (!talkingToSimpleQuestionAI) {
-            System.out.println("Not talking to OpenAI");
+
             sendButton.addActionListener(e -> {
 
                 String serverResponse = "";
@@ -516,7 +513,6 @@ public class ConversationWindow extends JDialog {
                     do {
                         try {
                             serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), content);
-
                         } catch (Exception messageError) {
                             System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
                             JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
@@ -552,6 +548,7 @@ public class ConversationWindow extends JDialog {
      * @param newMessage
      */
     private void addSentMessage(Message newMessage) {
+
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JPanel panel = formatLabel(newMessage.getContent(), newMessage.getTimestamp());
         JLabel sentMessageLabel = new JLabel(newMessage.getContent());
@@ -645,6 +642,10 @@ public class ConversationWindow extends JDialog {
         JSONObject json = new JSONObject(response.toString());
         String text = json.getJSONArray("choices").getJSONObject(0).getString("text");
         return text;
+    }
+
+    public void stopThread() {
+        updateThread.stop();
     }
 }
 

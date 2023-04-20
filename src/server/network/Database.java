@@ -11,10 +11,11 @@ public class Database {
 
     /**
      * This constructor allows to create a database
-     * @param server    The server of the database
-     * @param database  The name of the database
-     * @param username  The username of the database
-     * @param password  The password of the database
+     *
+     * @param server   The server of the database
+     * @param database The name of the database
+     * @param username The username of the database
+     * @param password The password of the database
      */
     public Database(String server, String database, String username, String password) {
         this.server = server;
@@ -85,7 +86,6 @@ public class Database {
             populate.executeUpdate(createUserTableSQL);
 
 
-
             // Create MESSAGE table
             String createMessageTableSQL = "CREATE TABLE MESSAGE " +
                     "(ID INTEGER not NULL AUTO_INCREMENT, " +
@@ -125,7 +125,6 @@ public class Database {
             populate.close();
 
 
-
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
@@ -143,6 +142,39 @@ public class Database {
         }
     }
 
+    public void clearDB() {
+        Statement statement = null;
 
+        try {
+            statement = connection.createStatement();
+
+            // Delete all rows from USER table
+            String clearUserTableSQL = "DELETE FROM USER";
+            statement.executeUpdate(clearUserTableSQL);
+
+            // Delete all rows from MESSAGE table
+            String clearMessageTableSQL = "DELETE FROM MESSAGE";
+            statement.executeUpdate(clearMessageTableSQL);
+
+            // Delete all rows from MESSAGEGROUP table
+            String clearMessageGroupTableSQL = "DELETE FROM MESSAGEGROUP";
+            statement.executeUpdate(clearMessageGroupTableSQL);
+
+            // Delete all rows from LOG table
+            String clearLogTableSQL = "DELETE FROM LOG";
+            statement.executeUpdate(clearLogTableSQL);
+
+            statement.close();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) statement.close();
+            } catch (SQLException se2) {
+            }
+        }
+    }
 }
 
