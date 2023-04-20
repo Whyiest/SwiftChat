@@ -41,6 +41,7 @@ public class ConversationWindow extends JDialog {
     private List<Message> alreadyDisplay;
     private Data localStorage;
     private Thread updateThread;
+     private LocalDateTime userConnexionTime;
     private boolean talkingToSimpleQuestionAI = false;
     public boolean messageLoaded = false;
 
@@ -71,9 +72,11 @@ public class ConversationWindow extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
-
         try {
+
             initComponents();
+
+
         } catch (Exception e) {
             System.out.println("[!] Error while initializing the conversation window");
         }
@@ -241,15 +244,34 @@ public class ConversationWindow extends JDialog {
      * @return the user panel
      */
     private JPanel createUserPanel() {
-
         String currentPrivilege = "";
 
-        JPanel userPanel = new JPanel(new BorderLayout());
+        JPanel userPanel = new JPanel(new GridBagLayout());
         userPanel.setPreferredSize(new Dimension(550, 30));
         userPanel.setBackground(Color.GRAY);
 
-        userPanel.add(createBackButton(), BorderLayout.WEST);
-        userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
+        // Create GridBagConstraints for the "gbcUserNameLabel" button
+        GridBagConstraints gbcUserNameLabel = new GridBagConstraints();
+        gbcUserNameLabel.gridx = 1; // Put the button in the second column
+        gbcUserNameLabel.gridy = 0; // Put the button in the first row
+        gbcUserNameLabel.weightx = 1.0;
+        gbcUserNameLabel.fill = GridBagConstraints.HORIZONTAL;
+
+        GridBagConstraints gbcBackButton = new GridBagConstraints();
+        gbcBackButton.gridx = 0; // Put the button in the first column
+        gbcBackButton.gridy = 0; // Put the button in the first row
+        gbcBackButton.gridheight= 2;
+        gbcBackButton.fill = GridBagConstraints.VERTICAL;
+
+        GridBagConstraints gbcTimeLabel = new GridBagConstraints();
+        gbcTimeLabel.gridx = 1; // Put the button in the second column
+        gbcTimeLabel.gridy = 1; // Put the button in the second row
+        gbcTimeLabel.weightx = 1.0;
+        gbcTimeLabel.fill = GridBagConstraints.HORIZONTAL;
+
+        userPanel.add(createBackButton(), gbcBackButton);
+        userPanel.add(createUserNameLabel(), gbcUserNameLabel);
+        userPanel.add(createTimeLabel(), gbcTimeLabel);
 
         // If the user is not talking to the simple question AI
         // We need to check client privileges
@@ -260,10 +282,31 @@ public class ConversationWindow extends JDialog {
 
             // Create more option for moderator & admin
             if (currentPrivilege.equals("MODERATOR") || currentPrivilege.equals("ADMIN")) {
-                userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
+                GridBagConstraints gbcOptionButton = new GridBagConstraints();
+                gbcOptionButton.gridx = 2; // Put the button in the fourth column
+                gbcOptionButton.gridheight= 2;
+                gbcOptionButton.fill = GridBagConstraints.VERTICAL;
+                userPanel.add(createMoreOptionsButton(), gbcOptionButton);
             }
         }
         return userPanel;
+    }
+
+    public static String formatDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, HH:mm");
+        return dateTime.format(formatter);
+    }
+    private JLabel createTimeLabel() {
+        if (!talkingToSimpleQuestionAI) {
+            userConnexionTime = chattingWithThisUser.getLastConnectionTime();
+        }
+        String formatted = formatDate(userConnexionTime);
+        JLabel timeLabel = new JLabel();
+        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timeLabel.setText(formatted);
+        timeLabel.setForeground(Color.WHITE);
+        timeLabel.setFont(new Font("Arial",Font.ITALIC,10));
+        return timeLabel;
     }
 
     /**
@@ -303,7 +346,7 @@ public class ConversationWindow extends JDialog {
      */
     private JButton createBackButton() {
         JButton backButton = new JButton("←");
-        backButton.setPreferredSize(new Dimension(100, 25));
+        backButton.setPreferredSize(new Dimension(200, 70));
         backButton.addActionListener(e -> {
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
@@ -331,6 +374,7 @@ public class ConversationWindow extends JDialog {
         userNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userNameLabel.setForeground(Color.WHITE);
         userNameLabel.setText(contactName);
+        userNameLabel.setFont(new Font("Arial",Font.BOLD,12));
         return userNameLabel;
     }
 
@@ -342,7 +386,7 @@ public class ConversationWindow extends JDialog {
 
     private JButton createMoreOptionsButton() {
         JButton moreOptionsButton = new JButton("...");
-        moreOptionsButton.setPreferredSize(new Dimension(50, 30));
+        moreOptionsButton.setPreferredSize(new Dimension(200, 70));
         moreOptionsButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(5);
             closeConversationWindow();
