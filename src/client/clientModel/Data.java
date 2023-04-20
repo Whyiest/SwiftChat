@@ -21,6 +21,10 @@ public class Data {
     private Thread updateThread;
 
 
+    /**
+     * Constructor
+     * @param serverConnection the server connection
+     */
     public Data(ServerConnection serverConnection) {
         this.userData = new ArrayList<>();
         this.messageBetweenUserData = new ArrayList<>();
@@ -123,6 +127,30 @@ public class Data {
         return true;
     }
 
+
+    /**
+     * Force user data to be updated
+     */
+
+    public boolean forceUpdateUser() {
+        String userResponse = "";
+        do {
+            try {
+                userResponse = serverConnection.listAllUsers();
+                ResponseAnalyser responseAnalyser = new ResponseAnalyser(userResponse);
+                userData = responseAnalyser.createUserList();
+            } catch (Exception e) {
+                System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } while (userData.size() == 0);
+        return true;
+    }
+
     /**
      * Update the log data
      */
@@ -210,6 +238,11 @@ public class Data {
         clientIsLogged = isLogged;
     }
 
+    /**
+     * Check if the client is banned
+     *
+     * @return true if the client is banned
+     */
     public boolean checkForBan() {
         // Check some times if the user is banned
         if ((iteratorBeforeCheckBan == 3) && Client.isClientLogged() == true) {

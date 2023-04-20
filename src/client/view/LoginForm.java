@@ -5,11 +5,11 @@ import client.clientModel.Data;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 
 public class LoginForm extends JDialog {
@@ -22,6 +22,8 @@ public class LoginForm extends JDialog {
     private JPanel loginForm;
     private JButton clickToRegisterAButton;
     private final ServerConnection serverConnection;
+    private List<User> userData;
+    private Data data;
     boolean isUserBanned;
 
     /**
@@ -29,7 +31,7 @@ public class LoginForm extends JDialog {
      * @param parent the parent frame
      * @param serverConnection the server connection
      */
-    public LoginForm(JFrame parent, ServerConnection serverConnection,int width,int height) {
+    public LoginForm(JFrame parent, ServerConnection serverConnection, Data localStorage, int width,int height) {
 
         super(parent);
 
@@ -37,7 +39,7 @@ public class LoginForm extends JDialog {
 
         // SETUP
         setTitle("Login Form");
-        //setLocationRelativeTo(null);
+
         setContentPane(loginForm);
         setMinimumSize(new Dimension(width, height));
         setModal(true);
@@ -193,17 +195,4 @@ public class LoginForm extends JDialog {
         }
     }
 
-    @Override
-    public String toString() {
-        return "LoginForm{" +
-                "user=" + user +
-                ", userNameField=" + userNameField +
-                ", passwordField=" + passwordField +
-                ", btnLogin=" + btnLogin +
-                ", btnCancel=" + btnCancel +
-                ", loginForm=" + loginForm +
-                ", clickToRegisterAButton=" + clickToRegisterAButton +
-                ", serverConnection=" + serverConnection +
-                '}';
-    }
 }

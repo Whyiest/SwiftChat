@@ -51,14 +51,14 @@ public class ViewManager implements Runnable {
                 case 0 -> { // LOGIN
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        loginForm = new LoginForm(null, serverConnection,700,600);
+                        loginForm = new LoginForm(null, serverConnection, localStorage, 700, 600);
                         loginForm.openLoginWindow();
                     }
                 }
                 case 1 -> { // REGISTER
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
-                        this.registrationForm = new RegistrationForm(null, serverConnection,700,600);
+                        this.registrationForm = new RegistrationForm(null, serverConnection,localStorage,700,600);
                         registrationForm.openRegisterWindow();
                     }
                 }

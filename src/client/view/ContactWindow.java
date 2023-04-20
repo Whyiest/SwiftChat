@@ -54,6 +54,8 @@ public class ContactWindow extends JDialog {
         this.labelSize = 600 / userPerPage;
         this.localStorage = localStorage;
 
+        // Reset data to avoid him to fetch user message
+
 
         // Setup view
         setTitle("Contacts");

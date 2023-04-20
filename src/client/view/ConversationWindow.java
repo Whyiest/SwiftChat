@@ -317,9 +317,11 @@ public class ConversationWindow extends JDialog {
         backButton.setPreferredSize(new Dimension(100, 25));
         backButton.addActionListener(e -> {
             previousSize = getSize();
+            updateThread.stop();
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
+
         });
         return backButton;
     }
@@ -383,17 +385,22 @@ public class ConversationWindow extends JDialog {
     }
 
     public static JPanel formatLabel(String out, LocalDateTime localDateTime) {
+
+        // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+        // Create and setup the message
         JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
         output.setBackground(new Color(37, 211, 102));
         output.setOpaque(true);
         output.setBorder(new EmptyBorder(15, 15, 15, 50));
 
+        // Add the message to the panel
         panel.add(output);
 
+        // Add the time to the panel
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
@@ -539,6 +546,11 @@ public class ConversationWindow extends JDialog {
         }
     }
 
+    /**
+     * Allow to display the message at the right side
+     *
+     * @param newMessage
+     */
     private void addSentMessage(Message newMessage) {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JPanel panel = formatLabel(newMessage.getContent(), newMessage.getTimestamp());
@@ -552,6 +564,12 @@ public class ConversationWindow extends JDialog {
         chatPanel.revalidate();
     }
 
+    /**
+     * Allow to display the message at the left side
+     *
+     * @param newMessage the message to display
+     */
+
     private void addReceivedMessage(Message newMessage) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel panel = formatLabelreceiver(newMessage.getContent(), newMessage.getTimestamp());
@@ -564,6 +582,11 @@ public class ConversationWindow extends JDialog {
         chatPanel.revalidate();
     }
 
+    /**
+     * Allow to aknowledge that the message list is loaded
+     *
+     * @param messageLoaded true if the message list is loaded
+     */
     public void setMessageLoaded(boolean messageLoaded) {
         this.messageLoaded = messageLoaded;
     }
@@ -623,7 +646,6 @@ public class ConversationWindow extends JDialog {
         String text = json.getJSONArray("choices").getJSONObject(0).getString("text");
         return text;
     }
-
 }
 
 
