@@ -120,7 +120,7 @@ public class MessageAnalyser {
      * Message format : LOGIN;USERNAME;PASSWORD
      * Response format : LOGIN;SUCCESS/FAILURE;USER_ID
      *
-     * @return SUCCESS if the user if the password is correct, FAILURE otherwise
+     * @return SUCCESS if the user the password is correct, FAILURE otherwise
      */
     public String logIn() {
         return userDao.logIn(messageParts, message);

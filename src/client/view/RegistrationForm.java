@@ -20,7 +20,6 @@ public class RegistrationForm extends JDialog {
     private JPasswordField confirmPasswordField;
     private final ServerConnection serverConnection;
     private final List<User> userList;
-    private Data data;
     private JButton btnRegister;
     private JButton btnCancel;
 
@@ -37,7 +36,6 @@ public class RegistrationForm extends JDialog {
         this.serverConnection = serverConnection;
 
         // Connect local storage and forcing him to fetch all users
-        this.data = localStorage;
         localStorage.forceUpdateUser();
         this.userList = localStorage.getUserData();
 
@@ -52,24 +50,14 @@ public class RegistrationForm extends JDialog {
 
 
         // REGISTER BUTTON
-        btnRegister.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registerUser();
-            }
-        });
+        btnRegister.addActionListener(e -> registerUser());
 
         // CANCEL BUTTON
-        btnCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                // Go back to log in
-                ViewManager.setCurrentDisplay(0);
-
-                // Close the current window
-                closeRegisterWindow();
-            }
+        btnCancel.addActionListener(e -> {
+            // Go back to log in
+            ViewManager.setCurrentDisplay(0);
+            // Close the current window
+            closeRegisterWindow();
         });
     }
 
@@ -78,7 +66,7 @@ public class RegistrationForm extends JDialog {
      */
     private void registerUser() {
 
-        String serverResponse = "";
+        String serverResponse;
         // Get the content of all fields :
 
         String firstName = textFieldFirstname.getText();
@@ -107,7 +95,7 @@ public class RegistrationForm extends JDialog {
             return;
         }
 
-        // Create an user with the provided parameter
+        // Create user with the provided parameter
         do {
             try {
                 serverResponse = serverConnection.addUser(userName, firstName, lastName, mail, password, "CLASSIC");
@@ -199,17 +187,15 @@ public class RegistrationForm extends JDialog {
             }
         }
         // if there is exactly one '@' in the String, the method returns true
-        if (numberOfAt == 1) {
-            return true;
-        } // else the method returns false
-        return false;
+        // else the method returns false
+        return numberOfAt == 1;
     }
 
     /**
      * Method to check if prefix is valid
      *
-     * @param s the prefix to check
-     * @return true if the prefix is valid, false otherwise
+     * @param s the prefix to get
+     * @return the prefix of the email address
      */
     public String getPrefix(String s) {
         // declaring and initializing the String which will contain the prefix

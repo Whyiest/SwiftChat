@@ -5,11 +5,15 @@ import client.clientModel.Data;
 import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
 import client.controler.ServerConnection;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 public class LoginForm extends JDialog {
@@ -28,10 +32,11 @@ public class LoginForm extends JDialog {
 
     /**
      * Constructor
-     * @param parent the parent frame
+     *
+     * @param parent           the parent frame
      * @param serverConnection the server connection
      */
-    public LoginForm(JFrame parent, ServerConnection serverConnection, Data localStorage, int width,int height) {
+    public LoginForm(JFrame parent, ServerConnection serverConnection, Data localStorage, int width, int height) {
 
         super(parent);
 
@@ -45,9 +50,9 @@ public class LoginForm extends JDialog {
         setModal(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         clickToRegisterAButton.setBorderPainted(false);
-        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-        int widthh=(screenSize.width - getWidth())/2;
-        int heightt=(screenSize.height - getHeight())/2;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int widthh = (screenSize.width - getWidth()) / 2;
+        int heightt = (screenSize.height - getHeight()) / 2;
         setLocation(widthh, heightt);
 
 
@@ -110,7 +115,7 @@ public class LoginForm extends JDialog {
     /**
      * Close the login window
      */
-    public void closeLoginWindow () {
+    public void closeLoginWindow() {
         setVisible(false);
         dispose();
     }
@@ -118,12 +123,13 @@ public class LoginForm extends JDialog {
     /**
      * Open the login window
      */
-    public void openLoginWindow () {
+    public void openLoginWindow() {
         setVisible(true);
     }
 
     /**
      * Get the authenticated user if the login is correct
+     *
      * @param userName the username of the user
      * @param password the password of the user
      * @return the user if the login is correct, null otherwise
@@ -134,16 +140,20 @@ public class LoginForm extends JDialog {
         User loggedUser = null;
         String serverResponse = "";
 
-
+        try {
+            password = hashPassword(password);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error while hashing password.");
+        }
         // LOGIN SEQUENCE
         do {
-            try{
-                serverResponse = serverConnection.login(userName,password);
+            try {
+                serverResponse = serverConnection.login(userName, password);
                 ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
                 userLoggedID = responseAnalyser.login();
             } catch (Exception e) {
                 System.out.println("[!] Error while checking credentials. (Retry in 1s)");
-                JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException error) {
@@ -166,8 +176,7 @@ public class LoginForm extends JDialog {
                     if (loggedUser != null && loggedUser.isBanned()) {
                         isUserBanned = true;
                         return null;
-                    }
-                    else if (loggedUser != null && !loggedUser.isBanned()) {
+                    } else if (loggedUser != null && !loggedUser.isBanned()) {
                         isUserBanned = false;
                         // Set the last connection time and the status
                         serverConnection.updateLastConnectinTime(userLoggedID);
@@ -176,7 +185,7 @@ public class LoginForm extends JDialog {
 
                 } catch (Exception e) {
                     System.out.println("[!] Error while getting user information after login. (Retry in 1s)");
-                    JOptionPane.showMessageDialog(this,"Connection lost, please wait we try to reconnect you.","Connection error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException error) {
@@ -195,4 +204,15 @@ public class LoginForm extends JDialog {
         }
     }
 
+    public String hashPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hashInBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashInBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
 }
+

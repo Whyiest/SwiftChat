@@ -264,7 +264,7 @@ public class ServerConnection implements Runnable {
     public String login(String username, String password) {
 
         // Send it through the server
-        String serverResponse = sendToServer("LOGIN;" + username + ";" + password.hashCode());
+        String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
         return serverResponse;
     }
 
