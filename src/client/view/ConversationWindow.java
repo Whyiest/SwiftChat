@@ -1,7 +1,6 @@
 package client.view;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -24,8 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class ConversationWindow extends JDialog {
@@ -46,6 +43,8 @@ public class ConversationWindow extends JDialog {
     private Thread updateThread;
     private boolean talkingToSimpleQuestionAI = false;
     public boolean messageLoaded = false;
+
+    private String file;
 
 
     /**
@@ -300,7 +299,7 @@ public class ConversationWindow extends JDialog {
             closeConversationWindow();
             if (!talkingToSimpleQuestionAI) {
                 // Stop updating message with other user
-                stopThread();
+                //stopThread();
             }
         });
         return backButton;
@@ -369,15 +368,29 @@ public class ConversationWindow extends JDialog {
         // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        BufferedImage bubbleMessage= new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d= bubbleMessage.createGraphics();
+        g2d.setColor(new Color(37, 211, 102));
+        g2d.fillRoundRect(0, 0, 150, 40, 20, 20);
+        g2d.dispose();
+        ImageIcon bubbleIcon = new ImageIcon(bubbleMessage);
 
         // Create and setup the message
-        JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
+        /*JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
         output.setBackground(new Color(37, 211, 102));
         output.setOpaque(true);
         output.setBorder(new EmptyBorder(15, 15, 15, 50));
-
+    */
         // Add the message to the panel
+        JLabel output = new JLabel(bubbleIcon);
+        output.setText("<html><p style=\"width: 125px; padding: 15px 15px 15px 20px\">" + out + "</p></html>");
+        output.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        output.setForeground(Color.WHITE);
+        output.setHorizontalTextPosition(JLabel.CENTER);
+        output.setVerticalTextPosition(JLabel.CENTER);
+        output.setIconTextGap(-100);
+        panel.add(output);
         panel.add(output);
 
         // Add the time to the panel
@@ -466,7 +479,31 @@ public class ConversationWindow extends JDialog {
                 System.out.println("You chose to open this file: " +
                         chooser.getSelectedFile().getName());
             }
+            //add message to database
+            String serverResponse = "";
+            do {
+                try {
+                    InputStream is = new FileInputStream(file);
+                    //InputStream is = new FileInputStream(img);
+                    serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), null);
+
+                } catch (Exception messageError) {
+                    messageError.printStackTrace();
+                    System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
+                    JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
+                }
+            } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+
+            serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
+
+
         });
+
         return imageButton;
     }
 
@@ -541,10 +578,10 @@ public class ConversationWindow extends JDialog {
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JPanel panel = formatLabel(newMessage.getContent(), newMessage.getTimestamp());
         JLabel sentMessageLabel = new JLabel(newMessage.getContent());
-        sentMessageLabel.setBackground(Color.GREEN);
-        sentMessageLabel.setForeground(Color.BLACK);
-        sentMessageLabel.setOpaque(true);
-        sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        //sentMessageLabel.setBackground(Color.GREEN);
+        //sentMessageLabel.setForeground(Color.BLACK);
+        //sentMessageLabel.setOpaque(true);
+        //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
@@ -560,9 +597,9 @@ public class ConversationWindow extends JDialog {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel panel = formatLabelreceiver(newMessage.getContent(), newMessage.getTimestamp());
         JLabel receivedMessageLabel = new JLabel(newMessage.getContent());
-        receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
-        receivedMessageLabel.setOpaque(true);
-        receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        //receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
+        //receivedMessageLabel.setOpaque(true);
+        //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(panel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
@@ -633,9 +670,9 @@ public class ConversationWindow extends JDialog {
         return text;
     }
 
-    public void stopThread() {
-        updateThread.stop();
-    }
+    //public void stopThread() {
+        //updateThread.stop();
+    //}
 }
 
 
