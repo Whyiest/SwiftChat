@@ -2,15 +2,20 @@ package client.view;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Scanner;
+
 import client.Client;
 import client.clientModel.Data;
 import client.clientModel.Message;
 import client.clientModel.User;
+import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
 
 
@@ -31,6 +36,7 @@ public class ConversationWindow extends JDialog {
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
     private final User currentUser;
+    private static Dimension previousSize;
     private JPanel chatPanel;
     static Box vertical = Box.createVerticalBox();
     private JTextArea chatArea;
@@ -41,7 +47,6 @@ public class ConversationWindow extends JDialog {
     private List<Message> alreadyDisplay;
     private Data localStorage;
     private Thread updateThread;
-     private LocalDateTime userConnexionTime;
     private boolean talkingToSimpleQuestionAI = false;
     public boolean messageLoaded = false;
 
@@ -64,6 +69,7 @@ public class ConversationWindow extends JDialog {
         this.chattingWithThisUser = userChattingWith;
         this.currentUser = whoIam;
         this.listOfMessageBetweenUsers = new ArrayList<>();
+        this.previousSize = new Dimension(width, height);
         this.localStorage = localStorage;
         this.alreadyDisplay = new ArrayList<Message>();
         this.messageLoaded = false;
@@ -72,43 +78,14 @@ public class ConversationWindow extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
+
+
         try {
-
             initComponents();
-
-
         } catch (Exception e) {
             System.out.println("[!] Error while initializing the conversation window");
         }
 
-    }
-
-    /**
-     * Timer task that will update the data
-     */
-    public void createTimer() {
-
-        updateThread = new Thread(() -> {
-
-            boolean isBusy = false;
-            boolean isUpdated = false;
-
-            // Infinite loop to update the data
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    // If no request is already in progress
-                    if (!isBusy) {
-                        localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
-                        // Wait 1 second to avoid spamming the server
-                        upDateChat();
-                        Thread.sleep(2000);
-
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // restore the interrupted status
-                }
-            }
-        });
     }
 
     /**
@@ -143,18 +120,45 @@ public class ConversationWindow extends JDialog {
     private void initComponents() {
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
-
-        // If we are talking to a real human, fetching last messages :
         if (!talkingToSimpleQuestionAI) {
+            startUpdateThread(this);
             if (!messageLoaded) {
                 boolean isUpdated = false;
                 isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
                 messageLoaded = true;
             }
-            createTimer();
             upDateChat();
+
             updateThread.start();
         }
+    }
+
+    /**
+     * Timer task that will update the data
+     */
+    public void startUpdateThread(ConversationWindow conversationWindow) {
+
+        updateThread = new Thread(() -> {
+
+            boolean isBusy = false;
+            boolean isUpdated = false;
+
+            // Infinite loop to update the data
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // If no request is already in progress
+                    if (!isBusy) {
+                        localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                        // Wait 1 second to avoid spamming the server
+                        upDateChat();
+                        Thread.sleep(2000);
+
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // restore the interrupted status
+                }
+            }
+        });
     }
 
     /**
@@ -163,42 +167,39 @@ public class ConversationWindow extends JDialog {
      */
     private void upDateChat() {
 
-        // Getting the list of messages between the current user and the user he is chatting with
+
         listOfMessageBetweenUsers = localStorage.getMessageDataBetweenUser();
 
-        // If list is empty, we don't need to do anything
         if (listOfMessageBetweenUsers == null || listOfMessageBetweenUsers.size() == 0) {
             return;
         }
         // Getting last messages
         List<Message> toDisplay = new ArrayList<Message>();
         Message newMessage = null;
+        System.out.println("Already DIsplay in function : " + alreadyDisplay.toString());
 
-        // Check if there is new messages
+        System.out.println("Message between user in fonction: " + listOfMessageBetweenUsers.toString());
+
         if (alreadyDisplay.size() > 0) {
-
-            // For each message in the list of all messages
             for (int i = 0; i < listOfMessageBetweenUsers.size(); i++) {
 
                 boolean isNewMessage = true;
-
-                // If the message is already displayed, it's not a new message
                 for (int j = 0; j < alreadyDisplay.size(); j++) {
                     if (listOfMessageBetweenUsers.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
                         isNewMessage = false;
                         break;
                     }
                 }
-                // If it's a new message, we add it to the list of messages to display
                 if (isNewMessage) {
                     newMessage = listOfMessageBetweenUsers.get(i);
                     toDisplay.add(newMessage);
                 }
             }
         } else {
-            // If there is no message displayed, we display all messages
             toDisplay.addAll(listOfMessageBetweenUsers);
         }
+        System.out.println("To display : " + toDisplay.toString());
+
 
         // Add the different messages to the UI
         for (Message message : toDisplay) {
@@ -235,6 +236,8 @@ public class ConversationWindow extends JDialog {
         chatPanel.add(createUserPanel(), BorderLayout.NORTH);
         chatPanel.add(createChatScrollPane(), BorderLayout.CENTER);
         chatPanel.add(createMessagePanel(), BorderLayout.SOUTH);
+        chatPanel.setBackground(Color.GRAY);//17
+
         return chatPanel;
     }
 
@@ -244,37 +247,17 @@ public class ConversationWindow extends JDialog {
      * @return the user panel
      */
     private JPanel createUserPanel() {
+
         String currentPrivilege = "";
 
-        JPanel userPanel = new JPanel(new GridBagLayout());
+        JPanel userPanel = new JPanel(new BorderLayout());
         userPanel.setPreferredSize(new Dimension(550, 30));
         userPanel.setBackground(Color.GRAY);
 
-        // Create GridBagConstraints for the "gbcUserNameLabel" button
-        GridBagConstraints gbcUserNameLabel = new GridBagConstraints();
-        gbcUserNameLabel.gridx = 1; // Put the button in the second column
-        gbcUserNameLabel.gridy = 0; // Put the button in the first row
-        gbcUserNameLabel.weightx = 1.0;
-        gbcUserNameLabel.fill = GridBagConstraints.HORIZONTAL;
-
-        GridBagConstraints gbcBackButton = new GridBagConstraints();
-        gbcBackButton.gridx = 0; // Put the button in the first column
-        gbcBackButton.gridy = 0; // Put the button in the first row
-        gbcBackButton.gridheight= 2;
-        gbcBackButton.fill = GridBagConstraints.VERTICAL;
-
-        GridBagConstraints gbcTimeLabel = new GridBagConstraints();
-        gbcTimeLabel.gridx = 1; // Put the button in the second column
-        gbcTimeLabel.gridy = 1; // Put the button in the second row
-        gbcTimeLabel.weightx = 1.0;
-        gbcTimeLabel.fill = GridBagConstraints.HORIZONTAL;
-
-        userPanel.add(createBackButton(), gbcBackButton);
-        userPanel.add(createUserNameLabel(), gbcUserNameLabel);
-        userPanel.add(createTimeLabel(), gbcTimeLabel);
+        userPanel.add(createBackButton(), BorderLayout.WEST);
+        userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
 
         // If the user is not talking to the simple question AI
-        // We need to check client privileges
         if (!talkingToSimpleQuestionAI) {
             do {
                 currentPrivilege = getClientPermission();
@@ -282,31 +265,10 @@ public class ConversationWindow extends JDialog {
 
             // Create more option for moderator & admin
             if (currentPrivilege.equals("MODERATOR") || currentPrivilege.equals("ADMIN")) {
-                GridBagConstraints gbcOptionButton = new GridBagConstraints();
-                gbcOptionButton.gridx = 2; // Put the button in the fourth column
-                gbcOptionButton.gridheight= 2;
-                gbcOptionButton.fill = GridBagConstraints.VERTICAL;
-                userPanel.add(createMoreOptionsButton(), gbcOptionButton);
+                userPanel.add(createMoreOptionsButton(), BorderLayout.EAST);
             }
         }
         return userPanel;
-    }
-
-    public static String formatDate(LocalDateTime dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, HH:mm");
-        return dateTime.format(formatter);
-    }
-    private JLabel createTimeLabel() {
-        if (!talkingToSimpleQuestionAI) {
-            userConnexionTime = chattingWithThisUser.getLastConnectionTime();
-        }
-        String formatted = formatDate(userConnexionTime);
-        JLabel timeLabel = new JLabel();
-        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        timeLabel.setText(formatted);
-        timeLabel.setForeground(Color.WHITE);
-        timeLabel.setFont(new Font("Arial",Font.ITALIC,10));
-        return timeLabel;
     }
 
     /**
@@ -315,13 +277,13 @@ public class ConversationWindow extends JDialog {
      * @return the chat scroll pane
      */
     private JScrollPane createChatScrollPane() {
-
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatscrollpane = new JScrollPane(chatPanel);
-
+        chatscrollpane.setBackground(Color.cyan);
         return chatscrollpane;
     }
+
 
 
     /**
@@ -331,9 +293,8 @@ public class ConversationWindow extends JDialog {
      */
 
     private JPanel createMessagePanel() {
-
         JPanel messagePanel = new JPanel(new BorderLayout());
-        // Add buttons
+        // add buttons
         messagePanel.add(createMessageField(), BorderLayout.CENTER);
         messagePanel.add(createButtonPanel(), BorderLayout.EAST);
         return messagePanel;
@@ -346,14 +307,16 @@ public class ConversationWindow extends JDialog {
      */
     private JButton createBackButton() {
         JButton backButton = new JButton("←");
-        backButton.setPreferredSize(new Dimension(200, 70));
+        backButton.setPreferredSize(new Dimension(100, 25));
         backButton.addActionListener(e -> {
+            previousSize = getSize();
+
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
             if (!talkingToSimpleQuestionAI) {
                 // Stop updating message with other user
-                updateThread.interrupt();
+                //stopThread();
             }
         });
         return backButton;
@@ -374,7 +337,6 @@ public class ConversationWindow extends JDialog {
         userNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userNameLabel.setForeground(Color.WHITE);
         userNameLabel.setText(contactName);
-        userNameLabel.setFont(new Font("Arial",Font.BOLD,12));
         return userNameLabel;
     }
 
@@ -386,7 +348,7 @@ public class ConversationWindow extends JDialog {
 
     private JButton createMoreOptionsButton() {
         JButton moreOptionsButton = new JButton("...");
-        moreOptionsButton.setPreferredSize(new Dimension(200, 70));
+        moreOptionsButton.setPreferredSize(new Dimension(50, 30));
         moreOptionsButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(5);
             closeConversationWindow();
@@ -423,37 +385,39 @@ public class ConversationWindow extends JDialog {
         // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        BufferedImage bubbleMessage = new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = bubbleMessage.createGraphics();
+        /*BufferedImage bubbleMessage= new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d= bubbleMessage.createGraphics();
         g2d.setColor(new Color(37, 211, 102));
         g2d.fillRoundRect(0, 0, 150, 40, 20, 20);
         g2d.dispose();
-        ImageIcon bubbleIcon = new ImageIcon(bubbleMessage);
+        ImageIcon bubbleIcon = new ImageIcon(bubbleMessage);*/
 
         // Create and setup the message
-        /*JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
+        JLabel output = new JLabel("<html><p style=\"width: 100px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
         output.setBackground(new Color(37, 211, 102));
         output.setOpaque(true);
-        output.setBorder(new EmptyBorder(15, 15, 15, 50));
-    */
+        output.setBorder(new EmptyBorder(5, 5, 10, 20));
+
         // Add the message to the panel
-        JLabel output = new JLabel(bubbleIcon);
+       /* JLabel output = new JLabel(bubbleIcon);
         output.setText("<html><p style=\"width: 125px; padding: 15px 15px 15px 20px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
         output.setForeground(Color.WHITE);
         output.setHorizontalTextPosition(JLabel.CENTER);
         output.setVerticalTextPosition(JLabel.CENTER);
         output.setIconTextGap(-100);
-        panel.add(output);
+        panel.add(output);*/
         panel.add(output);
 
         // Add the time to the panel
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
+        time.setBackground(new Color(176,157,185));
         time.setText(formattedTime);
         panel.add(time);
+        panel.setBackground(new Color(176,157,185));
 
         return panel;
     }
@@ -471,23 +435,39 @@ public class ConversationWindow extends JDialog {
         // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        /*BufferedImage bubbleMessage= new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d= bubbleMessage.createGraphics();
+        g2d.setColor(new Color(37, 211, 102));
+        g2d.fillRoundRect(0, 0, 150, 40, 20, 20);
+        g2d.dispose();
+        ImageIcon bubbleIcon = new ImageIcon(bubbleMessage);*/
 
         // Create and setup the message
-        JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
+        JLabel output = new JLabel("<html><p style=\"width: 100px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        output.setBackground(new Color(127, 114, 144, 255));
+        output.setBackground(new Color(115, 37, 211, 255));
         output.setOpaque(true);
-        output.setBorder(new EmptyBorder(15, 15, 15, 50));
+        output.setBorder(new EmptyBorder(5, 5, 10, 20));
 
         // Add the message to the panel
+       /* JLabel output = new JLabel(bubbleIcon);
+        output.setText("<html><p style=\"width: 125px; padding: 15px 15px 15px 20px\">" + out + "</p></html>");
+        output.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        output.setForeground(Color.WHITE);
+        output.setHorizontalTextPosition(JLabel.CENTER);
+        output.setVerticalTextPosition(JLabel.CENTER);
+        output.setIconTextGap(-100);
+        panel.add(output);*/
         panel.add(output);
 
         // Add the time to the panel
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
+        time.setBackground(new Color(176,157,185));
         time.setText(formattedTime);
         panel.add(time);
+        panel.setBackground(new Color(176,157,185));
 
         return panel;
     }
@@ -534,12 +514,12 @@ public class ConversationWindow extends JDialog {
                 System.out.println("You chose to open this file: " +
                         chooser.getSelectedFile().getName());
             }
-            // Add message to database
+            //add message to database
             String serverResponse = "";
             do {
                 try {
                     InputStream is = new FileInputStream(file);
-                    // InputStream is = new FileInputStream(img);
+                    //InputStream is = new FileInputStream(img);
                     serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), null);
 
                 } catch (Exception messageError) {
@@ -585,7 +565,6 @@ public class ConversationWindow extends JDialog {
                 alreadyDisplay.add(newMessage);
                 addSentMessage(newMessage);
 
-
                 if (content.equals("")) {
                     System.out.println("[!] User tried to send empty message. Abort sending.");
                 } else {
@@ -630,39 +609,36 @@ public class ConversationWindow extends JDialog {
      */
     private void addSentMessage(Message newMessage) {
 
-        // Create the panel that will contain the message
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        sentMessagePanel.setBackground(new Color(176,157,185));
+        //sentMessagePanel.setBackground(Color.black);
         JPanel panel = formatLabel(newMessage.getContent(), newMessage.getTimestamp());
         JLabel sentMessageLabel = new JLabel(newMessage.getContent());
-
-        // Set the style of the panel
         //sentMessageLabel.setBackground(Color.GREEN);
         //sentMessageLabel.setForeground(Color.BLACK);
         //sentMessageLabel.setOpaque(true);
         //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
-
-        // Add the message to the panel
         sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
     }
 
     /**
-     * Allow to display the message at the left side
+     * Allow to display the message at the left side"
      *
      * @param newMessage the message to display
      */
 
     private void addReceivedMessage(Message newMessage) {
-
-        // Create the panel that will contain the message
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel panel = formatLabelreceiver(newMessage.getContent(), newMessage.getTimestamp());
+        receivedMessagePanel.setBackground(new Color(176,157,185));
         JLabel receivedMessageLabel = new JLabel(newMessage.getContent());
         //receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
         //receivedMessageLabel.setOpaque(true);
         //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(panel);
+
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
     }
@@ -731,6 +707,10 @@ public class ConversationWindow extends JDialog {
         String text = json.getJSONArray("choices").getJSONObject(0).getString("text");
         return text;
     }
+
+    //public void stopThread() {
+    //updateThread.stop();
+    //}
 }
 
 
