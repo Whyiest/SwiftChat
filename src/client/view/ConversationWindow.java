@@ -160,9 +160,10 @@ public class ConversationWindow extends JDialog {
      */
     private void upDateChat() {
 
-
+        // Getting the list of messages between the current user and the user he is chatting with
         listOfMessageBetweenUsers = localStorage.getMessageDataBetweenUser();
 
+        // If list is empty, we don't need to do anything
         if (listOfMessageBetweenUsers == null || listOfMessageBetweenUsers.size() == 0) {
             return;
         }
@@ -170,23 +171,29 @@ public class ConversationWindow extends JDialog {
         List<Message> toDisplay = new ArrayList<Message>();
         Message newMessage = null;
 
-
+        // Check if there is new messages
         if (alreadyDisplay.size() > 0) {
+
+            // For each message in the list of all messages
             for (int i = 0; i < listOfMessageBetweenUsers.size(); i++) {
 
                 boolean isNewMessage = true;
+
+                // If the message is already displayed, it's not a new message
                 for (int j = 0; j < alreadyDisplay.size(); j++) {
                     if (listOfMessageBetweenUsers.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
                         isNewMessage = false;
                         break;
                     }
                 }
+                // If it's a new message, we add it to the list of messages to display
                 if (isNewMessage) {
                     newMessage = listOfMessageBetweenUsers.get(i);
                     toDisplay.add(newMessage);
                 }
             }
         } else {
+            // If there is no message displayed, we display all messages
             toDisplay.addAll(listOfMessageBetweenUsers);
         }
 
@@ -245,6 +252,7 @@ public class ConversationWindow extends JDialog {
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
 
         // If the user is not talking to the simple question AI
+        // We need to check client privileges
         if (!talkingToSimpleQuestionAI) {
             do {
                 currentPrivilege = getClientPermission();
@@ -264,9 +272,11 @@ public class ConversationWindow extends JDialog {
      * @return the chat scroll pane
      */
     private JScrollPane createChatScrollPane() {
+
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatscrollpane = new JScrollPane(chatPanel);
+
         return chatscrollpane;
     }
 
@@ -278,8 +288,9 @@ public class ConversationWindow extends JDialog {
      */
 
     private JPanel createMessagePanel() {
+
         JPanel messagePanel = new JPanel(new BorderLayout());
-        // add buttons
+        // Add buttons
         messagePanel.add(createMessageField(), BorderLayout.CENTER);
         messagePanel.add(createButtonPanel(), BorderLayout.EAST);
         return messagePanel;
@@ -299,7 +310,7 @@ public class ConversationWindow extends JDialog {
             closeConversationWindow();
             if (!talkingToSimpleQuestionAI) {
                 // Stop updating message with other user
-                //stopThread();
+                updateThread.interrupt();
             }
         });
         return backButton;
@@ -368,8 +379,8 @@ public class ConversationWindow extends JDialog {
         // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        BufferedImage bubbleMessage= new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d= bubbleMessage.createGraphics();
+        BufferedImage bubbleMessage = new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bubbleMessage.createGraphics();
         g2d.setColor(new Color(37, 211, 102));
         g2d.fillRoundRect(0, 0, 150, 40, 20, 20);
         g2d.dispose();
@@ -479,12 +490,12 @@ public class ConversationWindow extends JDialog {
                 System.out.println("You chose to open this file: " +
                         chooser.getSelectedFile().getName());
             }
-            //add message to database
+            // Add message to database
             String serverResponse = "";
             do {
                 try {
                     InputStream is = new FileInputStream(file);
-                    //InputStream is = new FileInputStream(img);
+                    // InputStream is = new FileInputStream(img);
                     serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), null);
 
                 } catch (Exception messageError) {
@@ -575,13 +586,18 @@ public class ConversationWindow extends JDialog {
      */
     private void addSentMessage(Message newMessage) {
 
+        // Create the panel that will contain the message
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JPanel panel = formatLabel(newMessage.getContent(), newMessage.getTimestamp());
         JLabel sentMessageLabel = new JLabel(newMessage.getContent());
+
+        // Set the style of the panel
         //sentMessageLabel.setBackground(Color.GREEN);
         //sentMessageLabel.setForeground(Color.BLACK);
         //sentMessageLabel.setOpaque(true);
         //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        // Add the message to the panel
         sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
@@ -594,6 +610,8 @@ public class ConversationWindow extends JDialog {
      */
 
     private void addReceivedMessage(Message newMessage) {
+
+        // Create the panel that will contain the message
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel panel = formatLabelreceiver(newMessage.getContent(), newMessage.getTimestamp());
         JLabel receivedMessageLabel = new JLabel(newMessage.getContent());
@@ -669,10 +687,6 @@ public class ConversationWindow extends JDialog {
         String text = json.getJSONArray("choices").getJSONObject(0).getString("text");
         return text;
     }
-
-    //public void stopThread() {
-        //updateThread.stop();
-    //}
 }
 
 
