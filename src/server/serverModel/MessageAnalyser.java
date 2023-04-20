@@ -89,7 +89,6 @@ public class MessageAnalyser {
             case "GET-STATUS-STATISTICS" -> serverResponse = getStatusStatistics();
             case "GET-PERMISSION-STATISTICS" -> serverResponse = getPermissionStatistics();
             case "GET-BAN-STATISTICS" -> serverResponse = getBanStatistics();
-            case "GET-USERS-STATISTICS" -> serverResponse = getUsersStatistics();
             case "GET-MESSAGES-STATISTICS" -> serverResponse = getMessagesStatistics();
             case "GET-MESSAGES-STATISTICS-BY-USER-ID" -> serverResponse = getMessagesStatisticsByUserId();
             case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();
@@ -312,17 +311,6 @@ public class MessageAnalyser {
      */
     public String getBanStatistics() {
         return userDao.getBanStatistics(message);
-    }
-
-    /**
-     * This method allow to get all the users statistics
-     * Message format : GET-USERS-STATISTICS
-     * Response format : GET-USERS-STATISTICS;SUCCESS/FAILURE;NUMBER_OF_USERS;NUMBER_OF_ONLINE_USERS;NUMBER_OF_OFFLINE_USERS;NUMBER_OF_BANNED_USERS
-     *
-     * @return The users statistics
-     */
-    public String getUsersStatistics() {
-        return logDao.getUsersStatistics(message);
     }
 
     /**
