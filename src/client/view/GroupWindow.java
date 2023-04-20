@@ -12,9 +12,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 public class GroupWindow extends JDialog {
@@ -59,32 +59,31 @@ public class GroupWindow extends JDialog {
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
 
-        startUpdateThread();
         try {
             initComponents();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("[!] Error while initializing the conversation window");
         }
-
     }
 
 
     /**
      * Timer task that will update the data
      */
-    public void startUpdateThread() {
+    public void createTimer() {
+
         updateThread = new Thread(() -> {
+
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Thread.sleep(1000);
                     upDateChat();
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // restore the interrupted status
                 }
             }
         });
-        updateThread.start();
     }
 
     /**
@@ -121,17 +120,31 @@ public class GroupWindow extends JDialog {
         JPanel mainPanel = createMainPanel();
         upDateChat();
         add(mainPanel);
+
+        // Fetching for first time all messages
+        groupMessageList = localStorage.getGroupMessageData();
+
+        // Create timer for update
+        createTimer();
+        updateThread.start();
+
     }
 
     private void upDateChat() {
 
         // Getting last messages
         groupMessageList = localStorage.getGroupMessageData();
+
+        if (groupMessageList == null || groupMessageList.size() == 0) {
+            return;
+        }
+
         List<Message> toDisplay = new ArrayList<Message>();
         Message newMessage = null;
 
         if (alreadyDisplay.size() > 0) {
             for (int i = 0; i < groupMessageList.size(); i++) {
+
                 boolean isNewMessage = true;
                 for (int j = 0; j < alreadyDisplay.size(); j++) {
                     if (groupMessageList.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
@@ -352,12 +365,22 @@ public class GroupWindow extends JDialog {
      * @return the send button
      */
     private JButton createSendButton() {
+
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
 
             String serverResponse = "";
             String content = messageField.getText();
             messageField.setText("");
+
+            // Allow to put this message at right side :
+            Message newMessage = new Message();
+            newMessage.setContent(content);
+            newMessage.setSenderID(currentUser.getId());
+            newMessage.setReceiverID(-9999); // Receiver is -9999 for group message
+            newMessage.setTimestamp(LocalDateTime.now());
+            addSentMessage(newMessage);
+
 
             // Add to DB :
             do {

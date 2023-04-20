@@ -3,20 +3,15 @@ package client.view;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Scanner;
-
 import client.Client;
 import client.clientModel.Data;
 import client.clientModel.Message;
 import client.clientModel.User;
-import client.clientModel.ResponseAnalyser;
 import client.controler.ServerConnection;
 
 
@@ -39,7 +34,6 @@ public class ConversationWindow extends JDialog {
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
     private final User currentUser;
-    private static Dimension previousSize;
     private JPanel chatPanel;
     static Box vertical = Box.createVerticalBox();
     private JTextArea chatArea;
@@ -70,7 +64,6 @@ public class ConversationWindow extends JDialog {
         this.chattingWithThisUser = userChattingWith;
         this.currentUser = whoIam;
         this.listOfMessageBetweenUsers = new ArrayList<>();
-        this.previousSize = new Dimension(width, height);
         this.localStorage = localStorage;
         this.alreadyDisplay = new ArrayList<Message>();
         this.messageLoaded = false;
@@ -86,6 +79,34 @@ public class ConversationWindow extends JDialog {
             System.out.println("[!] Error while initializing the conversation window");
         }
 
+    }
+
+    /**
+     * Timer task that will update the data
+     */
+    public void createTimer() {
+
+        updateThread = new Thread(() -> {
+
+            boolean isBusy = false;
+            boolean isUpdated = false;
+
+            // Infinite loop to update the data
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // If no request is already in progress
+                    if (!isBusy) {
+                        localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                        // Wait 1 second to avoid spamming the server
+                        upDateChat();
+                        Thread.sleep(2000);
+
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // restore the interrupted status
+                }
+            }
+        });
     }
 
     /**
@@ -120,45 +141,18 @@ public class ConversationWindow extends JDialog {
     private void initComponents() {
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
+
+        // If we are talking to a real human, fetching last messages :
         if (!talkingToSimpleQuestionAI) {
-            startUpdateThread(this);
             if (!messageLoaded) {
                 boolean isUpdated = false;
                 isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
                 messageLoaded = true;
             }
+            createTimer();
             upDateChat();
-
             updateThread.start();
         }
-    }
-
-    /**
-     * Timer task that will update the data
-     */
-    public void startUpdateThread(ConversationWindow conversationWindow) {
-
-        updateThread = new Thread(() -> {
-
-            boolean isBusy = false;
-            boolean isUpdated = false;
-
-            // Infinite loop to update the data
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    // If no request is already in progress
-                    if (!isBusy) {
-                        localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
-                        // Wait 1 second to avoid spamming the server
-                        upDateChat();
-                        Thread.sleep(2000);
-
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // restore the interrupted status
-                }
-            }
-        });
     }
 
     /**
@@ -176,9 +170,7 @@ public class ConversationWindow extends JDialog {
         // Getting last messages
         List<Message> toDisplay = new ArrayList<Message>();
         Message newMessage = null;
-        System.out.println("Already DIsplay in function : " + alreadyDisplay.toString());
 
-        System.out.println("Message between user in fonction: " + listOfMessageBetweenUsers.toString());
 
         if (alreadyDisplay.size() > 0) {
             for (int i = 0; i < listOfMessageBetweenUsers.size(); i++) {
@@ -198,8 +190,6 @@ public class ConversationWindow extends JDialog {
         } else {
             toDisplay.addAll(listOfMessageBetweenUsers);
         }
-        System.out.println("To display : " + toDisplay.toString());
-
 
         // Add the different messages to the UI
         for (Message message : toDisplay) {
@@ -305,8 +295,6 @@ public class ConversationWindow extends JDialog {
         JButton backButton = new JButton("←");
         backButton.setPreferredSize(new Dimension(100, 25));
         backButton.addActionListener(e -> {
-            previousSize = getSize();
-
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
@@ -504,6 +492,7 @@ public class ConversationWindow extends JDialog {
                 Message newMessage = new Message(currentUser.getId(), chattingWithThisUser.getId(), content, LocalDateTime.now());
                 alreadyDisplay.add(newMessage);
                 addSentMessage(newMessage);
+
 
                 if (content.equals("")) {
                     System.out.println("[!] User tried to send empty message. Abort sending.");
