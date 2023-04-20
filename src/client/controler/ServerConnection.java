@@ -526,8 +526,17 @@ public class ServerConnection implements Runnable {
      *
      * @return the list of the most active users in String format
      */
-    public String getTopUsers() {
-        return sendToServer("GET-TOP-USERS");
+    public String getTopUsersBySentMessages() {
+        return sendToServer("GET-TOP-USERS-BY-SENT-MESSAGES");
+    }
+
+    /**
+     * Give the most active users
+     *
+     * @return the list of the most active users in String format
+     */
+    public String getTopUsersByLogin(){
+        return sendToServer("GET-TOP-USERS-BY-LOGIN");
     }
 
     /**

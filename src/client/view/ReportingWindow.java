@@ -50,8 +50,11 @@ public class ReportingWindow extends JDialog{
                 removeChartFromPanel();
                 String actionChoice = (String) choiceBox.getSelectedItem();
                 switch (actionChoice) {
-                    case "Top User":
-                        topUsers();
+                    case "Top user by sent messages":
+                        topUsersBySentMessages();
+                        break;
+                    case "Top users by login":
+                        topUsersByLogin();
                         break;
                     case "Global connection statistics": //works
                         connectionStatistics();
@@ -81,7 +84,8 @@ public class ReportingWindow extends JDialog{
      */
     public void initButtons(){
         choiceBox.addItem("Select an option");
-        choiceBox.addItem("Top User");
+        choiceBox.addItem("Top user by sent messages");
+        choiceBox.addItem("Top users by login");
         choiceBox.addItem("Global connection statistics");
         choiceBox.addItem("Global messages statistics");
         choiceBox.addItem("Global ban statistics");
@@ -102,10 +106,23 @@ public class ReportingWindow extends JDialog{
         setVisible(false);
         dispose();
     }
-    private void topUsers() {
+    private void topUsersBySentMessages() {
         String serverResponse = "";
-        serverResponse = serverConnection.getTopUsers();
+        serverResponse = serverConnection.getTopUsersBySentMessages();
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        responseAnalyser.generateBarChart();
+
+        System.out.println(responseAnalyser);
+        System.out.println(serverResponse);
+        System.out.println("Top User");
+    }
+
+    private void topUsersByLogin() {
+        String serverResponse = "";
+        serverResponse = serverConnection.getTopUsersByLogin();
+        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        responseAnalyser.generateBarChart();
+
         System.out.println(responseAnalyser);
         System.out.println(serverResponse);
         System.out.println("Top User");
