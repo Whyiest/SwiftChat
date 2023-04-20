@@ -218,7 +218,6 @@ public class ContactWindow extends JDialog {
                 }
             }
         }
-
         // Visibility of the buttons
         nextPageButton.setVisible(true);
         backPageButton.setVisible(true);
