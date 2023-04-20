@@ -133,7 +133,7 @@ public class ResponseAnalyser {
      * @param dataToDisplay
      */
 
-    public void generatePieChart(int dataToDisplay) {
+    public JFreeChart generatePieChart(int dataToDisplay) {
         // Create a dataset for the pie chart
         DefaultPieDataset pieDataset = new DefaultPieDataset();
 
@@ -175,39 +175,20 @@ public class ResponseAnalyser {
                 p.setSectionPaint("Online", Color.red);
                 p.setSectionPaint("Away", Color.yellow);
 
-                try {
-                    ChartUtilities.saveChartAsJPEG(new File("statusPieChart.jpeg"), chart, 500, 300);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-
             case 2:
                 p.setSectionPaint("Classic user", Color.red);
                 p.setSectionPaint("Moderator", Color.green);
                 p.setSectionPaint("Administrator", Color.yellow);
 
-                try {
-                    ChartUtilities.saveChartAsJPEG(new File("permissionPieChart.jpeg"), chart, 500, 300);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
 
             case 3:
                 p.setSectionPaint("Not banned", Color.green);
                 p.setSectionPaint("Banned", Color.red);
 
-                try {
-                    ChartUtilities.saveChartAsJPEG(new File("banPieChart.jpeg"), chart, 500, 300);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-
             default:
                 break;
         }
+        return chart;
     }
 
     /**
@@ -262,45 +243,6 @@ public class ResponseAnalyser {
         chart.getPlot().setBackgroundPaint(Color.WHITE);
         chart.getPlot().setForegroundAlpha(0.9f);
 
-        // Save the chart to a file according to the type of histogram we want to generate
-        /*switch (dataToDisplay) {
-            case 1:
-                try {
-                    ChartUtilities.saveChartAsPNG(new File("totalMessageHistogram.png"), chart, 400, 300);
-                } catch (IOException e) {
-                    System.err.println("Error saving chart: " + e.getMessage());
-                }
-                break;
-
-            case 2:
-                try {
-                    ChartUtilities.saveChartAsPNG(new File("byUserMessageHistogram.png"), chart, 400, 300);
-                } catch (IOException e) {
-                    System.err.println("Error saving chart: " + e.getMessage());
-                }
-                break;
-
-            case 3:
-                try {
-                    ChartUtilities.saveChartAsPNG(new File("totalConnectionHistogram.png"), chart, 400, 300);
-                } catch (IOException e) {
-                    System.err.println("Error saving chart: " + e.getMessage());
-                }
-                break;
-
-            case 4:
-                try {
-                    ChartUtilities.saveChartAsPNG(new File("byUserConnectionHistogram.png"), chart, 400, 300);
-                } catch (IOException e) {
-                    System.err.println("Error saving chart: " + e.getMessage());
-                }
-                break;
-
-            default:
-                System.out.println("Cannot generate histogram, please use a correct number according to the data you want to display");
-                break;
-        }
-    }*/
         return chart;
     }
 

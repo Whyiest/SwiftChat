@@ -218,7 +218,6 @@ public class ContactWindow extends JDialog {
                 }
             }
         }
-
         // Visibility of the buttons
         nextPageButton.setVisible(true);
         backPageButton.setVisible(true);
@@ -359,7 +358,7 @@ public class ContactWindow extends JDialog {
 
         String currentPrivilege = "";
         JPanel userPanel = new JPanel(new GridBagLayout());
-        userPanel.setPreferredSize(new Dimension(50, 60)); // Increase height to allow for two lines
+        userPanel.setPreferredSize(new Dimension(50, 70)); // Increase height to allow for two lines
 
         // Create GridBagConstraints for the "General" button with weightx = 1.0 and fill = BOTH
         GridBagConstraints gbcGeneral = new GridBagConstraints();
@@ -393,39 +392,25 @@ public class ContactWindow extends JDialog {
         gbcLogOut.fill = GridBagConstraints.HORIZONTAL;
         userPanel.add(createLogOutButton(), gbcLogOut);
 
-        // Add a button that takes up the half second row
-        JButton fullRowButton = new JButton("Full Row Button");
 
         GridBagConstraints gbcGeneralButton = new GridBagConstraints();
         gbcGeneralButton.gridx = 0; // Put the button in the first column
         gbcGeneralButton.gridy = 1; // Put the button in the second line
-        gbcLogOut.weightx = 0.5;
+        gbcLogOut.weightx = 1;
+        gbcGeneralButton.gridwidth = GridBagConstraints.REMAINDER; // Occupy all cells in the ro
         gbcGeneralButton.fill = GridBagConstraints.BOTH;
         userPanel.add(createGeneralButton(), gbcGeneralButton);
 
         // Add a button that takes up the half second row
-        GridBagConstraints gbcOpenAIButton = new GridBagConstraints();
-        gbcOpenAIButton.gridx = 1; // Put the button is third line
-        gbcOpenAIButton.gridy = 1; // Put the button in first line
-        gbcOpenAIButton.weightx = 0.5;
-        gbcOpenAIButton.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(createOpenAIButton(), gbcOpenAIButton);
-
+        GridBagConstraints gbcSimpleQuestionAIButton = new GridBagConstraints();
+        gbcSimpleQuestionAIButton.gridx = 0; // Put the button in the first column
+        gbcSimpleQuestionAIButton.gridy = 2; // Put the button in the third row
+        gbcSimpleQuestionAIButton.gridwidth = GridBagConstraints.REMAINDER; // Occupy all cells in the row
+        gbcSimpleQuestionAIButton.weightx = 1;
+        gbcSimpleQuestionAIButton.fill = GridBagConstraints.BOTH;
+        userPanel.add(createSimpleQuestionAIButton(), gbcSimpleQuestionAIButton);;
 
         return userPanel;
-    }
-
-    /**
-     * Create the general panel
-     *
-     * @return the general panel
-     */
-    private JPanel createGeneralPanel() {
-        JPanel generalPanel = new JPanel(new GridBagLayout());
-        generalPanel.setPreferredSize(new Dimension(50, 30));
-        JButton generalButton = createGeneralButton();
-        generalPanel.add(generalButton);
-        return generalPanel;
     }
 
     private JComboBox createStatusComboBox() {
@@ -433,7 +418,6 @@ public class ContactWindow extends JDialog {
         JComboBox<String> createStatusComboBox = new JComboBox<>(options);
         createStatusComboBox.setPreferredSize(new Dimension(50, 30));
         createStatusComboBox.addItemListener(new ItemListener() {
-            //bsd le status du mec
             public void itemStateChanged(ItemEvent e) {
                 String actionChoice = (String) createStatusComboBox.getSelectedItem();
                 switch (actionChoice) {
@@ -527,14 +511,14 @@ public class ContactWindow extends JDialog {
         return createLogOutButton;
     }
 
-    private JButton createOpenAIButton() {
-        JButton createOpenAIButton = new JButton("OpenAI");
-        createOpenAIButton.setPreferredSize(new Dimension(50, 30));
-        createOpenAIButton.addActionListener(e -> {
+    private JButton createSimpleQuestionAIButton() {
+        JButton gbcSimpleQuestionAIButton = new JButton("Simple Question AI");
+        gbcSimpleQuestionAIButton.setPreferredSize(new Dimension(50, 30));
+        gbcSimpleQuestionAIButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(7);
             closeContactWindow();
         });
-        return createOpenAIButton;
+        return gbcSimpleQuestionAIButton;
     }
 
     /**

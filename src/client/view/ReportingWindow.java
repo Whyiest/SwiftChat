@@ -53,14 +53,8 @@ public class ReportingWindow extends JDialog{
                     case "Top User":
                         topUsers();
                         break;
-                    case "Connection statistics for one user":
-                        connectionByID();
-                        break;
                     case "Global connection statistics": //works
                         connectionStatistics();
-                        break;
-                    case "Messages statistics for one user":
-                        //doOption4();
                         break;
                     case "Global messages statistics"://works
                         messageStatistics();
@@ -86,13 +80,11 @@ public class ReportingWindow extends JDialog{
      * initialize the comboBox parameters
      */
     public void initButtons(){
+        choiceBox.addItem("Select an option");
         choiceBox.addItem("Top User");
-        choiceBox.addItem("Connection statistics for one user");
         choiceBox.addItem("Global connection statistics");
-        choiceBox.addItem("Messages statistics for one user");
         choiceBox.addItem("Global messages statistics");
         choiceBox.addItem("Global ban statistics");
-        choiceBox.addItem("Global users statistics");
         choiceBox.addItem("Global permission statistics");
         choiceBox.addItem("Global status statistics");
     }
@@ -119,14 +111,6 @@ public class ReportingWindow extends JDialog{
         System.out.println("Top User");
     }
 
-    private void connectionByID() {
-        String serverResponse = "";
-        serverResponse = serverConnection.getConnectionsStatisticsByUserId();
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-        responseAnalyser.generateHistogram(4);
-        System.out.println("Connection statistics for one user");
-    }
-
     private void connectionStatistics() {
         String serverResponse = "";
         serverResponse = serverConnection.getConnectionsStatistics();
@@ -139,7 +123,9 @@ public class ReportingWindow extends JDialog{
         String serverResponse = "";
         serverResponse = serverConnection.getBanStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
-        responseAnalyser.generatePieChart(3);
+        JFreeChart freeChart =responseAnalyser.generatePieChart(3);
+        ChartPanel chart = new ChartPanel(freeChart);
+        chartPanel.add(chart);
     }
 
     private void messageStatistics() {
@@ -151,26 +137,22 @@ public class ReportingWindow extends JDialog{
         chartPanel.add(chart);
     }
 
-    private void doOption6() {
-        System.out.println("Global ban statistics");
-    }
-    private void doOption7() {
-        System.out.println("Global users statistics");
-    }
-
     private void permissionStatistics() {
         String serverResponse = "";
         serverResponse = serverConnection.getPermissionStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
-        responseAnalyser.generatePieChart(2);
+        JFreeChart freeChart = responseAnalyser.generatePieChart(2);
+        ChartPanel chart = new ChartPanel(freeChart);
+        chartPanel.add(chart);
     }
 
     private void statusStatistics() {
         String serverResponse = "";
         serverResponse = serverConnection.getStatusStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
-        responseAnalyser.generatePieChart(1);
-        System.out.println("Global status statistics");
+        JFreeChart freeChart = responseAnalyser.generatePieChart(1);
+        ChartPanel chart = new ChartPanel(freeChart);
+        chartPanel.add(chart);
     }
 
     private void removeChartFromPanel() {

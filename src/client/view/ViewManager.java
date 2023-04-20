@@ -117,7 +117,7 @@ public class ViewManager implements Runnable {
                         isClientBanned = false;
                     }
                 }
-                case 7 -> { // OPENAI
+                case 7 -> { // SIMPLE QUESTION AI
                     if (!alreadyDisplay) {
                         alreadyDisplay = true;
                         this.conversationForm = new ConversationWindow(null, serverConnection, localStorage, currentUser, chattingWithThisUser, 700,600, true);

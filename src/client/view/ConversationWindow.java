@@ -50,7 +50,7 @@ public class ConversationWindow extends JDialog {
     private List<Message> alreadyDisplay;
     private Data localStorage;
     private Thread updateThread;
-    private boolean talkingToOpenAI = false;
+    private boolean talkingToSimpleQuestionAI = false;
     public boolean messageLoaded = false;
 
 
@@ -61,7 +61,7 @@ public class ConversationWindow extends JDialog {
      * @param serverConnection the server connection
      * @param userChattingWith the user
      */
-    public ConversationWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User whoIam, User userChattingWith, int width, int height, boolean talkingToOpenAI) {
+    public ConversationWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User whoIam, User userChattingWith, int width, int height, boolean talkingToSimpleQuestionAI) {
 
         super(parent, "SwiftChat", true);
 
@@ -74,7 +74,7 @@ public class ConversationWindow extends JDialog {
         this.localStorage = localStorage;
         this.alreadyDisplay = new ArrayList<Message>();
         this.messageLoaded = false;
-        this.talkingToOpenAI = talkingToOpenAI;
+        this.talkingToSimpleQuestionAI = talkingToSimpleQuestionAI;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
@@ -120,7 +120,7 @@ public class ConversationWindow extends JDialog {
     private void initComponents() {
         JPanel mainPanel = createMainPanel();
         add(mainPanel);
-        if (!talkingToOpenAI) {
+        if (!talkingToSimpleQuestionAI) {
             startUpdateThread(this);
             upDateChat();
         }
@@ -268,7 +268,7 @@ public class ConversationWindow extends JDialog {
         userPanel.add(createBackButton(), BorderLayout.WEST);
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
 
-        if (!talkingToOpenAI) {
+        if (!talkingToSimpleQuestionAI) {
             do {
                 currentPrivilege = getClientPermission();
             } while (currentPrivilege.equals("ERROR"));
@@ -317,7 +317,7 @@ public class ConversationWindow extends JDialog {
         backButton.setPreferredSize(new Dimension(100, 25));
         backButton.addActionListener(e -> {
             previousSize = getSize();
-            updateThread.stop();
+            //updateThread.stop(); Chelouu
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
@@ -332,10 +332,10 @@ public class ConversationWindow extends JDialog {
      * @return the user name label
      */
     private JLabel createUserNameLabel() {
-        if (!talkingToOpenAI) {
+        if (!talkingToSimpleQuestionAI) {
             contactName = chattingWithThisUser.getFirstName() + " " + chattingWithThisUser.getLastName();
         } else {
-            contactName = "OpenAI";
+            contactName = "Simple question AI";
         }
         JLabel userNameLabel = new JLabel(contactName);
         userNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -377,7 +377,7 @@ public class ConversationWindow extends JDialog {
      */
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        if (!talkingToOpenAI) {
+        if (!talkingToSimpleQuestionAI) {
             buttonPanel.add(createImageButton());
         }
         buttonPanel.add(createSendButton());
@@ -495,7 +495,7 @@ public class ConversationWindow extends JDialog {
 
         JButton sendButton = new JButton("Send");
 
-        if (!talkingToOpenAI) {
+        if (!talkingToSimpleQuestionAI) {
             System.out.println("Not talking to OpenAI");
             sendButton.addActionListener(e -> {
 
