@@ -93,7 +93,8 @@ public class MessageAnalyser {
             case "GET-MESSAGES-STATISTICS-BY-USER-ID" -> serverResponse = getMessagesStatisticsByUserId();
             case "GET-CONNECTIONS-STATISTICS" -> serverResponse = getConnectionsStatistics();
             case "GET-CONNECTIONS-STATISTICS-BY-USER-ID" -> serverResponse = getConnectionsStatisticsByUserId();
-            case "GET-TOP-USERS" -> serverResponse = getTopUsers();
+            case "GET-TOP-USERS-BY-SENT-MESSAGES" -> serverResponse = getTopUsersBySentMessages();
+            case "GET-TOP-USERS-BY-LOGIN" -> serverResponse = getTopUsersByLogin();
 
             case "LIST-ALL-MESSAGES-IN-GROUP" -> serverResponse = listAllMessagesInGroup();
             case "ADD-MESSAGE-IN-GROUP" -> serverResponse = addMessageToGroup();
@@ -359,14 +360,23 @@ public class MessageAnalyser {
 
     /**
      * This method allow to get the top users
-     * Message format : GET-TOP-USERS
-     * Response format : GET-TOP-USERS;SUCCESS/FAILURE;USER_ID;MESSAGE_COUNT
+     * Message format : GET-TOP-USERS-BY-SENT-MESSAGES
+     * Response format : GET-TOP-USERS-BY-SENT-MESSAGES;SUCCESS/FAILURE;USER_ID;MESSAGE_COUNT
      *
      * @return The top users
      */
-    public String getTopUsers() {
-        return logDao.getTopUsers(messageParts, message);
+    public String getTopUsersBySentMessages() {
+        return logDao.getTopUsersBySentMessages(message);
     }
+
+    /**
+     * This method allow to get the top users by login
+     * Message format : GET-TOP-USERS-BY-LOGIN
+     * Response format : GET-TOP-USERS-BY-LOGIN;SUCCESS/FAILURE;USER_ID;LOGIN_COUNT
+     *
+     * @return The top users by login
+     */
+    public String getTopUsersByLogin(){return logDao.getTopUsersByLogin(message);}
 
     /**
      * This method allow to list all the messages in a group

@@ -198,11 +198,26 @@ public class ContactWindow extends JDialog {
                     contactCard.add(initialsLabel, BorderLayout.WEST);
 
                     // Init contact button for each user
-                    JButton contactButton = createContactButton(fullName);
+                    //JButton contactButton = createContactButton(fullName);
+
 
                     // Add status circle to the contact button
-                    JLabel statusCircle = createStatusCircle(user.getStatus());
+                   // JLabel statusCircle = createStatusCircle(user.getStatus());
                     //contactButton.add(statusCircle, BorderLayout.WEST);
+
+                    String rightText = "";
+                    if(usersPerPage[currentPage][currentUserIterator].getStatus().equals("ONLINE")){
+                        rightText = "Ⓒ";
+
+                    }
+                    else if (usersPerPage[currentPage][currentUserIterator].getStatus().equals("AWAY")){
+                        rightText = "Ⓐ";
+                    }
+                    else {
+                        rightText = "Ⓞ";
+
+                    }
+                    JButton contactButton = createContactButton(fullName, rightText,usersPerPage[currentPage][currentUserIterator]);
 
                     // Allow event to be start in the button
                     int finalCurrentUserIterator = currentUserIterator;
@@ -337,8 +352,9 @@ public class ContactWindow extends JDialog {
      *
      * @return
      */
-    private JButton createContactButton(String fullName) {
+    private JButton createContactButton(String fullName, String rightText, User user) {
         JButton contactButton = new JButton(fullName);
+        contactButton.setLayout(new BoxLayout(contactButton, BoxLayout.LINE_AXIS));
         contactButton.setForeground(new Color(255, 255, 255));
         contactButton.setOpaque(true);
         contactButton.setPreferredSize(new Dimension(550 - labelSize, labelSize));
@@ -346,8 +362,32 @@ public class ContactWindow extends JDialog {
         contactButton.setContentAreaFilled(false);
         contactButton.setFocusPainted(false);
         contactButton.setHorizontalAlignment(SwingConstants.LEFT);
+
+        JLabel nameLabel = new JLabel();
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        contactButton.add(nameLabel);
+
+        // Add space between the name and the right text
+        contactButton.add(Box.createHorizontalGlue());
+
+        JLabel rightTextLabel = new JLabel(rightText);
+        if(user.getStatus().equals("ONLINE")){
+            rightTextLabel.setForeground(Color.GREEN);
+        }
+        else if (user.getStatus().equals("AWAY")){
+            rightTextLabel.setForeground(Color.YELLOW);
+        }
+        else {
+            rightTextLabel.setForeground(Color.RED);
+        }
+        rightTextLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        contactButton.add(rightTextLabel);
+
+        // Set any other properties for the JButton as needed, e.g., font, etc.
         return contactButton;
     }
+
 
     /**
      * Top panel with 3 or 2 button depending on the status of the user

@@ -11,6 +11,7 @@ public interface LogDao {
     String getConnectionsStatistics(String message);
     String getConnectionsStatisticsByUserId(String[] messageParts, String message);
 
-    String getTopUsers(String[] messageParts, String message);
+    String getTopUsersBySentMessages(String message);
+    String getTopUsersByLogin(String message);
 
 }

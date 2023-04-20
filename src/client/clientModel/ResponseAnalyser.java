@@ -249,9 +249,8 @@ public class ResponseAnalyser {
     /**
      * This method generates a bar chart from the server response
      *
-     * @param dataToDisplay
      */
-    public void generateBarChart(int dataToDisplay) {
+    public void generateBarChart() {
         // Create a dataset for the bar chart
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
