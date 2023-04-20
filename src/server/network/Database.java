@@ -55,11 +55,11 @@ public class Database {
     }
 
     /**
-     * This method allows to populate the database
+     * This method allow to create of the database
      */
-    public void populate() {
+    public void createDB() {
 
-        // DO NOT EXECUTE THIS METHOD IF THE DATABASE IS ALREADY POPULATED
+        // DO NOT EXECUTE THIS METHOD IF THE DATABASE IS ALREADY CREATED
         // FOR DEBUG ONLY
 
         Statement populate = null;
@@ -67,7 +67,7 @@ public class Database {
         try {
             populate = connection.createStatement();
 
-            /*
+
             // Create USER table
             String createUserTableSQL = "CREATE TABLE USER " +
                     "(ID INTEGER not NULL AUTO_INCREMENT, " +
@@ -98,7 +98,7 @@ public class Database {
                     " FOREIGN KEY ( RECEIVER_ID ) REFERENCES USER(ID))";
 
             populate.executeUpdate(createMessageTableSQL);
-*/
+
 
             // Create MESSAGE-GROUP table
             String createMessageGroupTableSQL = "CREATE TABLE MESSAGEGROUP " +
@@ -112,7 +112,6 @@ public class Database {
 
             populate.executeUpdate(createMessageGroupTableSQL);
 
-            /*
 
             // Create LOG table
             String createLogTableSQL = "CREATE TABLE LOG " +
@@ -125,7 +124,7 @@ public class Database {
             populate.executeUpdate(createLogTableSQL);
             populate.close();
 
-             */
+
 
         } catch (SQLException se) {
             se.printStackTrace();

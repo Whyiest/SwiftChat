@@ -154,17 +154,18 @@ public class ViewManager implements Runnable {
         chattingWithThisUser = user;
     }
 
+    /**
+     * Set the current user of the client
+     * @param user the current user
+     */
     public static void setCurrentUser(User user){
         currentUser = user;
     }
 
     /**
-     * Reload the display
+     * Set if the client is banned
+     * @param isClientBanned if the client is banned
      */
-    public void reloadDisplay() {
-        alreadyDisplay = false;
-    }
-
     public static void setIsClientBanned (boolean isClientBanned) {
         ViewManager.isClientBanned = isClientBanned;
     }

@@ -71,9 +71,7 @@ public class Client {
             if (isClientBanned == true) {
                 // Kicks out the banned user and sends logout message
                 System.out.println("[!] Starting logout protocol : client has been banned.");
-                clientID = -1;
-                clientIsLogged = false;
-                isClientBanned = false;
+                logout();
                 ViewManager.setIsClientBanned(true);
                 ViewManager.setCurrentDisplay(0);
                 System.out.println("[!] Logout protocol finished.");
@@ -113,19 +111,26 @@ public class Client {
      * Set the client isLogged value
      * @param isLogged True if the client is logged, false otherwise
      */
-
     public static void setClientIsLogged(boolean isLogged) {
         clientIsLogged = isLogged;
     }
 
+    /**
+     * Get the client isLogged value
+     */
     public static boolean isClientLogged() {
         return clientIsLogged;
     }
-    public static void askForReload () {
-        viewManager.reloadDisplay();
-    }
 
-    public void logout() {
+
+    /**
+     * Logout the client from the server
+     */
+    public static void logout() {
+
+        clientID = -1;
+        clientIsLogged = false;
+        isClientBanned = false;
 
         String logoutResponse = "";
         String logResponse = "";
