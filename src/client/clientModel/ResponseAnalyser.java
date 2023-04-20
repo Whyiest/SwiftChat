@@ -150,8 +150,8 @@ public class ResponseAnalyser {
                 pieDataset.setValue("Administrator", Double.parseDouble((messageParts[2])));
                 break;
             case 3:
-                pieDataset.setValue("Not banned", Double.parseDouble((messageParts[1])));
-                pieDataset.setValue("Banned", Double.parseDouble((messageParts[2])));
+                pieDataset.setValue("Not banned", Double.parseDouble((messageParts[0])));
+                pieDataset.setValue("Banned", Double.parseDouble((messageParts[1])));
                 break;
             default:
                 System.out.println("Cannot generate pie chart, please use a correct number according to the data you want to display");

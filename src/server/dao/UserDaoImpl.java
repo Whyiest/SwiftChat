@@ -597,4 +597,93 @@ public class UserDaoImpl implements UserDao {
             return "LOGOUT;FAILURE";
         }
     }
+
+    public String getStatusStatistics(String message){
+        // Create an SQL statement to get all the logs relating to a user status from the database
+        String sql = "SELECT \n" +
+                "    COUNT(CASE WHEN STATUS = 'OFFLINE' THEN 1 END) AS OFFLINE_COUNT,\n" +
+                "    COUNT(CASE WHEN STATUS = 'ONLINE' THEN 1 END) AS ONLINE_COUNT,\n" +
+                "    COUNT(CASE WHEN STATUS = 'AWAY' THEN 1 END) AS AWAY_COUNT\n" +
+                "FROM \n" +
+                "    USER;\n";
+
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) {
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    serverResponse += rs.getInt("OFFLINE_COUNT") + ";" + rs.getInt("ONLINE_COUNT") + ";" + rs.getInt("AWAY_COUNT");
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while analyzing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use: [GET-STATUS-STATISTICS]");
+            return "GET-STATUS-STATISTICS;FAILURE";
+        }
+    }
+
+    public String getPermissionStatistics(String message){
+        // Create an SQL statement to get all the logs relating to a user permission from the database
+        String sql = "SELECT \n" +
+                "    COUNT(CASE WHEN PERMISSION = 'CLASSIC' THEN 1 END) AS CLASSIC_COUNT,\n" +
+                "    COUNT(CASE WHEN PERMISSION = 'MODERATOR' THEN 1 END) AS MODERATOR_COUNT,\n" +
+                "    COUNT(CASE WHEN PERMISSION = 'ADMIN' THEN 1 END) AS ADMINISTRATOR_COUNT\n" +
+                "FROM \n" +
+                "    USER;\n";
+
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) {
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    serverResponse += rs.getInt("CLASSIC_COUNT") + ";" + rs.getInt("MODERATOR_COUNT") + ";" + rs.getInt("ADMINISTRATOR_COUNT");
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while analyzing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use: [GET-PERMISSION-STATISTICS]");
+            return "GET-PERMISSION-STATISTICS;FAILURE";
+        }
+    }
+
+    public String getBanStatistics(String message){
+        // Create an SQL statement to get all the logs relating to a user ban from the database
+        String sql = "SELECT \n" +
+                "    COUNT(CASE WHEN IS_BANNED = 'false' THEN 1 END) AS NON_BANNED_COUNT,\n" +
+                "    COUNT(CASE WHEN IS_BANNED = 'true' THEN 1 END) AS BANNED_COUNT\n" +
+                "FROM \n" +
+                "    USER;\n";
+
+        String serverResponse = "";
+
+        try {
+            if (!myDb.connection.isClosed()) {
+                PreparedStatement statement = myDb.connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    serverResponse += rs.getInt("NON_BANNED_COUNT") + ";" + rs.getInt("BANNED_COUNT");
+                }
+                statement.close();
+                return serverResponse;
+            } else {
+                throw new SQLException("Connection to database failed.");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Error while analyzing the message [" + message + "]");
+            System.out.println("Incorrect syntax provided, please use: [GET-BAN-STATISTICS]");
+            return "GET-BAN-STATISTICS;FAILURE";
+        }
+    }
 }
