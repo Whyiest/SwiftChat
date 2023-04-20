@@ -18,4 +18,8 @@ public interface UserDao {
     void disconnectAll();
     String logOut(String[] messageParts, String message);
 
+    String getStatusStatistics(String message);
+    String getPermissionStatistics(String message);
+    String getBanStatistics(String message);
+
 }

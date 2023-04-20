@@ -60,21 +60,18 @@ public class ReportingWindow extends JDialog{
                         connectionStatistics();
                         break;
                     case "Messages statistics for one user":
-                        doOption4();
+                        //doOption4();
                         break;
                     case "Global messages statistics"://works
                         messageStatistics();
                         break;
-                    case "Global ban statistics": //need to fix piechart
-                        doOption6();
+                    case "Global ban statistics": //works
+                        banStatistics();
                         break;
-                    case "Global users statistics":
-                        doOption7();
-                        break;
-                    case "Global permission statistics": //need to fix piechart
+                    case "Global permission statistics": // works
                         permissionStatistics();
                         break;
-                    case "Global status statistics": //nedd to fix piechart
+                    case "Global status statistics": //works
                         statusStatistics();
                         break;
                     default:
@@ -138,8 +135,11 @@ public class ReportingWindow extends JDialog{
         ChartPanel chart = new ChartPanel(freeChart);
         chartPanel.add(chart);
     }
-    private void doOption4() {
-        System.out.println("Messages statistics for one user");
+    private void banStatistics() {
+        String serverResponse = "";
+        serverResponse = serverConnection.getBanStatistics();
+        ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
+        responseAnalyser.generatePieChart(3);
     }
 
     private void messageStatistics() {

@@ -289,7 +289,7 @@ public class MessageAnalyser {
      * @return The status statistics
      */
     public String getStatusStatistics() {
-        return logDao.getStatusStatistics(message);
+        return userDao.getStatusStatistics(message);
     }
 
     /**
@@ -300,7 +300,7 @@ public class MessageAnalyser {
      * @return The permission statistics
      */
     public String getPermissionStatistics() {
-        return logDao.getPermissionStatistics(message);
+        return userDao.getPermissionStatistics(message);
     }
 
     /**
@@ -311,7 +311,7 @@ public class MessageAnalyser {
      * @return The ban statistics
      */
     public String getBanStatistics() {
-        return logDao.getBanStatistics(message);
+        return userDao.getBanStatistics(message);
     }
 
     /**
