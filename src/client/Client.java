@@ -150,4 +150,11 @@ public class Client {
             }
         } while (logoutResponse.equals("LOGOUT;FAILURE"));
     }
+
+    /**
+     * Ask the view manager to reload the display
+     */
+    public static void askForReload () {
+        viewManager.reloadDisplay();
+    }
 }

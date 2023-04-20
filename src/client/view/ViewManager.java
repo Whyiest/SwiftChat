@@ -169,4 +169,11 @@ public class ViewManager implements Runnable {
     public static void setIsClientBanned (boolean isClientBanned) {
         ViewManager.isClientBanned = isClientBanned;
     }
+
+    /**
+     * Reload the display
+     */
+    public void reloadDisplay() {
+        alreadyDisplay = false;
+    }
 }
