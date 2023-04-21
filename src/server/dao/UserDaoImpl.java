@@ -47,7 +47,8 @@ public class UserDaoImpl implements UserDao {
 
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
-            System.out.println("Incorrect syntax provided, please use : [SEND-MESSAGE;ID;PERMISSION;FIRST_NAME;LAST_NAME;USERNAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME]");
+            System.out.println("Incorrect syntax provided, please use : [ADD-USER;USERNAME;FIRST_NAME;LAST_NAME;EMAIL;PASSWORD;LAST_CONNECTION_TIME;IS_BANNED;STATUS]");
+            e.printStackTrace();
             return "ADD-USER;FAILURE";
         }
 
@@ -139,8 +140,8 @@ public class UserDaoImpl implements UserDao {
     public String changeUserStatus(String[] messageParts, String message) {
 
         // Linking message parts to variables
-        String userId = "";
-        String userStatus = "";
+        String userId;
+        String userStatus;
 
         try {
             userId = messageParts[1];
@@ -180,8 +181,8 @@ public class UserDaoImpl implements UserDao {
      */
     public String changeUserPermission(String[] messageParts, String message) {
         // Linking message parts to variables
-        String userId = "";
-        String userPermission = "";
+        String userId;
+        String userPermission;
 
         try {
             userId = messageParts[1];

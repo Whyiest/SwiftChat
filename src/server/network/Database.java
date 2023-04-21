@@ -99,7 +99,6 @@ public class Database {
             String createMessageGroupTableSQL = "CREATE TABLE MESSAGEGROUP " +
                     "(ID INTEGER not NULL AUTO_INCREMENT, " +
                     " SENDER_ID INTEGER," +
-                    " RECEIVER_ID INTEGER, " +
                     " TIMESTAMP VARCHAR(255), " +
                     " CONTENT VARCHAR(255), " +
                     " PRIMARY KEY ( ID ), " +
@@ -124,29 +123,44 @@ public class Database {
         }
     }
 
+    /**
+     * This method allows to clear the database
+     */
     public void clearDB() {
+        Statement statement = null;
 
-        try (Statement statement = connection.createStatement()) {
+        try {
+            statement = connection.createStatement();
 
-            // Delete all rows from USER table
-            String clearUserTableSQL = "DELETE FROM USER";
-            statement.executeUpdate(clearUserTableSQL);
+            // Delete all rows from LOG table
+            String clearLogTableSQL = "DROP TABLE LOG";
+            statement.executeUpdate(clearLogTableSQL);
 
             // Delete all rows from MESSAGE table
-            String clearMessageTableSQL = "DELETE FROM MESSAGE";
+            String clearMessageTableSQL = "DROP TABLE MESSAGE";
             statement.executeUpdate(clearMessageTableSQL);
 
             // Delete all rows from MESSAGEGROUP table
-            String clearMessageGroupTableSQL = "DELETE FROM MESSAGEGROUP";
+            String clearMessageGroupTableSQL = "DROP TABLE MESSAGEGROUP";
             statement.executeUpdate(clearMessageGroupTableSQL);
 
-            // Delete all rows from LOG table
-            String clearLogTableSQL = "DELETE FROM LOG";
-            statement.executeUpdate(clearLogTableSQL);
+            // Delete all rows from USER table
+            String clearUserTableSQL = "DROP TABLE USER";
+            statement.executeUpdate(clearUserTableSQL);
+
+
+
 
             statement.close();
         } catch (SQLException se) {
             se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) statement.close();
+            } catch (SQLException se2) {
+            }
         }
     }
 }

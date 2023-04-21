@@ -18,9 +18,14 @@ public class Server {
         // Connect to the database
         myClientConnectionHub.connectDatabase("swiftchatserver.mysql.database.azure.com", "swiftchatdb", "siwftchat", "Ines123#");
 
-        // POPULATE - TEST ONLY - DO NOT USE IN PRODUCTION
+        // DANGER ZONE-----------------------------------
+        // DO NOT USE IN PRODUCTION - Create and populate the database
+        // DO NOT CLEAR DB IF ALREADY EMPTY
+        // DO NOT POPULATE DB IF ALREADY POPULATED
+        //myClientConnectionHub.clearDatabase();
         //myClientConnectionHub.createDatabase();
         //myClientConnectionHub.populateDatabase();
+        //-----------------------------------------------
 
         // Open the connexion hub
         myClientConnectionHub.openConnexion();
