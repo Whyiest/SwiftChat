@@ -115,6 +115,7 @@ public class ConversationWindow extends JDialog {
      * Initialize the components of the conversation window
      */
     private void initComponents() {
+
         try {
             JPanel mainPanel = createMainPanel();
             add(mainPanel);

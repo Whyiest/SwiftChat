@@ -22,6 +22,7 @@
           <background color="-16602200"/>
           <font name="Courier New" size="28" style="1"/>
           <foreground color="-328966"/>
+          <horizontalAlignment value="2"/>
           <text value=""/>
         </properties>
       </component>

@@ -47,13 +47,13 @@ public class OptionsWindow extends JDialog {
         unbanRadioButton = new JRadioButton("Unban user ⛉");
 
         // Create a promote to moderator radio button
-        setClassicUserRadioButton = new JRadioButton("Set to classic user ⛖");
+        setClassicUserRadioButton = new JRadioButton("Set to classic user ⮂");
 
         // Create a demote to user radio button
-        setModeratorRadioButton = new JRadioButton("Set to moderator user ⛖");
+        setModeratorRadioButton = new JRadioButton("Set to moderator user ⮂");
 
         // Create a promote to admin radio button
-        setAdminRadioButton = new JRadioButton("Set to admin user ⛖");
+        setAdminRadioButton = new JRadioButton("Set to admin user ⮂");
         //Button colors
         banRadioButton.setForeground(Color.WHITE);
         banRadioButton.setBackground(new Color(2, 53, 53));

@@ -40,6 +40,15 @@ public class GroupWindow extends JDialog {
     private boolean messageLoaded;
 
 
+    /**
+     * Constructor
+     * @param parent the parent frame
+     * @param serverConnection the server connection
+     * @param localStorage the local storage
+     * @param sender the current user
+     * @param width the width of the window
+     * @param height the height of the window
+     */
     public GroupWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User sender, int width, int height) {
 
         super(parent, "SwiftChat", true);
@@ -92,7 +101,6 @@ public class GroupWindow extends JDialog {
                 }
             }
         });
-        updateThread.start();
     }
 
     /**
