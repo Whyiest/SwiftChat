@@ -166,8 +166,8 @@ public class ResponseAnalyser {
         PiePlot p = (PiePlot) chart.getPlot();
         switch (dataToDisplay) {
             case 1:
-                p.setSectionPaint("Offline", Color.green);
-                p.setSectionPaint("Online", Color.red);
+                p.setSectionPaint("Offline", Color.red);
+                p.setSectionPaint("Online", Color.green);
                 p.setSectionPaint("Away", Color.yellow);
 
             case 2:
