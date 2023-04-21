@@ -372,7 +372,7 @@ public class GroupWindow extends JDialog {
      */
     private JButton createSendButton() {
 
-        JButton sendButton = new JButton("Send");
+        JButton sendButton = new JButton("Send ➤");
         sendButton.setBackground(new Color(26, 26, 26, 255));
         sendButton.setForeground(new Color(255,255,255));
         sendButton.addActionListener(e -> {
