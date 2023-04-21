@@ -63,12 +63,7 @@ public class Database {
         // DO NOT EXECUTE THIS METHOD IF THE DATABASE IS ALREADY CREATED
         // FOR DEBUG ONLY
 
-        Statement populate = null;
-
-        try {
-            populate = connection.createStatement();
-
-
+        try (Statement populate = connection.createStatement()) {
             // Create USER table
             String createUserTableSQL = "CREATE TABLE USER " +
                     "(ID INTEGER not NULL AUTO_INCREMENT, " +
@@ -124,29 +119,14 @@ public class Database {
             populate.executeUpdate(createLogTableSQL);
             populate.close();
 
-
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (populate != null) populate.close();
-            } catch (SQLException se2) {
-            }
-            try {
-                if (connection != null) connection.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
         }
     }
 
     public void clearDB() {
-        Statement statement = null;
 
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
 
             // Delete all rows from USER table
             String clearUserTableSQL = "DELETE FROM USER";
@@ -167,13 +147,6 @@ public class Database {
             statement.close();
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (statement != null) statement.close();
-            } catch (SQLException se2) {
-            }
         }
     }
 }

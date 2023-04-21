@@ -40,8 +40,7 @@ public class LogDaoImpl implements LogDao {
 
         // Create a prepared statement with the SQL statement
 
-        try{
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             // Set the parameter values for the prepared statement
             statement.setInt(1, Integer.parseInt(logUserId));
             statement.setString(2, logTimestamp);
@@ -84,9 +83,8 @@ public class LogDaoImpl implements LogDao {
         // Create an SQL statement to get all the logs for a user from the database
         String sql = "SELECT * FROM log WHERE USER_ID = ?";
         StringBuilder serverResponse = new StringBuilder();
-        try {
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if (!myDb.connection.isClosed()) { // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setInt(1, idUser);
                 ResultSet rs = statement.executeQuery();
                 if (rs != null && rs.next()) {
@@ -216,25 +214,23 @@ public class LogDaoImpl implements LogDao {
                 "JOIN USER U ON U.ID = L.USER_ID\n" +
                 "GROUP BY U.ID, U.USERNAME\n" +
                 "ORDER BY MESSAGE_COUNT DESC;\n";
-        String serverResponse = "";
+        StringBuilder serverResponse = new StringBuilder();
 
-        try{
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if(!myDb.connection.isClosed()){ // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
-
                 ResultSet rs = statement.executeQuery();
 
                 if (rs != null && rs.next()) {
                     // Get the first user
-                    serverResponse += rs.getString("USERNAME") + ";" + rs.getInt("MESSAGE_COUNT");
+                    serverResponse.append(rs.getString("USERNAME")).append(";").append(rs.getInt("MESSAGE_COUNT"));
                     // Get the other users
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getString("USERNAME") + ";" + rs.getInt("MESSAGE_COUNT");
+                        serverResponse.append(";").append(rs.getString("USERNAME")).append(";").append(rs.getInt("MESSAGE_COUNT"));
 
                     }
                 }
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
@@ -263,24 +259,22 @@ public class LogDaoImpl implements LogDao {
                 "JOIN USER U ON U.ID = L.USER_ID\n" +
                 "GROUP BY U.ID, U.USERNAME\n" +
                 "ORDER BY LOGIN_COUNT DESC;\n";
-        String serverResponse = "";
+        StringBuilder serverResponse = new StringBuilder();
 
-        try{
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if(!myDb.connection.isClosed()){ // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
-
                 ResultSet rs = statement.executeQuery();
 
                 if (rs != null && rs.next()) {
                     // Get the first user
-                    serverResponse += rs.getString("USERNAME") + ";" + rs.getInt("LOGIN_COUNT");
+                    serverResponse.append(rs.getString("USERNAME")).append(";").append(rs.getInt("LOGIN_COUNT"));
                     // Get the other users
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getString("USERNAME") + ";" + rs.getInt("LOGIN_COUNT");
+                        serverResponse.append(";").append(rs.getString("USERNAME")).append(";").append(rs.getInt("LOGIN_COUNT"));
                     }
                 }
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
 
             } else {
                 // Throw an exception if the connection is closed

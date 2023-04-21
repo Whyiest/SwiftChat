@@ -41,9 +41,7 @@ public class MessageDaoImpl implements MessageDao {
         String sql = "INSERT INTO MESSAGE (SENDER_ID, RECEIVER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
-        try{
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
-
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             // Set the parameter values for the prepared statement
             statement.setInt(1, Integer.parseInt(messageSenderID));
             statement.setInt(2, Integer.parseInt(messageReceiverID));
@@ -84,12 +82,11 @@ public class MessageDaoImpl implements MessageDao {
         }
 
         // Create an SQL statement to get all the messages for a sender and a receiver from the database
-        String sql = "SELECT * FROM message " + "WHERE (SENDER_ID = ? AND RECEIVER_ID = ?) OR (SENDER_ID = ? AND RECEIVER_ID = ?) " + "ORDER BY TIMESTAMP ASC";
+        String sql = "SELECT * FROM message WHERE (SENDER_ID = ? AND RECEIVER_ID = ?) OR (SENDER_ID = ? AND RECEIVER_ID = ?) ORDER BY TIMESTAMP ASC";
 
         StringBuilder serverResponse = new StringBuilder("LIST-MESSAGES-BETWEEN-USERS;");
-        try {
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if (!myDb.connection.isClosed()) { // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setInt(1, idSender);
                 statement.setInt(2, idReceiver);
                 statement.setInt(3, idReceiver);
@@ -99,7 +96,6 @@ public class MessageDaoImpl implements MessageDao {
                 if (rs != null && rs.next()) {
                     // Get the first result
                     serverResponse.append(rs.getInt("SENDER_ID")).append(";").append(rs.getInt("RECEIVER_ID")).append(";").append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("CONTENT"));
-
                     // Get the other results
                     while (rs.next()) {
                         serverResponse.append(";").append(rs.getInt("SENDER_ID")).append(";").append(rs.getInt("RECEIVER_ID")).append(";").append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("CONTENT"));
@@ -108,7 +104,6 @@ public class MessageDaoImpl implements MessageDao {
                 else {
                     serverResponse.append("EMPTY");
                 }
-
                 statement.close();
                 return serverResponse.toString();
             } else {

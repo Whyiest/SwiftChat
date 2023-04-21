@@ -43,9 +43,7 @@ public class GroupMessageDaoImpl implements GroupMessageDao {
         String sql = "INSERT INTO MESSAGEGROUP (SENDER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
-        try{
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
-
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             // Set the parameter values for the prepared statement
             statement.setInt(1, Integer.parseInt(messageSenderID));
             statement.setString(2, messageTimestamp);
@@ -76,9 +74,8 @@ public class GroupMessageDaoImpl implements GroupMessageDao {
         // Create an SQL statement to get all the messages for a sender and a receiver from the database
         String sql = "SELECT * FROM MESSAGEGROUP";
         StringBuilder serverResponse = new StringBuilder("LIST-ALL-MESSAGES-IN-GROUP;");
-        try {
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if (!myDb.connection.isClosed()) { // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 ResultSet rs = statement.executeQuery();
 
                 if (rs != null && rs.next()) {
