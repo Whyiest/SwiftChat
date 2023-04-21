@@ -23,15 +23,15 @@ public class UserDaoImpl implements UserDao {
     public String addUser(String[] messageParts, String message) {
 
         // Linking message parts to variables
-        String userUsername = "";
-        String userFirstName = "";
-        String userLastName = "";
-        String userEmail = "";
-        String userPassword = "";
-        String userPermission = "";
-        String userLastConnectionTime = "";
-        String userIsBanned = "";
-        String userStatus = "";
+        String userUsername;
+        String userFirstName;
+        String userLastName;
+        String userEmail;
+        String userPassword;
+        String userPermission;
+        String userLastConnectionTime;
+        String userIsBanned;
+        String userStatus;
 
 
         try {
@@ -228,8 +228,8 @@ public class UserDaoImpl implements UserDao {
      */
     public String changeBanStatus(String[] messageParts, String message) {
         // Linking message parts to variables
-        String userId = "";
-        String userIsBanned = "";
+        String userId;
+        String userIsBanned;
 
         try {
             userId = messageParts[1];
@@ -276,7 +276,7 @@ public class UserDaoImpl implements UserDao {
     public String updateLastConnectionTime(String[] messageParts, String message) {
 
         // Linking message parts to variables
-        String userId = "";
+        String userId;
         String userLastConnectionTime = LocalDateTime.now().toString();
 
         try {
@@ -321,7 +321,7 @@ public class UserDaoImpl implements UserDao {
      */
     public String getUserById(String[] messageParts, String message) {
         // Linking message parts to variables
-        String userId = "";
+        String userId;
 
         try {
             userId = messageParts[1];
@@ -373,8 +373,8 @@ public class UserDaoImpl implements UserDao {
     public String getUserPermissionById(String[] messageParts, String message) {
 
         // Linking message parts to variables
-        String userId = "";
-        String userPermission = "";
+        String userId;
+        String userPermission;
 
         try {
             userId = messageParts[1];
@@ -424,8 +424,8 @@ public class UserDaoImpl implements UserDao {
     public String getUserBanStatusById(String[] messageParts, String message) {
 
         // Linking message parts to variables
-        String userId = "";
-        String userBanStatus = "";
+        String userId;
+        String userBanStatus;
 
         try {
             userId = messageParts[1];
@@ -534,7 +534,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     /**
-     * This method allow an user to logout
+     * This method allow a user to logout
      *
      * @param messageParts The message parts
      * @param message      The message
@@ -543,7 +543,7 @@ public class UserDaoImpl implements UserDao {
     public String logOut(String[] messageParts, String message) {
 
         // Linking message parts to variables
-        String userId = "";
+        String userId;
         String userLastConnectionTime = LocalDateTime.now().toString();
 
         try {
@@ -582,12 +582,14 @@ public class UserDaoImpl implements UserDao {
 
     public String getStatusStatistics(String message){
         // Create an SQL statement to get all the logs relating to a user status from the database
-        String sql = "SELECT \n" +
-                "    COUNT(CASE WHEN STATUS = 'OFFLINE' THEN 1 END) AS OFFLINE_COUNT,\n" +
-                "    COUNT(CASE WHEN STATUS = 'ONLINE' THEN 1 END) AS ONLINE_COUNT,\n" +
-                "    COUNT(CASE WHEN STATUS = 'AWAY' THEN 1 END) AS AWAY_COUNT\n" +
-                "FROM \n" +
-                "    USER;\n";
+        String sql = """
+                SELECT\s
+                    COUNT(CASE WHEN STATUS = 'OFFLINE' THEN 1 END) AS OFFLINE_COUNT,
+                    COUNT(CASE WHEN STATUS = 'ONLINE' THEN 1 END) AS ONLINE_COUNT,
+                    COUNT(CASE WHEN STATUS = 'AWAY' THEN 1 END) AS AWAY_COUNT
+                FROM\s
+                    USER;
+                """;
 
         String serverResponse = "";
 
@@ -611,12 +613,14 @@ public class UserDaoImpl implements UserDao {
 
     public String getPermissionStatistics(String message){
         // Create an SQL statement to get all the logs relating to a user permission from the database
-        String sql = "SELECT \n" +
-                "    COUNT(CASE WHEN PERMISSION = 'CLASSIC' THEN 1 END) AS CLASSIC_COUNT,\n" +
-                "    COUNT(CASE WHEN PERMISSION = 'MODERATOR' THEN 1 END) AS MODERATOR_COUNT,\n" +
-                "    COUNT(CASE WHEN PERMISSION = 'ADMIN' THEN 1 END) AS ADMINISTRATOR_COUNT\n" +
-                "FROM \n" +
-                "    USER;\n";
+        String sql = """
+                SELECT\s
+                    COUNT(CASE WHEN PERMISSION = 'CLASSIC' THEN 1 END) AS CLASSIC_COUNT,
+                    COUNT(CASE WHEN PERMISSION = 'MODERATOR' THEN 1 END) AS MODERATOR_COUNT,
+                    COUNT(CASE WHEN PERMISSION = 'ADMIN' THEN 1 END) AS ADMINISTRATOR_COUNT
+                FROM\s
+                    USER;
+                """;
 
         String serverResponse = "";
 
@@ -640,11 +644,13 @@ public class UserDaoImpl implements UserDao {
 
     public String getBanStatistics(String message){
         // Create an SQL statement to get all the logs relating to a user ban from the database
-        String sql = "SELECT \n" +
-                "    COUNT(CASE WHEN IS_BANNED = 'false' THEN 1 END) AS NON_BANNED_COUNT,\n" +
-                "    COUNT(CASE WHEN IS_BANNED = 'true' THEN 1 END) AS BANNED_COUNT\n" +
-                "FROM \n" +
-                "    USER;\n";
+        String sql = """
+                SELECT\s
+                    COUNT(CASE WHEN IS_BANNED = 'false' THEN 1 END) AS NON_BANNED_COUNT,
+                    COUNT(CASE WHEN IS_BANNED = 'true' THEN 1 END) AS BANNED_COUNT
+                FROM\s
+                    USER;
+                """;
 
         String serverResponse = "";
 

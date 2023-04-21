@@ -212,7 +212,7 @@ public class ContactWindow extends JDialog {
                     JLabel initialsLabel = createInitialsLabel(initials);
                     contactCard.add(initialsLabel, BorderLayout.WEST);
 
-                    String rightText = "Ⓒ";
+                    String rightText = "●";
 
                     JButton contactButton = createContactButton(fullName, rightText,usersPerPage[currentPage][currentUserIterator]);
 
@@ -560,7 +560,7 @@ public class ContactWindow extends JDialog {
      * @return general button
      */
     private JButton createGeneralButton() {
-        JButton createGeneralButton = new JButton("Global Chat");
+        JButton createGeneralButton = new JButton("Global Chat (◕‿◕)");
         createGeneralButton.setPreferredSize(new Dimension(50, 100));
         createGeneralButton.setBackground(new Color(26, 26, 26, 255));
         createGeneralButton.setForeground(new Color(255,255,255));
@@ -577,7 +577,7 @@ public class ContactWindow extends JDialog {
      * @return logoutButton
      */
     private JButton createLogOutButton() {
-        JButton createLogOutButton = new JButton("Sign out");
+        JButton createLogOutButton = new JButton("⮐ Sign out");
         createLogOutButton.setPreferredSize(new Dimension(50, 30));
         createLogOutButton.setBackground(new Color(26, 26, 26, 255));
         createLogOutButton.setForeground(new Color(255,255,255));
@@ -590,7 +590,7 @@ public class ContactWindow extends JDialog {
     }
 
     private JButton createSimpleQuestionAIButton() {
-        JButton gbcSimpleQuestionAIButton = new JButton("Simple Question AI");
+        JButton gbcSimpleQuestionAIButton = new JButton("Simple Question AI ✉");
         gbcSimpleQuestionAIButton.setPreferredSize(new Dimension(50, 30));
         gbcSimpleQuestionAIButton.setBackground(new Color(26, 26, 26, 255));
         gbcSimpleQuestionAIButton.setForeground(new Color(255,255,255));

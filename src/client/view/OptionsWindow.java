@@ -40,19 +40,19 @@ public class OptionsWindow extends JDialog {
         String userPermission = getClientPermission();
 
         // Create ban radio button
-        banRadioButton = new JRadioButton("Ban user");
+        banRadioButton = new JRadioButton("Ban user ⛊");
 
         // Create unban radio button
-        unbanRadioButton = new JRadioButton("Unban user");
+        unbanRadioButton = new JRadioButton("Unban user ⛉");
 
         // Create a promote to moderator radio button
-        setClassicUserRadioButton = new JRadioButton("Set to classic user");
+        setClassicUserRadioButton = new JRadioButton("Set to classic user ⛖");
 
         // Create a demote to user radio button
-        setModeratorRadioButton = new JRadioButton("Set to moderator user");
+        setModeratorRadioButton = new JRadioButton("Set to moderator user ⛖");
 
         // Create a promote to admin radio button
-        setAdminRadioButton = new JRadioButton("Set to admin user");
+        setAdminRadioButton = new JRadioButton("Set to admin user ⛖");
 
 
         // Group the radio buttons

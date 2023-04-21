@@ -21,9 +21,9 @@ public class LogDaoImpl implements LogDao {
     public String addLog(String[] messageParts, String message){
 
         // Linking message parts to variables
-        String logUserId = "";
+        String logUserId;
         String logTimestamp = LocalDateTime.now().toString();
-        String logType = "";
+        String logType;
 
         try{
             logUserId = messageParts[1];
@@ -130,7 +130,7 @@ public class LogDaoImpl implements LogDao {
 
         // Linking message parts to variables
         String logType = "SENT-MESSAGE";
-        int idUser = 0;
+        int idUser;
 
         try {
             idUser = Integer.parseInt(messageParts[1]);
