@@ -128,7 +128,7 @@ public class ConversationWindow extends JDialog {
                 upDateChat();
                 updateThread.start();
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -257,7 +257,7 @@ public class ConversationWindow extends JDialog {
         GridBagConstraints gbcBackButton = new GridBagConstraints();
         gbcBackButton.gridx = 0; // Put the button in the first column
         gbcBackButton.gridy = 0; // Put the button in the first row
-        gbcBackButton.gridheight= 2;
+        gbcBackButton.gridheight = 2;
         gbcBackButton.fill = GridBagConstraints.VERTICAL;
 
         GridBagConstraints gbcTimeLabel = new GridBagConstraints();
@@ -268,9 +268,10 @@ public class ConversationWindow extends JDialog {
 
         userPanel.add(createBackButton(), gbcBackButton);
         userPanel.add(createUserNameLabel(), gbcUserNameLabel);
-        userPanel.add(createTimeLabel(), gbcTimeLabel);
+
         // If the user is not talking to the simple question AI
         if (!talkingToSimpleQuestionAI) {
+            userPanel.add(createTimeLabel(), gbcTimeLabel);
             do {
                 currentPrivilege = getClientPermission();
             } while (currentPrivilege.equals("ERROR"));
@@ -279,29 +280,31 @@ public class ConversationWindow extends JDialog {
             if (currentPrivilege.equals("MODERATOR") || currentPrivilege.equals("ADMIN")) {
                 GridBagConstraints gbcOptionButton = new GridBagConstraints();
                 gbcOptionButton.gridx = 2; // Put the button in the fourth column
-                gbcOptionButton.gridheight= 2;
+                gbcOptionButton.gridheight = 2;
                 gbcOptionButton.fill = GridBagConstraints.VERTICAL;
                 userPanel.add(createMoreOptionsButton(), gbcOptionButton);
             }
         }
         return userPanel;
     }
+
     public static String formatDate(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, HH:mm");
         return dateTime.format(formatter);
     }
+
     private JLabel createTimeLabel() {
-        if (!talkingToSimpleQuestionAI) {
-            userConnexionTime = chattingWithThisUser.getLastConnectionTime();
-        }
+
+        userConnexionTime = chattingWithThisUser.getLastConnectionTime();
         String formatted = formatDate(userConnexionTime);
         JLabel timeLabel = new JLabel();
         timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timeLabel.setText(formatted);
         timeLabel.setForeground(Color.WHITE);
-        timeLabel.setFont(new Font("Arial",Font.ITALIC,10));
+        timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
         return timeLabel;
     }
+
     /**
      * Create the chat scroll pane
      *
@@ -329,13 +332,9 @@ public class ConversationWindow extends JDialog {
 
             }
         });
-        //chatscrollpane = new JScrollPane(chatPanel);
-        //chatscrollpane.setBackground(Color.cyan);
-
         return chatScrollPane;
 
     }
-
 
 
     /**
@@ -361,7 +360,7 @@ public class ConversationWindow extends JDialog {
         JButton backButton = new JButton("←");
         backButton.setPreferredSize(new Dimension(200, 70));
         backButton.setBackground(new Color(26, 26, 26, 255));
-        backButton.setForeground(new Color(255,255,255));
+        backButton.setForeground(new Color(255, 255, 255));
         backButton.addActionListener(e -> {
 
             // Go gack to contact page
@@ -389,7 +388,7 @@ public class ConversationWindow extends JDialog {
         JLabel userNameLabel = new JLabel(contactName);
         userNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userNameLabel.setForeground(Color.WHITE);
-        userNameLabel.setFont(new Font("Arial",Font.BOLD,12));
+        userNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
         userNameLabel.setText(contactName);
         return userNameLabel;
     }
@@ -404,7 +403,7 @@ public class ConversationWindow extends JDialog {
         JButton moreOptionsButton = new JButton("...");
         moreOptionsButton.setPreferredSize(new Dimension(200, 70));
         moreOptionsButton.setBackground(new Color(26, 26, 26, 255));
-        moreOptionsButton.setForeground(new Color(255,255,255));
+        moreOptionsButton.setForeground(new Color(255, 255, 255));
         moreOptionsButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(5);
             closeConversationWindow();
@@ -507,7 +506,7 @@ public class ConversationWindow extends JDialog {
 
         JButton sendButton = new JButton("Send");
         sendButton.setBackground(new Color(26, 26, 26, 255));
-        sendButton.setForeground(new Color(255,255,255));
+        sendButton.setForeground(new Color(255, 255, 255));
 
         if (!talkingToSimpleQuestionAI) {
 
@@ -656,11 +655,6 @@ public class ConversationWindow extends JDialog {
         String text = json.getJSONArray("choices").getJSONObject(0).getString("text");
         return text;
     }
-
-    //public void stopThread() {
-    //updateThread.stop();
-    //}
-
 }
 
 
