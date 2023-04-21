@@ -10,7 +10,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +35,9 @@ public class ContactWindow extends JDialog {
     private JPanel mainPanel;
     private JPanel buttonPanel;
     private CardLayout cardLayout;
+    private Thread updateThread;
+    private List<JLabel> listRightTextLabel;
+    private Map<User,JLabel> mapContact ;
 
     /**
      * Constructor
@@ -174,6 +179,9 @@ public class ContactWindow extends JDialog {
             // Add the current page number to the contacts panel
             contactsPanel.add(pagePanel, "Page " + currentPage);
 
+            // Start up the thread to update
+            startUpdateThread(this);
+
             // For each user in the current page, add a contact button to the grid layout
 
             for (int currentUserIterator = 0; currentUserIterator < userPerPage; currentUserIterator++) {
@@ -197,26 +205,8 @@ public class ContactWindow extends JDialog {
                     JLabel initialsLabel = createInitialsLabel(initials);
                     contactCard.add(initialsLabel, BorderLayout.WEST);
 
-                    // Init contact button for each user
-                    //JButton contactButton = createContactButton(fullName);
+                    String rightText = "Ⓒ";
 
-
-                    // Add status circle to the contact button
-                   // JLabel statusCircle = createStatusCircle(user.getStatus());
-                    //contactButton.add(statusCircle, BorderLayout.WEST);
-
-                    String rightText = "";
-                    if(usersPerPage[currentPage][currentUserIterator].getStatus().equals("ONLINE")){
-                        rightText = "Ⓒ";
-
-                    }
-                    else if (usersPerPage[currentPage][currentUserIterator].getStatus().equals("AWAY")){
-                        rightText = "Ⓐ";
-                    }
-                    else {
-                        rightText = "Ⓞ";
-
-                    }
                     JButton contactButton = createContactButton(fullName, rightText,usersPerPage[currentPage][currentUserIterator]);
 
                     // Allow event to be start in the button
@@ -241,6 +231,41 @@ public class ContactWindow extends JDialog {
         setButtonVisibility();
     }
 
+    public void startUpdateThread(ContactWindow contactWindow) {
+
+        updateThread = new Thread(() -> {
+
+            boolean isBusy = false;
+            boolean isUpdated = false;
+
+            // Infinite loop to update the data
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // If no request is already in progress
+                    if (!isBusy) {
+                        // Wait 1 second to avoid spamming the server
+                        upDateStatus();
+                        Thread.sleep(1000);
+
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // restore the interrupted status
+                }
+            }
+        });
+        updateThread.start();
+    }
+
+    public void upDateStatus () {
+     /*  mapContact = new LinkedHashMap<>();
+        for (int p = 0; p < totalPage; p++){
+         for (int i = 0; i < userPerPage ; i++) {
+          mapContact.put(usersPerPage[p][i], listRightTextLabel.get(i));
+          }
+        }
+*/
+
+    }
     /**
      * Allow to get the permissions of the client
      *
@@ -454,7 +479,7 @@ public class ContactWindow extends JDialog {
     }
 
     private JComboBox createStatusComboBox() {
-        String[] options = {"ONLINE", "OFFLINE", "AWAY"};
+        String[] options = {"Change status","ONLINE", "OFFLINE", "AWAY"};
         JComboBox<String> createStatusComboBox = new JComboBox<>(options);
         createStatusComboBox.setPreferredSize(new Dimension(50, 30));
         createStatusComboBox.addItemListener(new ItemListener() {

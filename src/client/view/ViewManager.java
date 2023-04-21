@@ -14,7 +14,7 @@ public class ViewManager implements Runnable {
     private GroupWindow groupWindow; //GROUP 3
     private ConversationWindow conversationForm; // CHAT 4
     private OptionsWindow optionsWindow; // BAN 5
-    private ReportingWindow reportingWindow; //REPORTS 6
+    private ReportingWindow reportingWindow; //REPORTS
 
     private Data localStorage;
     public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage, 5=ReportWindow

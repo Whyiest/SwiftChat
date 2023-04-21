@@ -1,6 +1,12 @@
 package client.view;
 
 import java.io.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -40,7 +46,7 @@ public class ConversationWindow extends JDialog {
     private JPanel chatPanel;
     static Box vertical = Box.createVerticalBox();
     private JTextArea chatArea;
-    private JScrollPane chatscrollpane;
+    //private JScrollPane chatScrollpane;
     private JPanel conversationPanel;
     static JFrame parent = new JFrame();
     private List<Message> listOfMessageBetweenUsers;
@@ -49,6 +55,7 @@ public class ConversationWindow extends JDialog {
     private Thread updateThread;
     private boolean talkingToSimpleQuestionAI = false;
     public boolean messageLoaded = false;
+    private JScrollPane chatScrollPane;
 
     private String file;
 
@@ -279,9 +286,29 @@ public class ConversationWindow extends JDialog {
     private JScrollPane createChatScrollPane() {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-        chatscrollpane = new JScrollPane(chatPanel);
-        chatscrollpane.setBackground(Color.cyan);
-        return chatscrollpane;
+        chatScrollPane = new JScrollPane(chatPanel);
+        chatScrollPane.addHierarchyListener(new HierarchyListener() {
+            @Override
+            public void hierarchyChanged(HierarchyEvent e) {
+                if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                    if (chatScrollPane.isShowing()) {
+                        Runnable scrollDown = new Runnable() {
+                            @Override
+                            public void run() {
+                                JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
+                                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                            }
+                        };
+                        SwingUtilities.invokeLater(scrollDown);
+                    }
+                }
+            }
+        });
+        //chatscrollpane = new JScrollPane(chatPanel);
+        //chatscrollpane.setBackground(Color.cyan);
+
+        return chatScrollPane;
+
     }
 
 
@@ -638,7 +665,6 @@ public class ConversationWindow extends JDialog {
         //receivedMessageLabel.setOpaque(true);
         //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(panel);
-
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
     }
