@@ -161,7 +161,7 @@ public class ContactWindow extends JDialog {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // List all users in DB
-        localStorage.updateAll();
+        localStorage.timedTask();
         listAllUsers = localStorage.getUserData();
 
 

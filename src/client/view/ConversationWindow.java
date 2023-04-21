@@ -42,7 +42,6 @@ public class ConversationWindow extends JDialog {
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
     private final User currentUser;
-    private static Dimension previousSize;
     private JPanel chatPanel;
     static Box vertical = Box.createVerticalBox();
     private JTextArea chatArea;
@@ -76,7 +75,6 @@ public class ConversationWindow extends JDialog {
         this.chattingWithThisUser = userChattingWith;
         this.currentUser = whoIam;
         this.listOfMessageBetweenUsers = new ArrayList<>();
-        this.previousSize = new Dimension(width, height);
         this.localStorage = localStorage;
         this.alreadyDisplay = new ArrayList<Message>();
         this.messageLoaded = false;
@@ -131,11 +129,10 @@ public class ConversationWindow extends JDialog {
             startUpdateThread(this);
             if (!messageLoaded) {
                 boolean isUpdated = false;
-                isUpdated = localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
                 messageLoaded = true;
             }
             upDateChat();
-
             updateThread.start();
         }
     }
@@ -148,7 +145,6 @@ public class ConversationWindow extends JDialog {
         updateThread = new Thread(() -> {
 
             boolean isBusy = false;
-            boolean isUpdated = false;
 
             // Infinite loop to update the data
             while (!Thread.currentThread().isInterrupted()) {
@@ -183,9 +179,6 @@ public class ConversationWindow extends JDialog {
         // Getting last messages
         List<Message> toDisplay = new ArrayList<Message>();
         Message newMessage = null;
-        System.out.println("Already DIsplay in function : " + alreadyDisplay.toString());
-
-        System.out.println("Message between user in fonction: " + listOfMessageBetweenUsers.toString());
 
         if (alreadyDisplay.size() > 0) {
             for (int i = 0; i < listOfMessageBetweenUsers.size(); i++) {
@@ -205,8 +198,6 @@ public class ConversationWindow extends JDialog {
         } else {
             toDisplay.addAll(listOfMessageBetweenUsers);
         }
-        System.out.println("To display : " + toDisplay.toString());
-
 
         // Add the different messages to the UI
         for (Message message : toDisplay) {
@@ -336,7 +327,6 @@ public class ConversationWindow extends JDialog {
         JButton backButton = new JButton("←");
         backButton.setPreferredSize(new Dimension(100, 25));
         backButton.addActionListener(e -> {
-            previousSize = getSize();
 
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
@@ -610,6 +600,7 @@ public class ConversationWindow extends JDialog {
                             }
                         }
                     } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
+
                     serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
                 }
             });

@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -34,6 +35,7 @@ public class GroupWindow extends JDialog {
     private JScrollPane chatscrollpane;
     private JPanel conversationPanel;
     private Thread updateThread;
+    private boolean messageLoaded;
 
 
     /**
@@ -54,12 +56,12 @@ public class GroupWindow extends JDialog {
         this.groupMessageList = new ArrayList<>();
         this.header = "General conversation";
         this.alreadyDisplay = new ArrayList<Message>();
+        this.messageLoaded = false;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(new Dimension(width, height));
         setLocationRelativeTo(parent);
 
-        startUpdateThread();
         try {
             initComponents();
         } catch (Exception e) {
@@ -73,12 +75,23 @@ public class GroupWindow extends JDialog {
     /**
      * Timer task that will update the data
      */
-    public void startUpdateThread() {
+    public void createTimer() {
         updateThread = new Thread(() -> {
+
+            boolean isBusy = false;
+            boolean isUpdated = false;
+
+            // Infinite loop to update the data
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Thread.sleep(1000);
-                    upDateChat();
+                    // If no request is already in progress
+                    if (!isBusy) {
+                        localStorage.forceUpdateGroupMessage();
+                        // Wait 1 second to avoid spamming the server
+                        upDateGroupChat();
+                        Thread.sleep(2000);
+
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // restore the interrupted status
                 }
@@ -119,32 +132,58 @@ public class GroupWindow extends JDialog {
 
         // Main panel that store all others components
         JPanel mainPanel = createMainPanel();
-        upDateChat();
         add(mainPanel);
+
+        // Fetching for first time all messages
+        groupMessageList = localStorage.getGroupMessageData();
+
+        // Fetching last messages :
+        if (!messageLoaded) {
+            boolean isUpdated = false;
+            isUpdated = localStorage.forceUpdateGroupMessage();
+            messageLoaded = true;
+        }
+        createTimer();
+        upDateGroupChat();
+        updateThread.start();
     }
 
-    private void upDateChat() {
+    private void upDateGroupChat() {
 
         // Getting last messages
         groupMessageList = localStorage.getGroupMessageData();
+
+        // If list is empty, do nothing
+        if (groupMessageList == null || groupMessageList.size() == 0) {
+            return;
+        }
+
         List<Message> toDisplay = new ArrayList<Message>();
         Message newMessage = null;
 
+        // Check if there is new messages
         if (alreadyDisplay.size() > 0) {
+
+            // For each message in the list of all messages
             for (int i = 0; i < groupMessageList.size(); i++) {
+
                 boolean isNewMessage = true;
+
+                // If the message is already displayed, it's not a new message
                 for (int j = 0; j < alreadyDisplay.size(); j++) {
                     if (groupMessageList.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
                         isNewMessage = false;
                         break;
                     }
                 }
+                // If it's a new message, we add it to the list of messages to display
                 if (isNewMessage) {
                     newMessage = groupMessageList.get(i);
                     toDisplay.add(newMessage);
                 }
             }
         } else {
+            // If there is no message displayed, we display all messages
             toDisplay.addAll(groupMessageList);
         }
 
@@ -211,6 +250,7 @@ public class GroupWindow extends JDialog {
      * @return the chat scroll pane
      */
     private JScrollPane createChatScrollPane() {
+
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatscrollpane = new JScrollPane(chatPanel);
@@ -226,7 +266,9 @@ public class GroupWindow extends JDialog {
      */
 
     private JPanel createMessagePanel() {
+
         JPanel messagePanel = new JPanel(new BorderLayout());
+        // Add buttons
         messagePanel.add(createMessageField(), BorderLayout.CENTER);
         messagePanel.add(createButtonPanel(), BorderLayout.EAST);
         return messagePanel;
@@ -244,6 +286,7 @@ public class GroupWindow extends JDialog {
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
+            updateThread.interrupt();
         });
         return backButton;
     }
@@ -352,6 +395,7 @@ public class GroupWindow extends JDialog {
      * @return the send button
      */
     private JButton createSendButton() {
+
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
 
@@ -359,25 +403,35 @@ public class GroupWindow extends JDialog {
             String content = messageField.getText();
             messageField.setText("");
 
-            // Add to DB :
-            do {
-                try {
-                    serverResponse = serverConnection.addMessageInGroup(currentUser.getId(), content);
+            // Allow to put this message at right side :
+            Message newMessage = new Message(currentUser.getId(), -9999, content, LocalDateTime.now());
+            alreadyDisplay.add(newMessage);
+            //addSentMessage(newMessage);
 
-                } catch (Exception messageError) {
-                    System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
-                    JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
+
+            if (content.equals("")) {
+                System.out.println("[!] User tried to send empty message. Abort sending.");
+            } else {
+                // Add to DB :
+                do {
                     try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
+                        serverResponse = serverConnection.addMessageInGroup(currentUser.getId(), content);
+
+                    } catch (Exception messageError) {
+                        System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
+                        JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException interruptedException) {
+                            interruptedException.printStackTrace();
+                        }
                     }
-                }
-            } while (serverResponse.equals("ADD-MESSAGE-GROUP;FAILURE"));
+                } while (serverResponse.equals("ADD-MESSAGE-GROUP;FAILURE"));
 
-            serverConnection.addLog(currentUser.getId(), "SENT-GROUP-MESSAGE");
-
+                serverConnection.addLog(currentUser.getId(), "SENT-GROUP-MESSAGE");
+            }
         });
+
         return sendButton;
     }
 
@@ -387,12 +441,18 @@ public class GroupWindow extends JDialog {
      * @param message the message to display
      */
     private void addSentMessage(Message message) {
+
+        // Create the panel that will contain the message
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel sentMessageSenderLabel = new JLabel(currentUser.getFirstName() + " " + currentUser.getLastName());
         JLabel sentMessageLabel = new JLabel(message.getContent());
+
+        // Set the color of the message
         sentMessageLabel.setBackground(Color.GREEN);
-        sentMessageLabel.setForeground(Color.BLACK);
+        sentMessageLabel.setForeground(Color.WHITE);
         sentMessageLabel.setOpaque(true);
         sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        sentMessagePanel.add(sentMessageSenderLabel);
         sentMessagePanel.add(sentMessageLabel);
         sentMessagePanel.setBackground(new Color(176,157,185));
         chatPanel.add(sentMessagePanel);
@@ -407,18 +467,17 @@ public class GroupWindow extends JDialog {
      */
     private void addReceivedMessage(Message message) {
 
-        String firstName = "";
-        String lastName = "";
+        int senderID = message.getSenderID();
+        User sender = localStorage.userIDLookup(senderID);
+        String firstName = sender.getFirstName();
+        String lastName = sender.getLastName();
 
-        for (User user : localStorage.getUserData()) {
-            if (user.getId() == message.getSenderID()) {
-                firstName = user.getFirstName();
-                lastName = user.getLastName();
-            }
-        }
+        // Create the panel that will contain the message
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel receivedMessageSenderLabel = new JLabel(firstName + " " + lastName);
         JLabel receivedMessageLabel = new JLabel(message.getContent());
+
+        // Set the color of the message
         receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
         receivedMessageLabel.setOpaque(true);
         receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -429,11 +488,4 @@ public class GroupWindow extends JDialog {
         chatPanel.revalidate();
     }
 
-
 }
-
-
-
-
-
-

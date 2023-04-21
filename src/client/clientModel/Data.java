@@ -48,7 +48,7 @@ public class Data {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(2000);
-                    updateAll();
+                    timedTask();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // restore the interrupted status
                 }
@@ -60,14 +60,15 @@ public class Data {
     /**
      * Update all the data
      */
-    public void updateAll() {
+    public void timedTask() {
+
+        // This function is called every 2 seconds
         iteratorBeforeCheckBan++;
 
         if (isBusy || !clientIsLogged || clientID == -1) {
             return;
         } else {
             updateUser();
-            updateGroupMessage();
             checkForBan();
         }
 
@@ -162,7 +163,7 @@ public class Data {
     /**
      * Update the group message data
      */
-    public void updateGroupMessage() {
+    public boolean forceUpdateGroupMessage() {
         String serverResponse = "";
 
         do {
@@ -173,13 +174,14 @@ public class Data {
             } catch (Exception e) {
                 System.out.println("[!] Error while getting the list of message in group. (Retrying in 1s)");
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         } while (serverResponse.equals("LIST-ALL-MESSAGES-IN-GROUP;FAILURE"));
 
+        return true;
     }
 
     /**

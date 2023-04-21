@@ -63,7 +63,7 @@ public class Client {
 
             // This is a one time call to start the view manager or perform test
             if (!oneTimeCall) {
-                localStorage.updateAll();
+                localStorage.timedTask();
                 Thread viewThread = new Thread(viewManager);
                 viewThread.start();
                 oneTimeCall = true;
