@@ -111,7 +111,15 @@ public class ContactWindow extends JDialog {
         backPageButton = new JButton("⬆");
         firstPageButton = new JButton("<<");
         lastPageButton = new JButton(">>");
-
+        buttonPanel.setBackground(new Color(1, 89, 88));
+        nextPageButton.setBackground(new Color(26, 26, 26, 255));
+        nextPageButton.setForeground(new Color(255,255,255));
+        backPageButton.setBackground(new Color(26, 26, 26, 255));
+        backPageButton.setForeground(new Color(255,255,255));
+        firstPageButton.setBackground(new Color(26, 26, 26, 255));
+        firstPageButton.setForeground(new Color(255,255,255));
+        lastPageButton.setBackground(new Color(26, 26, 26, 255));
+        lastPageButton.setForeground(new Color(255,255,255));
         add(mainPanel);
 
         // Button to scroll down
@@ -175,7 +183,7 @@ public class ContactWindow extends JDialog {
 
             // Create a new grid layout for each page to display 12 users
             JPanel pagePanel = new JPanel(new GridLayout(userPerPage, 1));
-            pagePanel.setBackground(new Color(32, 32, 32));
+            pagePanel.setBackground(new Color(1, 89, 88));
             // Add the current page number to the contacts panel
             contactsPanel.add(pagePanel, "Page " + currentPage);
 
@@ -197,7 +205,7 @@ public class ContactWindow extends JDialog {
 
                     // Create a contact panel
                     JPanel contactCard = new JPanel(new BorderLayout());
-                    contactCard.setBackground(new Color(31, 13, 48));
+                    contactCard.setBackground(new Color(2, 53, 53));
                     contactCard.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
                     // Initials of the user
@@ -362,9 +370,8 @@ public class ContactWindow extends JDialog {
     private JLabel createInitialsLabel(String initials) {
         JLabel initialsLabel = new JLabel(initials);
         initialsLabel.setOpaque(true);
-        initialsLabel.setBackground(new Color(160, 142, 255));
-        initialsLabel.setForeground(new Color(32, 32, 32));
-        initialsLabel.setBorder(BorderFactory.createLineBorder(new Color(32, 32, 32), 2));
+        initialsLabel.setBackground(new Color(2, 171, 168));
+        initialsLabel.setForeground(new Color(0, 0, 0));
         initialsLabel.setHorizontalAlignment(SwingConstants.CENTER);
         initialsLabel.setVerticalAlignment(SwingConstants.CENTER);
         initialsLabel.setPreferredSize(new Dimension(labelSize, labelSize));
@@ -403,7 +410,7 @@ public class ContactWindow extends JDialog {
             rightTextLabel.setForeground(Color.YELLOW);
         }
         else {
-            rightTextLabel.setForeground(Color.RED);
+            rightTextLabel.setForeground(Color.LIGHT_GRAY);
         }
         rightTextLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
@@ -482,6 +489,8 @@ public class ContactWindow extends JDialog {
         String[] options = {"Change status","ONLINE", "OFFLINE", "AWAY"};
         JComboBox<String> createStatusComboBox = new JComboBox<>(options);
         createStatusComboBox.setPreferredSize(new Dimension(50, 30));
+        createStatusComboBox.setBackground(new Color(26, 26, 26, 255));
+        createStatusComboBox.setForeground(new Color(255,255,255));
         createStatusComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 String actionChoice = (String) createStatusComboBox.getSelectedItem();
@@ -537,6 +546,8 @@ public class ContactWindow extends JDialog {
      */
     private JButton createReportingButton() {
         JButton createReportingButton = new JButton("Reports");
+        createReportingButton.setBackground(new Color(26, 26, 26, 255));
+        createReportingButton.setForeground(new Color(255,255,255));
         createReportingButton.setPreferredSize(new Dimension(50, 30));
         createReportingButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(6);
@@ -553,6 +564,8 @@ public class ContactWindow extends JDialog {
     private JButton createGeneralButton() {
         JButton createGeneralButton = new JButton("Global Chat");
         createGeneralButton.setPreferredSize(new Dimension(50, 100));
+        createGeneralButton.setBackground(new Color(26, 26, 26, 255));
+        createGeneralButton.setForeground(new Color(255,255,255));
         createGeneralButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(3);
             closeContactWindow();
@@ -568,6 +581,8 @@ public class ContactWindow extends JDialog {
     private JButton createLogOutButton() {
         JButton createLogOutButton = new JButton("Sign out");
         createLogOutButton.setPreferredSize(new Dimension(50, 30));
+        createLogOutButton.setBackground(new Color(26, 26, 26, 255));
+        createLogOutButton.setForeground(new Color(255,255,255));
         createLogOutButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(null, "Logout successful");
             ViewManager.setCurrentDisplay(0);
@@ -579,6 +594,8 @@ public class ContactWindow extends JDialog {
     private JButton createSimpleQuestionAIButton() {
         JButton gbcSimpleQuestionAIButton = new JButton("Simple Question AI");
         gbcSimpleQuestionAIButton.setPreferredSize(new Dimension(50, 30));
+        gbcSimpleQuestionAIButton.setBackground(new Color(26, 26, 26, 255));
+        gbcSimpleQuestionAIButton.setForeground(new Color(255,255,255));
         gbcSimpleQuestionAIButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(7);
             closeContactWindow();

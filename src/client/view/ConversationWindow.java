@@ -230,7 +230,6 @@ public class ConversationWindow extends JDialog {
         chatPanel.add(createUserPanel(), BorderLayout.NORTH);
         chatPanel.add(createChatScrollPane(), BorderLayout.CENTER);
         chatPanel.add(createMessagePanel(), BorderLayout.SOUTH);
-        chatPanel.setBackground(Color.GRAY);//17
 
         return chatPanel;
     }
@@ -246,7 +245,7 @@ public class ConversationWindow extends JDialog {
 
         JPanel userPanel = new JPanel(new GridBagLayout());
         userPanel.setPreferredSize(new Dimension(550, 30));
-        userPanel.setBackground(Color.GRAY);
+        userPanel.setBackground(new Color(2, 53, 53, 255));
 
         // Create GridBagConstraints for the "gbcUserNameLabel" button
         GridBagConstraints gbcUserNameLabel = new GridBagConstraints();
@@ -361,6 +360,8 @@ public class ConversationWindow extends JDialog {
     private JButton createBackButton() {
         JButton backButton = new JButton("←");
         backButton.setPreferredSize(new Dimension(200, 70));
+        backButton.setBackground(new Color(26, 26, 26, 255));
+        backButton.setForeground(new Color(255,255,255));
         backButton.addActionListener(e -> {
 
             // Go gack to contact page
@@ -402,6 +403,8 @@ public class ConversationWindow extends JDialog {
     private JButton createMoreOptionsButton() {
         JButton moreOptionsButton = new JButton("...");
         moreOptionsButton.setPreferredSize(new Dimension(200, 70));
+        moreOptionsButton.setBackground(new Color(26, 26, 26, 255));
+        moreOptionsButton.setForeground(new Color(255,255,255));
         moreOptionsButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(5);
             closeConversationWindow();
@@ -426,9 +429,6 @@ public class ConversationWindow extends JDialog {
      */
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        if (!talkingToSimpleQuestionAI) {
-            buttonPanel.add(createImageButton());
-        }
         buttonPanel.add(createSendButton());
         return buttonPanel;
     }
@@ -438,39 +438,24 @@ public class ConversationWindow extends JDialog {
         // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        /*BufferedImage bubbleMessage= new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d= bubbleMessage.createGraphics();
-        g2d.setColor(new Color(37, 211, 102));
-        g2d.fillRoundRect(0, 0, 150, 40, 20, 20);
-        g2d.dispose();
-        ImageIcon bubbleIcon = new ImageIcon(bubbleMessage);*/
 
         // Create and setup the message
         JLabel output = new JLabel("<html><p style=\"width: 100px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        output.setBackground(new Color(37, 211, 102));
+        output.setBackground(new Color(5, 194, 192));
         output.setOpaque(true);
         output.setBorder(new EmptyBorder(5, 5, 10, 20));
-
-        // Add the message to the panel
-       /* JLabel output = new JLabel(bubbleIcon);
-        output.setText("<html><p style=\"width: 125px; padding: 15px 15px 15px 20px\">" + out + "</p></html>");
-        output.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        output.setForeground(Color.WHITE);
-        output.setHorizontalTextPosition(JLabel.CENTER);
-        output.setVerticalTextPosition(JLabel.CENTER);
-        output.setIconTextGap(-100);
-        panel.add(output);*/
         panel.add(output);
 
         // Add the time to the panel
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
-        time.setBackground(new Color(176,157,185));
+        time.setBackground(new Color(1, 89, 88));
+        time.setForeground(new Color(255, 255, 255));
         time.setText(formattedTime);
         panel.add(time);
-        panel.setBackground(new Color(176,157,185));
+        panel.setBackground(new Color(1, 89, 88));
 
         return panel;
     }
@@ -483,116 +468,33 @@ public class ConversationWindow extends JDialog {
      * @return the message field
      */
 
-    public static JPanel formatLabelreceiver(String out, LocalDateTime localDateTime) {
+    public static JPanel formatLabelReceiver(String out, LocalDateTime localDateTime) {
 
         // Create and setup layout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        /*BufferedImage bubbleMessage= new BufferedImage(150, 40, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d= bubbleMessage.createGraphics();
-        g2d.setColor(new Color(37, 211, 102));
-        g2d.fillRoundRect(0, 0, 150, 40, 20, 20);
-        g2d.dispose();
-        ImageIcon bubbleIcon = new ImageIcon(bubbleMessage);*/
 
         // Create and setup the message
         JLabel output = new JLabel("<html><p style=\"width: 100px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        output.setBackground(new Color(115, 37, 211, 255));
+        output.setBackground(new Color(140, 152, 152, 255));
         output.setOpaque(true);
         output.setBorder(new EmptyBorder(5, 5, 10, 20));
 
         // Add the message to the panel
-       /* JLabel output = new JLabel(bubbleIcon);
-        output.setText("<html><p style=\"width: 125px; padding: 15px 15px 15px 20px\">" + out + "</p></html>");
-        output.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        output.setForeground(Color.WHITE);
-        output.setHorizontalTextPosition(JLabel.CENTER);
-        output.setVerticalTextPosition(JLabel.CENTER);
-        output.setIconTextGap(-100);
-        panel.add(output);*/
         panel.add(output);
 
         // Add the time to the panel
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = localDateTime.format(formatter);
         JLabel time = new JLabel();
-        time.setBackground(new Color(176,157,185));
+        time.setBackground(new Color(1, 89, 88));
         time.setText(formattedTime);
+        time.setForeground(new Color(255, 255, 255));
         panel.add(time);
-        panel.setBackground(new Color(176,157,185));
+        panel.setBackground(new Color(1, 89, 88));
 
         return panel;
-    }
-
-    /**
-     * Create the image button
-     *
-     * @return the image button
-     */
-
-    private JButton createImageButton() {
-        JButton imageButton = new JButton("image");
-        imageButton.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "JPG et PNG Images", "jpg", "png");
-            chooser.setFileFilter(filter);
-            int returnVal = chooser.showOpenDialog(null);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File img = chooser.getSelectedFile();
-                BufferedImage monimage;
-                try {
-                    monimage = ImageIO.read(img);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                Image dimg = monimage.getScaledInstance(250, 250, Image.SCALE_DEFAULT);
-                JLabel p = new JLabel(new ImageIcon(dimg));
-                JPanel JP = new JPanel();
-                JP.add(p);
-
-                System.out.println(img);
-                conversationPanel.setLayout(new BorderLayout());
-                JPanel right = new JPanel(new BorderLayout());
-                right.add(JP, BorderLayout.LINE_END);
-                vertical.add(right);
-                vertical.add(Box.createVerticalStrut(15));
-                conversationPanel.add(vertical, BorderLayout.PAGE_START);
-                repaint();
-                invalidate();
-                validate();
-
-                System.out.println("You chose to open this file: " +
-                        chooser.getSelectedFile().getName());
-            }
-            //add message to database
-            String serverResponse = "";
-            do {
-                try {
-                    InputStream is = new FileInputStream(file);
-                    //InputStream is = new FileInputStream(img);
-                    serverResponse = serverConnection.addMessage(chattingWithThisUser.getId(), currentUser.getId(), null);
-
-                } catch (Exception messageError) {
-                    messageError.printStackTrace();
-                    System.out.println("[!] Error while sending a message. Try to reconnect every 1 second.");
-                    JOptionPane.showMessageDialog(this, "Connection lost, please wait we try to reconnect you.", "Connection error", JOptionPane.ERROR_MESSAGE);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                }
-            } while (serverResponse.equals("ADD-MESSAGE;FAILURE"));
-
-            serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
-
-
-        });
-
-        return imageButton;
     }
 
 
@@ -604,6 +506,8 @@ public class ConversationWindow extends JDialog {
     private JButton createSendButton() {
 
         JButton sendButton = new JButton("Send");
+        sendButton.setBackground(new Color(26, 26, 26, 255));
+        sendButton.setForeground(new Color(255,255,255));
 
         if (!talkingToSimpleQuestionAI) {
 
@@ -664,14 +568,9 @@ public class ConversationWindow extends JDialog {
     private void addSentMessage(Message newMessage) {
 
         JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        sentMessagePanel.setBackground(new Color(176,157,185));
-        //sentMessagePanel.setBackground(Color.black);
+        sentMessagePanel.setBackground(new Color(1, 89, 88));
         JPanel panel = formatLabel(newMessage.getContent(), newMessage.getTimestamp());
         JLabel sentMessageLabel = new JLabel(newMessage.getContent());
-        //sentMessageLabel.setBackground(Color.GREEN);
-        //sentMessageLabel.setForeground(Color.BLACK);
-        //sentMessageLabel.setOpaque(true);
-        //sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         sentMessagePanel.add(panel);
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
@@ -685,12 +584,9 @@ public class ConversationWindow extends JDialog {
 
     private void addReceivedMessage(Message newMessage) {
         JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel panel = formatLabelreceiver(newMessage.getContent(), newMessage.getTimestamp());
-        receivedMessagePanel.setBackground(new Color(176,157,185));
+        JPanel panel = formatLabelReceiver(newMessage.getContent(), newMessage.getTimestamp());
+        receivedMessagePanel.setBackground(new Color(1, 89, 88));
         JLabel receivedMessageLabel = new JLabel(newMessage.getContent());
-        //receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
-        //receivedMessageLabel.setOpaque(true);
-        //receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(panel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
@@ -764,6 +660,7 @@ public class ConversationWindow extends JDialog {
     //public void stopThread() {
     //updateThread.stop();
     //}
+
 }
 
 

@@ -49,7 +49,6 @@ public class LoginForm extends JDialog {
         setMinimumSize(new Dimension(width, height));
         setModal(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        clickToRegisterAButton.setBorderPainted(false);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int widthh = (screenSize.width - getWidth()) / 2;
         int heightt = (screenSize.height - getHeight()) / 2;

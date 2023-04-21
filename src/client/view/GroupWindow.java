@@ -40,13 +40,6 @@ public class GroupWindow extends JDialog {
     private boolean messageLoaded;
 
 
-    /**
-     * Constructor
-     *
-     * @param parent           the parent frame
-     * @param serverConnection the server connection
-     * @param user             the user
-     */
     public GroupWindow(JFrame parent, ServerConnection serverConnection, Data localStorage, User sender, int width, int height) {
 
         super(parent, "SwiftChat", true);
@@ -468,13 +461,13 @@ public class GroupWindow extends JDialog {
         JLabel sentMessageLabel = new JLabel(message.getContent());
 
         // Set the color of the message
-        sentMessageLabel.setBackground(Color.GREEN);
-        sentMessageLabel.setForeground(Color.WHITE);
+        sentMessageLabel.setBackground(new Color(5,194,192));
+        sentMessageLabel.setForeground(Color.black);
         sentMessageLabel.setOpaque(true);
         sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         sentMessagePanel.add(sentMessageSenderLabel);
         sentMessagePanel.add(sentMessageLabel);
-        sentMessagePanel.setBackground(new Color(176,157,185));
+        sentMessagePanel.setBackground(new Color(1, 89, 88));
         chatPanel.add(sentMessagePanel);
         chatPanel.revalidate();
     }
@@ -498,12 +491,12 @@ public class GroupWindow extends JDialog {
         JLabel receivedMessageLabel = new JLabel(message.getContent());
 
         // Set the color of the message
-        receivedMessageLabel.setBackground(Color.LIGHT_GRAY);
+        receivedMessageLabel.setBackground(new Color(140, 152, 152, 255));
         receivedMessageLabel.setOpaque(true);
         receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         receivedMessagePanel.add(receivedMessageSenderLabel);
         receivedMessagePanel.add(receivedMessageLabel);
-        receivedMessagePanel.setBackground(new Color(176,157,185));
+        receivedMessagePanel.setBackground(new Color(1, 89, 88));
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
     }
