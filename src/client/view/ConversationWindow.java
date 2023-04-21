@@ -327,6 +327,7 @@ public class ConversationWindow extends JDialog {
                         SwingUtilities.invokeLater(scrollDown);
                     }
                 }
+
             }
         });
         //chatscrollpane = new JScrollPane(chatPanel);

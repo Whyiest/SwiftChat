@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -254,6 +256,24 @@ public class GroupWindow extends JDialog {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatscrollpane = new JScrollPane(chatPanel);
+        chatscrollpane.addHierarchyListener(new HierarchyListener() {
+            @Override
+            public void hierarchyChanged(HierarchyEvent e) {
+                if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                    if (chatscrollpane.isShowing()) {
+                        Runnable scrollDown = new Runnable() {
+                            @Override
+                            public void run() {
+                                JScrollBar verticalScrollBar = chatscrollpane.getVerticalScrollBar();
+                                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                            }
+                        };
+                        SwingUtilities.invokeLater(scrollDown);
+                    }
+                }
+
+            }
+        });
 
         return chatscrollpane;
     }
