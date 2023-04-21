@@ -30,6 +30,7 @@ public class OptionsWindow extends JDialog {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(parent);
 
+
         // Init all the components
         initComponents(userChattingWith);
     }
@@ -53,6 +54,17 @@ public class OptionsWindow extends JDialog {
 
         // Create a promote to admin radio button
         setAdminRadioButton = new JRadioButton("Set to admin user ⛖");
+        //Button colors
+        banRadioButton.setForeground(Color.WHITE);
+        banRadioButton.setBackground(new Color(2, 53, 53));
+        unbanRadioButton.setForeground(Color.WHITE);
+        unbanRadioButton.setBackground(new Color(2, 53, 53));
+        setClassicUserRadioButton.setForeground(Color.WHITE);
+        setClassicUserRadioButton.setBackground(new Color(2, 53, 53));
+        setModeratorRadioButton.setForeground(Color.WHITE);
+        setModeratorRadioButton.setBackground(new Color(2, 53, 53));
+        setAdminRadioButton.setForeground(Color.WHITE);
+        setAdminRadioButton.setBackground(new Color(2, 53, 53));
 
 
         // Group the radio buttons
@@ -72,7 +84,10 @@ public class OptionsWindow extends JDialog {
         submitButton = new JButton("Confirm");
         //Create the cancel button
         cancelButton = new JButton("Cancel");
-
+        submitButton.setBackground(new Color(1,89,88));
+        submitButton.setForeground(new Color(251,251,251));
+        cancelButton.setForeground(new Color(251,251,251));
+        cancelButton.setBackground(new Color(1,89,88));
         cancelButton.addActionListener(e -> {
             ViewManager.setCurrentDisplay(4);
             closeOptionWindow();

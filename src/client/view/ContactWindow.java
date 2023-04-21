@@ -488,7 +488,7 @@ public class ContactWindow extends JDialog {
         JComboBox<String> createStatusComboBox = new JComboBox<>(options);
         createStatusComboBox.setPreferredSize(new Dimension(50, 30));
         createStatusComboBox.setBackground(new Color(26, 26, 26, 255));
-        createStatusComboBox.setForeground(new Color(255,255,255));
+        createStatusComboBox.setForeground(new Color(5,194,192));
         createStatusComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 String actionChoice = (String) createStatusComboBox.getSelectedItem();

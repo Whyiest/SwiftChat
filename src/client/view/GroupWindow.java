@@ -235,7 +235,7 @@ public class GroupWindow extends JDialog {
         userPanel.setBackground(Color.GRAY);
         userPanel.add(createBackButton(), BorderLayout.WEST);
         userPanel.add(createUserNameLabel(), BorderLayout.CENTER);
-
+        userPanel.setBackground(new Color(2, 53, 53, 255));
         return userPanel;
     }
 
@@ -295,6 +295,8 @@ public class GroupWindow extends JDialog {
     private JButton createBackButton() {
         JButton backButton = new JButton("←");
         backButton.setPreferredSize(new Dimension(100, 30));
+        backButton.setBackground(new Color(26, 26, 26, 255));
+        backButton.setForeground(new Color(255,255,255));
         backButton.addActionListener(e -> {
             // Go gack to contact page
             ViewManager.setCurrentDisplay(2);
@@ -327,7 +329,6 @@ public class GroupWindow extends JDialog {
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(createImageButton());
         buttonPanel.add(createSendButton());
         return buttonPanel;
     }
@@ -355,52 +356,6 @@ public class GroupWindow extends JDialog {
         return panel;
     }
 
-    /**
-     * Create the image button
-     *
-     * @return the image button
-     */
-
-    private JButton createImageButton() {
-        JButton imageButton = new JButton("image");
-        imageButton.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "JPG Images", "jpg");
-            chooser.setFileFilter(filter);
-            int returnVal = chooser.showOpenDialog(null);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File img = chooser.getSelectedFile();
-                BufferedImage monimage;
-                try {
-                    monimage = ImageIO.read(img);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                Image dimg = monimage.getScaledInstance(250, 250, Image.SCALE_DEFAULT);
-                JLabel p = new JLabel(new ImageIcon(dimg));
-                JPanel JP = new JPanel();
-                JP.add(p);
-
-                System.out.println(img);
-                conversationPanel.setLayout(new BorderLayout());
-                JPanel right = new JPanel(new BorderLayout());
-                right.add(JP, BorderLayout.LINE_END);
-                vertical.add(right);
-                vertical.add(Box.createVerticalStrut(15));
-                conversationPanel.add(vertical, BorderLayout.PAGE_START);
-                repaint();
-                invalidate();
-                validate();
-
-                System.out.println("You chose to open this file: " +
-                        chooser.getSelectedFile().getName());
-            }
-        });
-        return imageButton;
-    }
-
 
     /**
      * Create the send button
@@ -410,6 +365,8 @@ public class GroupWindow extends JDialog {
     private JButton createSendButton() {
 
         JButton sendButton = new JButton("Send");
+        sendButton.setBackground(new Color(26, 26, 26, 255));
+        sendButton.setForeground(new Color(255,255,255));
         sendButton.addActionListener(e -> {
 
             String serverResponse = "";
