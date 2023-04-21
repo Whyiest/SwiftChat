@@ -6,13 +6,10 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.util.Objects;
 
 public class ReportingWindow extends JDialog{
-    private JComboBox choiceBox;
+    private JComboBox<String> choiceBox;
     private JPanel mainPanel;
     private JLabel title;
     private JButton cancelButton;
@@ -37,46 +34,31 @@ public class ReportingWindow extends JDialog{
 
     public void initComponents(){
         initButtons();
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ViewManager.setCurrentDisplay(2);
-                closeReportWindow();
-            }
+        cancelButton.addActionListener(e -> {
+            ViewManager.setCurrentDisplay(2);
+            closeReportWindow();
         });
 
-        choiceBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                removeChartFromPanel();
-                String actionChoice = (String) choiceBox.getSelectedItem();
-                switch (actionChoice) {
-                    case "Top users by sent messages":
-                        topUsersBySentMessages();
-                        break;
-                    case "Top users by logins":
-                        topUsersByLogin();
-                        break;
-                    case "Global connection statistics": //works
+        choiceBox.addItemListener(e -> {
+            removeChartFromPanel();
+            String actionChoice = (String) choiceBox.getSelectedItem();
+            switch (Objects.requireNonNull(actionChoice)) {
+                case "Top users by sent messages" -> topUsersBySentMessages();
+                case "Top users by logins" -> topUsersByLogin();
+                case "Global connection statistics" -> //works
                         connectionStatistics();
-                        break;
-                    case "Global messages statistics"://works
+                case "Global messages statistics" ->//works
                         messageStatistics();
-                        break;
-                    case "Global ban statistics": //works
+                case "Global ban statistics" -> //works
                         banStatistics();
-                        break;
-                    case "Global permission statistics": // works
+                case "Global permission statistics" -> // works
                         permissionStatistics();
-                        break;
-                    case "Global status statistics": //works
+                case "Global status statistics" -> //works
                         statusStatistics();
-                        break;
-                    default:
-                        break;
+                default -> {
                 }
-
             }
+
         });
     }
 
@@ -126,7 +108,7 @@ public class ReportingWindow extends JDialog{
         // all following functions are similar to this one, so they will not be commented
 
         // assigning the server response to a String variable
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.getTopUsersBySentMessages();
 
         // creating a ResponseAnalyser to generate a bar chart
@@ -146,10 +128,10 @@ public class ReportingWindow extends JDialog{
      * The data is based on the number of logins by top users
      */
     private void topUsersByLogin() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.getTopUsersByLogin();
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
-        JFreeChart freeChart = responseAnalyser.generateBarChart(1);
+        JFreeChart freeChart = responseAnalyser.generateBarChart(2);
         ChartPanel chart = new ChartPanel(freeChart);
         chartPanel.add(chart);
     }
@@ -159,7 +141,7 @@ public class ReportingWindow extends JDialog{
      * The data is based on the number of banned users
      */
     private void banStatistics() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.getBanStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
         JFreeChart freeChart = responseAnalyser.generatePieChart(3);
@@ -172,7 +154,7 @@ public class ReportingWindow extends JDialog{
      * The data is based on the number of total connections
      */
     private void connectionStatistics() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.getConnectionsStatistics();
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
         JFreeChart freeChart = responseAnalyser.generateHistogram(2);
@@ -185,7 +167,7 @@ public class ReportingWindow extends JDialog{
      * The data is based on the number of total messages
      */
     private void messageStatistics() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.getMessagesStatistics();
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
         JFreeChart freeChart = responseAnalyser.generateHistogram(1);
@@ -198,7 +180,7 @@ public class ReportingWindow extends JDialog{
      * The data is based on the number of users with different permissions
      */
     private void permissionStatistics() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.getPermissionStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
         JFreeChart freeChart = responseAnalyser.generatePieChart(2);
@@ -211,7 +193,7 @@ public class ReportingWindow extends JDialog{
      * The data is based on the number of users with different statuses
      */
     private void statusStatistics() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.getStatusStatistics();
         ResponseAnalyser responseAnalyser= new ResponseAnalyser(serverResponse);
         JFreeChart freeChart = responseAnalyser.generatePieChart(1);

@@ -224,45 +224,38 @@ public class ResponseAnalyser {
 
         // Create the chart object using the dataset and customize the chart settings
 
-        JFreeChart chart;
-
-        switch(dataToDisplay){
-            case 1:
-                chart = ChartFactory.createHistogram(
-                        "Message distribution",    // Chart title
-                        "Date",                  // X axis label
-                        "Number",                // Y axis label
-                        dataset,                 // Chart data
-                        PlotOrientation.VERTICAL,// Orientation of chart
-                        true,                    // Include legend
-                        true,                    // Use tooltips
-                        false                    // Configure chart to generate URLs?
-                );
-                break;
-            case 2:
-                chart = ChartFactory.createHistogram(
-                        "Connection distribution",    // Chart title
-                        "Date",                  // X axis label
-                        "Number",                // Y axis label
-                        dataset,                 // Chart data
-                        PlotOrientation.VERTICAL,// Orientation of chart
-                        true,                    // Include legend
-                        true,                    // Use tooltips
-                        false                    // Configure chart to generate URLs?
-                );
-            default:
-                chart = ChartFactory.createHistogram(
-                        "Connection distribution",    // Chart title
-                        "Date",                  // X axis label
-                        "Number",                // Y axis label
-                        dataset,                 // Chart data
-                        PlotOrientation.VERTICAL,// Orientation of chart
-                        true,                    // Include legend
-                        true,                    // Use tooltips
-                        false                    // Configure chart to generate URLs?
-                );
-                break;
-        }
+        JFreeChart chart = switch (dataToDisplay) {
+            case 1 -> ChartFactory.createHistogram(
+                    "Message distribution",    // Chart title
+                    "Date",                  // X axis label
+                    "Number",                // Y axis label
+                    dataset,                 // Chart data
+                    PlotOrientation.VERTICAL,// Orientation of chart
+                    true,                    // Include legend
+                    true,                    // Use tooltips
+                    false                    // Configure chart to generate URLs?
+            );
+            case 2 -> ChartFactory.createHistogram(
+                    "Connection distribution",    // Chart title
+                    "Date",                  // X axis label
+                    "Number",                // Y axis label
+                    dataset,                 // Chart data
+                    PlotOrientation.VERTICAL,// Orientation of chart
+                    true,                    // Include legend
+                    true,                    // Use tooltips
+                    false                    // Configure chart to generate URLs?
+            );
+            default -> ChartFactory.createHistogram(
+                    "Distribution",    // Chart title
+                    "Date",                  // X axis label
+                    "Number",                // Y axis label
+                    dataset,                 // Chart data
+                    PlotOrientation.VERTICAL,// Orientation of chart
+                    true,                    // Include legend
+                    true,                    // Use tooltips
+                    false                    // Configure chart to generate URLs?
+            );
+        };
 
         // Customize the background color and opacity of the chart
         chart.getPlot().setBackgroundPaint(Color.WHITE);

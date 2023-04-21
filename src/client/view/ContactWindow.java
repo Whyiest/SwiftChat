@@ -10,7 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -18,12 +17,12 @@ import java.util.regex.Pattern;
 
 public class ContactWindow extends JDialog {
     private final ServerConnection serverConnection;
-    private Data localStorage;
+    private final Data localStorage;
     private final int labelSize;
     private List<User> listAllUsers;
     private final int userPerPage;
     private User[][] usersPerPage;
-    private User[] listCurrentDisplayedUsers;
+    private final User[] listCurrentDisplayedUsers;
     private final User currentUser;
     private int totalPage;
     private int currentContactPanel;
@@ -188,7 +187,7 @@ public class ContactWindow extends JDialog {
             contactsPanel.add(pagePanel, "Page " + currentPage);
 
             // Start up the thread to update
-            startUpdateThread(this);
+            startUpdateThread();
 
             // For each user in the current page, add a contact button to the grid layout
 
@@ -239,12 +238,11 @@ public class ContactWindow extends JDialog {
         setButtonVisibility();
     }
 
-    public void startUpdateThread(ContactWindow contactWindow) {
+    public void startUpdateThread() {
 
         updateThread = new Thread(() -> {
 
             boolean isBusy = false;
-            boolean isUpdated = false;
 
             // Infinite loop to update the data
             while (!Thread.currentThread().isInterrupted()) {
@@ -280,7 +278,7 @@ public class ContactWindow extends JDialog {
      * @return the permission of the client
      */
     private String getClientPermission() {
-        User user = null;
+        User user;
 
         try {
             String serverResponse = this.serverConnection.getUserByID(Client.getClientID());
@@ -382,7 +380,7 @@ public class ContactWindow extends JDialog {
     /**
      * Allow to create a contact button for an user
      *
-     * @return
+     * @return the contact button
      */
     private JButton createContactButton(String fullName, String rightText, User user) {
         JButton contactButton = new JButton(fullName);
@@ -428,7 +426,7 @@ public class ContactWindow extends JDialog {
      */
     private JPanel createTopPanel() {
 
-        String currentPrivilege = "";
+        String currentPrivilege;
         JPanel userPanel = new JPanel(new GridBagLayout());
         userPanel.setPreferredSize(new Dimension(50, 70)); // Increase height to allow for two lines
 
@@ -480,7 +478,7 @@ public class ContactWindow extends JDialog {
         gbcSimpleQuestionAIButton.gridwidth = GridBagConstraints.REMAINDER; // Occupy all cells in the row
         gbcSimpleQuestionAIButton.weightx = 1;
         gbcSimpleQuestionAIButton.fill = GridBagConstraints.BOTH;
-        userPanel.add(createSimpleQuestionAIButton(), gbcSimpleQuestionAIButton);;
+        userPanel.add(createSimpleQuestionAIButton(), gbcSimpleQuestionAIButton);
 
         return userPanel;
     }
@@ -516,7 +514,7 @@ public class ContactWindow extends JDialog {
      * Set the status of the user to online
      */
     void setOnline() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "ONLINE");
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
     }
@@ -525,7 +523,7 @@ public class ContactWindow extends JDialog {
      * Set the status of the user to offline
      */
     void setOffline() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "OFFLINE");
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
     }
@@ -534,7 +532,7 @@ public class ContactWindow extends JDialog {
      * Set the status of the user to away
      */
     void setAway() {
-        String serverResponse = "";
+        String serverResponse;
         serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "AWAY");
         ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
     }

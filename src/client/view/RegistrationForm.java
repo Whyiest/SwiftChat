@@ -6,8 +6,6 @@ import client.controler.ServerConnection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class RegistrationForm extends JDialog {
@@ -313,10 +311,8 @@ public class RegistrationForm extends JDialog {
      */
     public boolean isValidEmail(String checkThisEmail) {
         // if the input String has exactly one '@', a valid prefix, and a valid domain, the method returns true
-        if (exactlyOneAt(checkThisEmail) && isValidPrefix(getPrefix(checkThisEmail)) && isValidDomain(getDomain(checkThisEmail))) {
-            return true;
-        } // else the method returns false
-        return false;
+        // else the method returns false
+        return exactlyOneAt(checkThisEmail) && isValidPrefix(getPrefix(checkThisEmail)) && isValidDomain(getDomain(checkThisEmail));
     }
 
     /**
