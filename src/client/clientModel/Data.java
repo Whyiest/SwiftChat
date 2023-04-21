@@ -4,21 +4,17 @@ import client.Client;
 import client.controler.ServerConnection;
 
 import java.util.*;
-import java.util.Timer;
 
 public class Data {
 
     private List<User> userData;
     private List<Message> messageBetweenUserData;
     private List<Message> groupMessageData;
-    private boolean isBusy;
-    private ServerConnection serverConnection;
+    private final boolean isBusy;
+    private final ServerConnection serverConnection;
     private static int clientID;
     private static boolean clientIsLogged;
     private int iteratorBeforeCheckBan; // Check if the user is banned every 10 pings
-    private Timer timer;
-    private Thread updateThread;
-
 
     /**
      * Constructor
@@ -42,7 +38,8 @@ public class Data {
      * Timer task that will update the data
      */
     public void startUpdateThread() {
-        updateThread = new Thread(() -> {
+        // restore the interrupted status
+        Thread updateThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(2000);
@@ -66,7 +63,7 @@ public class Data {
         if (isBusy || !clientIsLogged || clientID == -1) {
             return;
         } else {
-            updateUser();
+            forceUpdateUser();
             checkForBan();
         }
 
@@ -75,34 +72,12 @@ public class Data {
         }
     }
 
-    /**
-     * Update the user data
-     */
-    public void updateUser() {
-        String userResponse = "";
-        do {
-            try {
-                userResponse = serverConnection.listAllUsers();
-                ResponseAnalyser responseAnalyser = new ResponseAnalyser(userResponse);
-                userData = responseAnalyser.createUserList();
-            } catch (Exception e) {
-                System.out.println("[!] Error while getting the list of users. (Retrying in 1s)");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        } while (userData.size() == 0);
-    }
-
 
     /**
      * Allow to force the update of the message data
      */
-    public boolean forceUpdateMessageBetweenUser(int userID, int userChattingWithID) {
-        String messageResponse = "";
-        boolean forceUpdateSuccess = false;
+    public void forceUpdateMessageBetweenUser(int userChattingWithID) {
+        String messageResponse;
 
         do {
             try {
@@ -116,14 +91,13 @@ public class Data {
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
-                return false;
+                return;
             }
 
             if (messageBetweenUserData == null) {
-                return true;
+                return;
             }
         } while (messageBetweenUserData.size() == 0);
-        return true;
     }
 
 
@@ -131,8 +105,8 @@ public class Data {
      * Force user data to be updated
      */
 
-    public boolean forceUpdateUser() {
-        String userResponse = "";
+    public void forceUpdateUser() {
+        String userResponse;
         do {
             try {
                 userResponse = serverConnection.listAllUsers();
@@ -147,15 +121,6 @@ public class Data {
                 }
             }
         } while (userData.size() == 0);
-        return true;
-    }
-
-    /**
-     * Update the log data
-     */
-    public void updateLog() {
-        // TODO
-
     }
 
     /**
@@ -214,7 +179,6 @@ public class Data {
      * Allow to set the client ID
      *
      * @param id the client ID
-     * @return the client ID set
      */
     public static void setClientID(int id) {
         clientID = id;
@@ -224,7 +188,7 @@ public class Data {
     /**
      * Set the client logged in
      *
-     * @param isLogged
+     * @param isLogged true if the client is logged
      */
     public static void setClientIsLogged(boolean isLogged) {
         clientIsLogged = isLogged;
@@ -232,19 +196,14 @@ public class Data {
 
     /**
      * Check if the client is banned
-     *
-     * @return true if the client is banned
      */
-    public boolean checkForBan() {
-        // Check some times if the user is banned
-        if ((iteratorBeforeCheckBan == 3) && Client.isClientLogged() == true) {
+    public void checkForBan() {
+        // Check if the user is banned
+        if ((iteratorBeforeCheckBan == 3) && Client.isClientLogged()) {
             User whoIAm = userIDLookup(Client.getClientID());
             if (whoIAm.isBanned()) {
                 Client.setIsClientBanned(true);
             }
-            return true;
-        } else {
-            return false;
         }
     }
 

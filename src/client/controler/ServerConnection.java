@@ -2,22 +2,19 @@ package client.controler;
 
 import client.Client;
 import client.clientModel.Message;
-import client.clientModel.ResponseAnalyser;
 import client.clientModel.User;
-import server.serverModel.MessageAnalyser;
 
 import java.io.*;
 import java.net.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 
 public class ServerConnection implements Runnable {
 
-    private String serverIP;
-    private int port;
+    private final String serverIP;
+    private final int port;
     private Socket clientSocket;
     private boolean clientAlive = false;
 
@@ -147,7 +144,6 @@ public class ServerConnection implements Runnable {
         if (clientSocket != null && clientSocket.isConnected()) {
 
             String pingResponse;
-            String checkResponse;
 
             // Try to send and receive a message to check the connection
             try {
@@ -162,17 +158,12 @@ public class ServerConnection implements Runnable {
             }
 
             // NO RESPONSE : CONNECTION IS DEAD
+            // WRONG RESPONSE : CONNECTION IS DEAD
             if (pingResponse == null) {
                 return false;
             }
             // NORMAL RESPONSE : CONNECTION IS ALIVE
-            else if (pingResponse.equals("PONG")) {
-                return true;
-            }
-            // WRONG RESPONSE : CONNECTION IS DEAD
-            else {
-                return false;
-            }
+            else return pingResponse.equals("PONG");
         }
 
         // If the client is not connected to the server, return false because the connection is dead
@@ -259,13 +250,12 @@ public class ServerConnection implements Runnable {
      *
      * @param username the username of the user
      * @param password the password of the user
-     * @return the response from the server and the user information if the login was successful"
+     * @return the response from the server and the user information if the login was successful
      */
     public String login(String username, String password) {
 
         // Send it through the server
-        String serverResponse = sendToServer("LOGIN;" + username + ";" + password);
-        return serverResponse;
+        return sendToServer("LOGIN;" + username + ";" + password);
     }
 
     /**
@@ -302,9 +292,7 @@ public class ServerConnection implements Runnable {
         User userToSend = new User(username, firstName, lastName, email, password, permission);
 
         // Send it through the server
-        String serverResponse = sendToServer("ADD-USER;" + userToSend.formalizeServerMessage());
-
-        return serverResponse;
+        return sendToServer("ADD-USER;" + userToSend.formalizeServerMessage());
     }
 
     /**
@@ -326,13 +314,11 @@ public class ServerConnection implements Runnable {
      * @return the list of all the logs in String format / Response format: "CHANGE-STATUS;SUCCESS/FAILURE;LOG-CREATED/LOG-ERROR"
      */
     public String changeStatus(int userID, String status) {
-
-        String serverResponse = sendToServer("CHANGE-USER-STATUS;" + userID + ";" + status);
-        return serverResponse;
+        return sendToServer("CHANGE-USER-STATUS;" + userID + ";" + status);
     }
 
     /**
-     * Alllow to ban or unban a user
+     * Allow to ban or unban a user
      *
      * @param userID   the ID of the user
      * @param isBanned the new status of the user
@@ -346,41 +332,9 @@ public class ServerConnection implements Runnable {
      * Update the last connection time of the user
      *
      * @param userID the ID of the user
-     * @return the response from the server
      */
-    public String updateLastConnectinTime(int userID) {
-        return sendToServer("UPDATE-LAST-CONNECTION-TIME;" + userID);
-    }
-
-    /**
-     * Get the user by his ID
-     *
-     * @param userID the ID of the user
-     * @return the user in String format / Response format: "GET-USER-BY-ID;SUCCESS/FAILURE;ID;USERNAME;FIRST_NAME;LAST_NAME;EMAIL;PASSWORD;PERMISSION;LAST_CONNECTION_TIME;IS_BANNED;STATUS"
-     * } el
-     */
-    public String getUserById(int userID) {
-        return sendToServer("GET-USER-BY-ID;" + userID);
-    }
-
-    /**
-     * Get the user by his username
-     *
-     * @param userID the ID of the user
-     * @return the user in String format / Response format: "GET-USER-BY-ID;SUCCESS/FAILURE;PERMISSION"
-     */
-    public String getUserPermissionById(int userID) {
-        return sendToServer("GET-USER-PERMISSION-BY-ID;" + userID);
-    }
-
-    /**
-     * Get the user by his username
-     *
-     * @param userID the ID of the user
-     * @return the user in String format / Response format: "GET-USER-BY-ID;SUCCESS/FAILURE;IS_BANNED"
-     */
-    public String getUserBanStatusById(int userID) {
-        return sendToServer("GET-USER-BAN-STATUS-BY-ID;" + userID);
+    public void updateLastConnectionTime(int userID) {
+        sendToServer("UPDATE-LAST-CONNECTION-TIME;" + userID);
     }
 
     /**
@@ -399,7 +353,7 @@ public class ServerConnection implements Runnable {
      * @param receiverID the ID of the receiver of the message
      * @param senderID   the ID of the sender of the message
      * @param content    the content of the message
-     * @return the response from the server"
+     * @return the response from the server
      */
     public String addMessage(int receiverID, int senderID, String content) {
 
@@ -407,20 +361,18 @@ public class ServerConnection implements Runnable {
         Message messageToSend = new Message(senderID, receiverID, content);
 
         // Send it through the server
-        String serverResponse = sendToServer("ADD-MESSAGE;" + messageToSend.formalizeServerMessage());
-
-        return serverResponse;
+        return sendToServer("ADD-MESSAGE;" + messageToSend.formalizeServerMessage());
     }
 
     /**
      * List all the messages for between the client and a specific user
      *
      * @param senderID  the ID of the sender
-     * @param receverID the ID of the receiver
+     * @param receiverID the ID of the receiver
      * @return the list of all the messages in String format
      */
-    public String listMessageBetweenUsers(int senderID, int receverID) {
-        return sendToServer("LIST-MESSAGES-BETWEEN-USERS;" + senderID + ";" + receverID);
+    public String listMessageBetweenUsers(int senderID, int receiverID) {
+        return sendToServer("LIST-MESSAGES-BETWEEN-USERS;" + senderID + ";" + receiverID);
     }
 
 
@@ -432,30 +384,8 @@ public class ServerConnection implements Runnable {
      * @return the response from the server
      */
     public String addLog(int userID, String type) {
-
         Timestamp myTimestamp = new Timestamp(System.currentTimeMillis());
-
-        String serverResponse = sendToServer("ADD-LOG;" + userID + ";" + type + ";" + myTimestamp.toString());
-        return serverResponse;
-    }
-
-    /**
-     * List all the logs for a specific user
-     *
-     * @param userID the ID of the user
-     * @return the list of all the logs in String format
-     */
-    public String listLogForUser(int userID) {
-        return sendToServer("LIST-LOG-FOR-USER;" + userID);
-    }
-
-    /**
-     * List all statistics related to users for the server
-     *
-     * @return the list of all the statistics in String format
-     */
-    public String getUsersStatistics() {
-        return sendToServer("GET-USERS-STATISTICS");
+        return sendToServer("ADD-LOG;" + userID + ";" + type + ";" + myTimestamp);
     }
 
     /**
@@ -495,30 +425,12 @@ public class ServerConnection implements Runnable {
     }
 
     /**
-     * List all statistics related to Messages and a specific User ID for the server
-     *
-     * @return the list of all the statistics in String format
-     */
-    public String getMessagesStatisticsByUserId() {
-        return sendToServer("GET-MESSAGES-STATISTICS-BY-USER-ID");
-    }
-
-    /**
      * List all statistics related to Connections for the server
      *
      * @return the list of all the statistics in String format
      */
     public String getConnectionsStatistics() {
         return sendToServer("GET-CONNECTIONS-STATISTICS");
-    }
-
-    /**
-     * List all statistics related to Connections and a specific User ID for the server
-     *
-     * @return the list of all the statistics in String format
-     */
-    public String getConnectionsStatisticsByUserId() {
-        return sendToServer("GET-CONNECTIONS-STATISTICS-BY-USER-ID");
     }
 
     /**
@@ -545,12 +457,11 @@ public class ServerConnection implements Runnable {
      * @return the list of the most active users in String format
      */
     public String getUserByID(int userID) {
-        String serverResponse = sendToServer("GET-USER-BY-ID;" + userID);
-        return serverResponse;
+        return sendToServer("GET-USER-BY-ID;" + userID);
     }
 
     /**
-     * This function allow to sen send message to general group
+     * This function allow to send message to general group
      *
      * @param senderID the ID of the sender of the message
      * @param content  the content of the message
@@ -564,7 +475,6 @@ public class ServerConnection implements Runnable {
     /**
      * This function allow to list all the messages in the general group
      *
-     * @param senderID the ID of the sender of the message
      * @return the response from the server
      */
     public String listMessageInGroup() {
@@ -573,21 +483,10 @@ public class ServerConnection implements Runnable {
 
 
     /**
-     * Send a ping to the server
-     *
-     * @return PONG if the server is alive
-     */
-    public String ping() {
-        return sendToServer("PING");
-    }
-
-    /**
      * Send a signal to the server to leave
-     *
-     * @return the response from the server
      */
-    public String leaveSignal() {
-        return sendToServer("LEAVE-SIGNAL");
+    public void leaveSignal() {
+        sendToServer("LEAVE-SIGNAL");
     }
 }
 

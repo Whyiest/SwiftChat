@@ -1,11 +1,8 @@
 package client.clientModel;
 
 import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
@@ -21,7 +18,7 @@ import java.util.List;
 
 public class ResponseAnalyser {
 
-    private String serverResponse;
+    private final String serverResponse;
 
     private String[] messageParts;
 
@@ -107,8 +104,7 @@ public class ResponseAnalyser {
         if (messageParts[1].equals("FAILURE")) {
             return null;
         } else {
-            User myUser = new User(Integer.parseInt(messageParts[1]), messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], messageParts[7], LocalDateTime.parse(messageParts[8]), Boolean.parseBoolean(messageParts[9]), messageParts[10]);
-            return myUser;
+            return new User(Integer.parseInt(messageParts[1]), messageParts[2], messageParts[3], messageParts[4], messageParts[5], messageParts[6], messageParts[7], LocalDateTime.parse(messageParts[8]), Boolean.parseBoolean(messageParts[9]), messageParts[10]);
 
         }
     }
@@ -130,7 +126,7 @@ public class ResponseAnalyser {
     /**
      * This method generates a pie chart from the server response
      *
-     * @param dataToDisplay
+     * @param dataToDisplay the type of pie chart we want to generate
      */
 
     public JFreeChart generatePieChart(int dataToDisplay) {
@@ -139,23 +135,22 @@ public class ResponseAnalyser {
 
         // Add values to the dataset according to the type of pie chart we want to generate
         switch (dataToDisplay) {
-            case 1:
+            case 1 -> {
                 pieDataset.setValue("Offline", Double.parseDouble((messageParts[0])));
                 pieDataset.setValue("Online", Double.parseDouble((messageParts[1])));
                 pieDataset.setValue("Away", Double.parseDouble((messageParts[2])));
-                break;
-            case 2:
+            }
+            case 2 -> {
                 pieDataset.setValue("Classic user", Double.parseDouble(messageParts[0]));
                 pieDataset.setValue("Moderator", Double.parseDouble(messageParts[1]));
                 pieDataset.setValue("Administrator", Double.parseDouble((messageParts[2])));
-                break;
-            case 3:
+            }
+            case 3 -> {
                 pieDataset.setValue("Not banned", Double.parseDouble((messageParts[0])));
                 pieDataset.setValue("Banned", Double.parseDouble((messageParts[1])));
-                break;
-            default:
-                System.out.println("Cannot generate pie chart, please use a correct number according to the data you want to display");
-                break;
+            }
+            default ->
+                    System.out.println("Cannot generate pie chart, please use a correct number according to the data you want to display");
         }
 
         // Create the chart object
@@ -194,7 +189,7 @@ public class ResponseAnalyser {
     /**
      * This method generates a histogram from the server response
      *
-     * @param dataToDisplay
+     * @param dataToDisplay the type of histogram we want to generate
      */
     public JFreeChart generateHistogram(int dataToDisplay) {
         // Create a dataset to store the histogram data
@@ -290,46 +285,38 @@ public class ResponseAnalyser {
         }
 
         // Create the chart object
-        JFreeChart chart;
-
-        switch(dataToDisplay){
-            case 1:
-                chart = ChartFactory.createBarChart(
-                        "Top users by sent messages",     // Chart title
-                        "Month and day",             // X-axis label
-                        "Top users logs",    // Y-axis label
-                        dataset,             // Chart data
-                        PlotOrientation.VERTICAL,  // Bar chart orientation
-                        true,                // Include legend
-                        true,                // Use tooltips
-                        false                // Configure chart to generate URLs?
-                );
-                break;
-            case 2:
-                chart = ChartFactory.createBarChart(
-                        "Top users by logins",     // Chart title
-                        "Month and day",             // X-axis label
-                        "Top users logs",    // Y-axis label
-                        dataset,             // Chart data
-                        PlotOrientation.VERTICAL,  // Bar chart orientation
-                        true,                // Include legend
-                        true,                // Use tooltips
-                        false                // Configure chart to generate URLs?
-                );
-                break;
-            default:
-                chart = ChartFactory.createBarChart(
-                        "Top users",     // Chart title
-                        "Month",             // X-axis label
-                        "Top users logs",    // Y-axis label
-                        dataset,             // Chart data
-                        PlotOrientation.VERTICAL,  // Bar chart orientation
-                        true,                // Include legend
-                        true,                // Use tooltips
-                        false                // Configure chart to generate URLs?
-                );
-                break;
-        }
+        JFreeChart chart = switch (dataToDisplay) {
+            case 1 -> ChartFactory.createBarChart(
+                    "Top users by sent messages",     // Chart title
+                    "Month and day",             // X-axis label
+                    "Top users logs",    // Y-axis label
+                    dataset,             // Chart data
+                    PlotOrientation.VERTICAL,  // Bar chart orientation
+                    true,                // Include legend
+                    true,                // Use tooltips
+                    false                // Configure chart to generate URLs?
+            );
+            case 2 -> ChartFactory.createBarChart(
+                    "Top users by logins",     // Chart title
+                    "Month and day",             // X-axis label
+                    "Top users logs",    // Y-axis label
+                    dataset,             // Chart data
+                    PlotOrientation.VERTICAL,  // Bar chart orientation
+                    true,                // Include legend
+                    true,                // Use tooltips
+                    false                // Configure chart to generate URLs?
+            );
+            default -> ChartFactory.createBarChart(
+                    "Top users",     // Chart title
+                    "Month",             // X-axis label
+                    "Top users logs",    // Y-axis label
+                    dataset,             // Chart data
+                    PlotOrientation.VERTICAL,  // Bar chart orientation
+                    true,                // Include legend
+                    true,                // Use tooltips
+                    false                // Configure chart to generate URLs?
+            );
+        };
 
         // Set custom colors for the bars
         CategoryPlot plot = chart.getCategoryPlot();

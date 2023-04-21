@@ -1,6 +1,5 @@
 package client.clientModel;
 
-import java.sql.Blob;
 import java.time.LocalDateTime;
 
 public class Message implements Comparable<Message> {
@@ -8,7 +7,6 @@ public class Message implements Comparable<Message> {
     private int receiverID;
     private String content;
     private LocalDateTime timestamp;
-    private Blob image;
 
     /**
      * This constructor allow to create a message
@@ -22,7 +20,6 @@ public class Message implements Comparable<Message> {
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.timestamp = LocalDateTime.now();
-        ;
         this.content = content;
     }
 
@@ -78,10 +75,6 @@ public class Message implements Comparable<Message> {
         return receiverID;
     }
 
-    public Blob getImage() {
-        return image;
-    }
-
     /**
      * This method allow to set the content of a message
      *
@@ -118,13 +111,13 @@ public class Message implements Comparable<Message> {
         this.timestamp = timestamp;
     }
 
-    public void setImage(Blob image){this.image= image;}
     /**
      * This method allow to compare two messages
      *
      * @param otherMessage the object to be compared.
      * @return 0 if the messages are the same, 1 if the other message is more recent, -1 if the other message is older
      */
+
     @Override
     public int compareTo(Message otherMessage) {
 

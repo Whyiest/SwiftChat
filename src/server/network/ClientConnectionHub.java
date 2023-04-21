@@ -1,6 +1,5 @@
 package server.network;
 
-import client.clientModel.Message;
 import server.dao.*;
 import server.serverModel.ClientManager;
 import server.serverModel.MessageAnalyser;
@@ -21,9 +20,9 @@ public class ClientConnectionHub {
 
     private Database myDb;
 
-    private static ArrayList<Socket> clientSocketList = new ArrayList<>();
+    private static final ArrayList<Socket> clientSocketList = new ArrayList<>();
 
-    private static ArrayList<ClientManager> clientManagerList = new ArrayList<>();
+    private static final ArrayList<ClientManager> clientManagerList = new ArrayList<>();
 
     /**
      * Constructor of the ClientConnexionHub class
@@ -62,8 +61,7 @@ public class ClientConnectionHub {
         System.out.println("Port " + port + "...");
         System.out.println("-------------------------------------------\n");
 
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
+        try (ServerSocket serverSocket = new ServerSocket(port)){
             System.out.println("[!] Server started on port " + port + " and IP address " + serverIpAddress + ".");
             System.out.println("[?] Waiting for client connection...\n");
 
@@ -102,8 +100,8 @@ public class ClientConnectionHub {
         myUserDao.disconnectAll();
 
         // Close all sockets
-        for (int i = 0; i < clientManagerList.size(); i++) {
-            clientManagerList.get(i).closeConnexion();
+        for (ClientManager clientManager : clientManagerList) {
+            clientManager.closeConnexion();
         }
 
         // Disconnect from the database

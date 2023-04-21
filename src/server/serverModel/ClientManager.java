@@ -37,7 +37,7 @@ public class ClientManager implements Runnable {
     public void run() {
 
         try {
-            String serverResponse = "";
+            String serverResponse;
 
             while (!clientSocket.isClosed()) {
 

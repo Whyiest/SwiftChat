@@ -179,7 +179,7 @@ public class LoginForm extends JDialog {
                     } else if (loggedUser != null && !loggedUser.isBanned()) {
                         isUserBanned = false;
                         // Set the last connection time and the status
-                        serverConnection.updateLastConnectinTime(userLoggedID);
+                        serverConnection.updateLastConnectionTime(userLoggedID);
                         serverConnection.changeStatus(userLoggedID, "ONLINE");
                     }
 

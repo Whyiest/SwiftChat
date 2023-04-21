@@ -122,7 +122,7 @@ public class ConversationWindow extends JDialog {
                 createTimer();
                 if (!messageLoaded) {
                     boolean isUpdated = false;
-                    localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                    localStorage.forceUpdateMessageBetweenUser(chattingWithThisUser.getId());
                     messageLoaded = true;
                 }
                 upDateChat();
@@ -147,7 +147,7 @@ public class ConversationWindow extends JDialog {
                 try {
                     // If no request is already in progress
                     if (!isBusy) {
-                        localStorage.forceUpdateMessageBetweenUser(currentUser.getId(), chattingWithThisUser.getId());
+                        localStorage.forceUpdateMessageBetweenUser(chattingWithThisUser.getId());
                         // Wait 1 second to avoid spamming the server
                         upDateChat();
                         Thread.sleep(2000);
