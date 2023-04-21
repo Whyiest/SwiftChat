@@ -9,13 +9,13 @@ import server.dao.LogDaoImpl;
 
 public class MessageAnalyser {
 
-    private String message;
+    private final String message;
     private String[] messageParts;
     private String messageAction;
-    private UserDaoImpl userDao;
-    private MessageDaoImpl messageDao;
-    private LogDaoImpl logDao;
-    private GroupMessageDaoImpl groupMessageDao;
+    private final UserDaoImpl userDao;
+    private final MessageDaoImpl messageDao;
+    private final LogDaoImpl logDao;
+    private final GroupMessageDaoImpl groupMessageDao;
 
 
     /**
@@ -55,7 +55,7 @@ public class MessageAnalyser {
      */
     public String redirectMessage() {
 
-        String serverResponse = "";
+        String serverResponse;
 
         // Extract all the parts of the message
         extractMessage();

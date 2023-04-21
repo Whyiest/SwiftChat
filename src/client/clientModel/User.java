@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 public class User {
 
@@ -82,7 +81,7 @@ public class User {
 
     public int getId() {
         return id;
-    };
+    }
     public void setId(int id) {
         this.id = id;
     }
@@ -113,17 +112,8 @@ public class User {
         this.permission = permission;
     }
 
-
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getMail() {
-        return mail;
     }
 
     public void setMail(String mail) {

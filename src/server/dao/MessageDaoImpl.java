@@ -41,9 +41,7 @@ public class MessageDaoImpl implements MessageDao {
         String sql = "INSERT INTO MESSAGE (SENDER_ID, RECEIVER_ID, TIMESTAMP, CONTENT) VALUES (?, ?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
-        try{
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
-
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             // Set the parameter values for the prepared statement
             statement.setInt(1, Integer.parseInt(messageSenderID));
             statement.setInt(2, Integer.parseInt(messageReceiverID));
@@ -56,7 +54,7 @@ public class MessageDaoImpl implements MessageDao {
             // Close the statement
             statement.close();
             return "ADD-MESSAGE;SUCCESS";
-        } catch (Exception e){
+        } catch (SQLException e){
             System.out.println("[!] Error while creating the message [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "ADD-MESSAGE;FAILURE";
@@ -84,12 +82,11 @@ public class MessageDaoImpl implements MessageDao {
         }
 
         // Create an SQL statement to get all the messages for a sender and a receiver from the database
-        String sql = "SELECT * FROM message " + "WHERE (SENDER_ID = ? AND RECEIVER_ID = ?) OR (SENDER_ID = ? AND RECEIVER_ID = ?) " + "ORDER BY TIMESTAMP ASC";
+        String sql = "SELECT * FROM message WHERE (SENDER_ID = ? AND RECEIVER_ID = ?) OR (SENDER_ID = ? AND RECEIVER_ID = ?) ORDER BY TIMESTAMP ASC";
 
-        String serverResponse = "LIST-MESSAGES-BETWEEN-USERS;";
-        try {
+        StringBuilder serverResponse = new StringBuilder("LIST-MESSAGES-BETWEEN-USERS;");
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if (!myDb.connection.isClosed()) { // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setInt(1, idSender);
                 statement.setInt(2, idReceiver);
                 statement.setInt(3, idReceiver);
@@ -98,19 +95,17 @@ public class MessageDaoImpl implements MessageDao {
 
                 if (rs != null && rs.next()) {
                     // Get the first result
-                    serverResponse +=  rs.getInt("SENDER_ID") + ";" + rs.getInt("RECEIVER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
-
+                    serverResponse.append(rs.getInt("SENDER_ID")).append(";").append(rs.getInt("RECEIVER_ID")).append(";").append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("CONTENT"));
                     // Get the other results
                     while (rs.next()) {
-                        serverResponse +=  ";" + rs.getInt("SENDER_ID") + ";" + rs.getInt("RECEIVER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                        serverResponse.append(";").append(rs.getInt("SENDER_ID")).append(";").append(rs.getInt("RECEIVER_ID")).append(";").append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("CONTENT"));
                     }
                 }
                 else {
-                    serverResponse += "EMPTY";
+                    serverResponse.append("EMPTY");
                 }
-
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");

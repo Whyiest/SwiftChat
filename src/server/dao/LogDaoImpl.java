@@ -5,7 +5,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 
 public class LogDaoImpl implements LogDao {
-    private Database myDb;
+    private final Database myDb;
 
     public LogDaoImpl(Database myDb){
         this.myDb = myDb;
@@ -40,8 +40,7 @@ public class LogDaoImpl implements LogDao {
 
         // Create a prepared statement with the SQL statement
 
-        try{
-            PreparedStatement statement = myDb.connection.prepareStatement(sql);
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             // Set the parameter values for the prepared statement
             statement.setInt(1, Integer.parseInt(logUserId));
             statement.setString(2, logTimestamp);
@@ -83,22 +82,21 @@ public class LogDaoImpl implements LogDao {
 
         // Create an SQL statement to get all the logs for a user from the database
         String sql = "SELECT * FROM log WHERE USER_ID = ?";
-        String serverResponse = "";
-        try {
+        StringBuilder serverResponse = new StringBuilder();
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if (!myDb.connection.isClosed()) { // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
                 statement.setInt(1, idUser);
                 ResultSet rs = statement.executeQuery();
                 if (rs != null && rs.next()) {
                     // Get the first log
-                    serverResponse += rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                    serverResponse.append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("TYPE"));
                     // Get the other logs
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("TYPE");
+                        serverResponse.append(";").append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("TYPE"));
                     }
                 }
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
@@ -203,25 +201,36 @@ public class LogDaoImpl implements LogDao {
     public String getTopUsersBySentMessages(String message){
 
         // Create an SQL statement to get the 3 top users according to a specified type of log from the database
-        String sql = "SELECT USER_ID, COUNT(*) AS MESSAGE_COUNT FROM LOG WHERE TYPE = Sent-message GROUP BY USER_ID ORDER BY MESSAGE_COUNT DESC LIMIT 3";
-        String serverResponse = "";
+        String sql = "SELECT U.USERNAME, COUNT(L.TYPE) AS MESSAGE_COUNT\n" +
+                "FROM LOG L\n" +
+                "JOIN (\n" +
+                "  SELECT USER_ID\n" +
+                "  FROM LOG\n" +
+                "  WHERE TYPE = 'Sent-message'\n" +
+                "  GROUP BY USER_ID\n" +
+                "  ORDER BY COUNT(*) DESC\n" +
+                "  LIMIT 4\n" +
+                ") T ON T.USER_ID = L.USER_ID\n" +
+                "JOIN USER U ON U.ID = L.USER_ID\n" +
+                "GROUP BY U.ID, U.USERNAME\n" +
+                "ORDER BY MESSAGE_COUNT DESC;\n";
+        StringBuilder serverResponse = new StringBuilder();
 
-        try{
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if(!myDb.connection.isClosed()){ // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
-
                 ResultSet rs = statement.executeQuery();
 
                 if (rs != null && rs.next()) {
                     // Get the first user
-                    serverResponse += rs.getInt("USER_ID") + ";" + rs.getInt("MESSAGE_COUNT");
+                    serverResponse.append(rs.getString("USERNAME")).append(";").append(rs.getInt("MESSAGE_COUNT"));
                     // Get the other users
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getInt("USER_ID") + ";" + rs.getInt("MESSAGE_COUNT");
+                        serverResponse.append(";").append(rs.getString("USERNAME")).append(";").append(rs.getInt("MESSAGE_COUNT"));
+
                     }
                 }
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
@@ -237,33 +246,35 @@ public class LogDaoImpl implements LogDao {
     public String getTopUsersByLogin(String message){
 
         // Create an SQL statement to get the 3 top users according to a specified type of log from the database
-        String sql = "SELECT USER_ID, COUNT(*) AS LOGIN_COUNT FROM LOG WHERE TYPE = 'LOGIN' GROUP BY USER_ID ORDER BY LOGIN_COUNT DESC LIMIT 3";
-        String serverResponse = "";
+        String sql = "SELECT U.USERNAME, COUNT(L.TYPE) AS LOGIN_COUNT\n" +
+                "FROM LOG L\n" +
+                "JOIN (\n" +
+                "  SELECT USER_ID\n" +
+                "  FROM LOG\n" +
+                "  WHERE TYPE = 'LOGIN'\n" +
+                "  GROUP BY USER_ID\n" +
+                "  ORDER BY COUNT(*) DESC\n" +
+                "  LIMIT 4\n" +
+                ") T ON T.USER_ID = L.USER_ID\n" +
+                "JOIN USER U ON U.ID = L.USER_ID\n" +
+                "GROUP BY U.ID, U.USERNAME\n" +
+                "ORDER BY LOGIN_COUNT DESC;\n";
+        StringBuilder serverResponse = new StringBuilder();
 
-        try{
+        try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
             if(!myDb.connection.isClosed()){ // Check if the connection is open
-                PreparedStatement statement = myDb.connection.prepareStatement(sql);
-
                 ResultSet rs = statement.executeQuery();
 
-                if(rs == null){
-                    return "GET-TOP-USERS-BY-LOGIN;FAIL1";
-                }
-
                 if (rs != null && rs.next()) {
-                    return "GET-TOP-USERS-BY-LOGIN;SUCCESS";
-
-                    /*
                     // Get the first user
-                    serverResponse += rs.getInt("USER_ID") + ";" + rs.getInt("LOGIN_COUNT");
+                    serverResponse.append(rs.getString("USERNAME")).append(";").append(rs.getInt("LOGIN_COUNT"));
                     // Get the other users
                     while (rs.next()) {
-                        serverResponse += ";" + rs.getInt("USER_ID") + ";" + rs.getInt("LOGIN_COUNT");
+                        serverResponse.append(";").append(rs.getString("USERNAME")).append(";").append(rs.getInt("LOGIN_COUNT"));
                     }
-                     */
                 }
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
 
             } else {
                 // Throw an exception if the connection is closed
@@ -330,9 +341,11 @@ public class LogDaoImpl implements LogDao {
             // Get the first log
             serverResponse += rs.getString("TIMESTAMP");
             // Get the other logs
+            StringBuilder serverResponseBuilder = new StringBuilder(serverResponse);
             while (rs.next()) {
-                serverResponse += ";" + rs.getString("TIMESTAMP");
+                serverResponseBuilder.append(";").append(rs.getString("TIMESTAMP"));
             }
+            serverResponse = serverResponseBuilder.toString();
         }
         statement.close();
         return serverResponse;
