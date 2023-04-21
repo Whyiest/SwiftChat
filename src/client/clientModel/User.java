@@ -113,17 +113,8 @@ public class User {
         this.permission = permission;
     }
 
-
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getMail() {
-        return mail;
     }
 
     public void setMail(String mail) {

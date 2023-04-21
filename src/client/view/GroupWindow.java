@@ -428,7 +428,7 @@ public class GroupWindow extends JDialog {
                     }
                 } while (serverResponse.equals("ADD-MESSAGE-GROUP;FAILURE"));
 
-                serverConnection.addLog(currentUser.getId(), "SENT-GROUP-MESSAGE");
+                serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
             }
         });
 

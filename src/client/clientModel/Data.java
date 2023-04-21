@@ -10,7 +10,6 @@ public class Data {
 
     private List<User> userData;
     private List<Message> messageBetweenUserData;
-    private List<Log> logData;
     private List<Message> groupMessageData;
     private boolean isBusy;
     private ServerConnection serverConnection;
@@ -28,7 +27,6 @@ public class Data {
     public Data(ServerConnection serverConnection) {
         this.userData = new ArrayList<>();
         this.messageBetweenUserData = new ArrayList<>();
-        this.logData = new ArrayList<>();
         this.groupMessageData = new ArrayList<>();
         this.isBusy = false;
         this.serverConnection = serverConnection;
@@ -202,14 +200,6 @@ public class Data {
         return messageBetweenUserData;
     }
 
-    /**
-     * Allow to get all log data in DB
-     *
-     * @return List of all log data
-     */
-    public List<Log> getLogData() {
-        return logData;
-    }
 
     /**
      * Allow to get all group message data in DB

@@ -45,7 +45,6 @@ public class ConversationWindow extends JDialog {
     private JPanel chatPanel;
     static Box vertical = Box.createVerticalBox();
     private JTextArea chatArea;
-    //private JScrollPane chatScrollpane;
     private JPanel conversationPanel;
     static JFrame parent = new JFrame();
     private List<Message> listOfMessageBetweenUsers;
