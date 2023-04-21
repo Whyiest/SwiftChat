@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class GroupMessageDaoImpl implements GroupMessageDao {
 
-    private Database myDb;
+    private final Database myDb;
 
     public GroupMessageDaoImpl(Database myDb){
 
@@ -75,7 +75,7 @@ public class GroupMessageDaoImpl implements GroupMessageDao {
 
         // Create an SQL statement to get all the messages for a sender and a receiver from the database
         String sql = "SELECT * FROM MESSAGEGROUP";
-        String serverResponse = "LIST-ALL-MESSAGES-IN-GROUP;";
+        StringBuilder serverResponse = new StringBuilder("LIST-ALL-MESSAGES-IN-GROUP;");
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
@@ -83,19 +83,19 @@ public class GroupMessageDaoImpl implements GroupMessageDao {
 
                 if (rs != null && rs.next()) {
                     // Get the first result
-                    serverResponse +=  rs.getInt("SENDER_ID") + ";"  + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                    serverResponse.append(rs.getInt("SENDER_ID")).append(";").append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("CONTENT"));
 
                     // Get the other results
                     while (rs.next()) {
-                        serverResponse +=  ";" + rs.getInt("SENDER_ID") + ";" + rs.getString("TIMESTAMP") + ";" + rs.getString("CONTENT");
+                        serverResponse.append(";").append(rs.getInt("SENDER_ID")).append(";").append(rs.getString("TIMESTAMP")).append(";").append(rs.getString("CONTENT"));
                     }
                 }
                 else {
-                    serverResponse += "EMPTY";
+                    serverResponse.append("EMPTY");
                 }
 
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");

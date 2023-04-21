@@ -228,16 +228,46 @@ public class ResponseAnalyser {
         dataset.addSeries("Messages by dates", dates, messageParts.length);
 
         // Create the chart object using the dataset and customize the chart settings
-        JFreeChart chart = ChartFactory.createHistogram(
-                "Message distribution",    // Chart title
-                "Date",                  // X axis label
-                "Number",                // Y axis label
-                dataset,                 // Chart data
-                PlotOrientation.VERTICAL,// Orientation of chart
-                true,                    // Include legend
-                true,                    // Use tooltips
-                false                    // Configure chart to generate URLs?
-        );
+
+        JFreeChart chart;
+
+        switch(dataToDisplay){
+            case 1:
+                chart = ChartFactory.createHistogram(
+                        "Message distribution",    // Chart title
+                        "Date",                  // X axis label
+                        "Number",                // Y axis label
+                        dataset,                 // Chart data
+                        PlotOrientation.VERTICAL,// Orientation of chart
+                        true,                    // Include legend
+                        true,                    // Use tooltips
+                        false                    // Configure chart to generate URLs?
+                );
+                break;
+            case 2:
+                chart = ChartFactory.createHistogram(
+                        "Connection distribution",    // Chart title
+                        "Date",                  // X axis label
+                        "Number",                // Y axis label
+                        dataset,                 // Chart data
+                        PlotOrientation.VERTICAL,// Orientation of chart
+                        true,                    // Include legend
+                        true,                    // Use tooltips
+                        false                    // Configure chart to generate URLs?
+                );
+            default:
+                chart = ChartFactory.createHistogram(
+                        "Connection distribution",    // Chart title
+                        "Date",                  // X axis label
+                        "Number",                // Y axis label
+                        dataset,                 // Chart data
+                        PlotOrientation.VERTICAL,// Orientation of chart
+                        true,                    // Include legend
+                        true,                    // Use tooltips
+                        false                    // Configure chart to generate URLs?
+                );
+                break;
+        }
 
         // Customize the background color and opacity of the chart
         chart.getPlot().setBackgroundPaint(Color.WHITE);
@@ -250,37 +280,62 @@ public class ResponseAnalyser {
      * This method generates a bar chart from the server response
      *
      */
-    public void generateBarChart() {
+    public JFreeChart generateBarChart(int dataToDisplay) {
         // Create a dataset for the bar chart
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // Add the data to the dataset
         for (int i = 0; i < messageParts.length / 2; i++) {
-            dataset.setValue(Integer.parseInt(messageParts[2 * i + 1]), "Top users logs", "User " + messageParts[2 * i]);
+            dataset.setValue(Integer.parseInt(messageParts[2 * i + 1]), "Top users logs", messageParts[2 * i]);
         }
 
         // Create the chart object
-        JFreeChart chart = ChartFactory.createBarChart(
-                "Top users",     // Chart title
-                "Month",             // X-axis label
-                "Top users logs",    // Y-axis label
-                dataset,             // Chart data
-                PlotOrientation.VERTICAL,  // Bar chart orientation
-                true,                // Include legend
-                true,                // Use tooltips
-                false                // Configure chart to generate URLs?
-        );
+        JFreeChart chart;
+
+        switch(dataToDisplay){
+            case 1:
+                chart = ChartFactory.createBarChart(
+                        "Top users by sent messages",     // Chart title
+                        "Month and day",             // X-axis label
+                        "Top users logs",    // Y-axis label
+                        dataset,             // Chart data
+                        PlotOrientation.VERTICAL,  // Bar chart orientation
+                        true,                // Include legend
+                        true,                // Use tooltips
+                        false                // Configure chart to generate URLs?
+                );
+                break;
+            case 2:
+                chart = ChartFactory.createBarChart(
+                        "Top users by logins",     // Chart title
+                        "Month and day",             // X-axis label
+                        "Top users logs",    // Y-axis label
+                        dataset,             // Chart data
+                        PlotOrientation.VERTICAL,  // Bar chart orientation
+                        true,                // Include legend
+                        true,                // Use tooltips
+                        false                // Configure chart to generate URLs?
+                );
+                break;
+            default:
+                chart = ChartFactory.createBarChart(
+                        "Top users",     // Chart title
+                        "Month",             // X-axis label
+                        "Top users logs",    // Y-axis label
+                        dataset,             // Chart data
+                        PlotOrientation.VERTICAL,  // Bar chart orientation
+                        true,                // Include legend
+                        true,                // Use tooltips
+                        false                // Configure chart to generate URLs?
+                );
+                break;
+        }
 
         // Set custom colors for the bars
         CategoryPlot plot = chart.getCategoryPlot();
         plot.getRenderer().setSeriesPaint(0, Color.BLUE);
 
-        // Save the chart to a file
-        try {
-            ChartUtilities.saveChartAsPNG(new File("topUsersBarChart.png"), chart, 600, 400);
-        } catch (IOException e) {
-            System.err.println("Error saving chart: " + e.getMessage());
-        }
+        return chart;
     }
 
     public List<Message> createGroupMessageList() {

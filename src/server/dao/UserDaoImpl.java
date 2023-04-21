@@ -82,7 +82,7 @@ public class UserDaoImpl implements UserDao {
                 throw new SQLException("Connection to database failed.");
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while creating the user [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "ADD-USER;FAILURE";
@@ -100,7 +100,7 @@ public class UserDaoImpl implements UserDao {
 
         // Create a SQL statement to get all the users from the database
         String sql = "SELECT * FROM user";
-        String serverResponse = "LIST-ALL-USERS;";
+        StringBuilder serverResponse = new StringBuilder("LIST-ALL-USERS;");
         try {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 PreparedStatement statement = myDb.connection.prepareStatement(sql);
@@ -108,22 +108,22 @@ public class UserDaoImpl implements UserDao {
 
                 if (rs != null && rs.next()) {
                     // Get the first user
-                    serverResponse += rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + "MAIL-REMOVED" + ";" + "PASSWORD-REMOVED" + ";" + rs.getString("PERMISSION") + ";" + rs.getString("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
+                    serverResponse.append(rs.getInt("ID")).append(";").append(rs.getString("USERNAME")).append(";").append(rs.getString("FIRST_NAME")).append(";").append(rs.getString("LAST_NAME")).append(";").append(rs.getString("EMAIL")).append(";").append("PASSWORD-REMOVED").append(";").append(rs.getString("PERMISSION")).append(";").append(rs.getString("LAST_CONNECTION_TIME")).append(";").append(rs.getString("IS_BANNED")).append(";").append(rs.getString("STATUS"));
 
                     while (rs.next()) {
                         // Get the next user
-                        serverResponse += ";" + rs.getInt("ID") + ";" + rs.getString("USERNAME") + ";" + rs.getString("FIRST_NAME") + ";" + rs.getString("LAST_NAME") + ";" + "MAIL-REMOVED" + ";" + "PASSWORD-REMOVED" + ";" + rs.getString("PERMISSION") + ";" + rs.getString("LAST_CONNECTION_TIME") + ";" + rs.getString("IS_BANNED") + ";" + rs.getString("STATUS");
+                        serverResponse.append(";").append(rs.getInt("ID")).append(";").append(rs.getString("USERNAME")).append(";").append(rs.getString("FIRST_NAME")).append(";").append(rs.getString("LAST_NAME")).append(";").append(rs.getString("EMAIL")).append(";").append("PASSWORD-REMOVED").append(";").append(rs.getString("PERMISSION")).append(";").append(rs.getString("LAST_CONNECTION_TIME")).append(";").append(rs.getString("IS_BANNED")).append(";").append(rs.getString("STATUS"));
                     }
                 } else {
-                    serverResponse += "EMPTY";
+                    serverResponse.append("EMPTY");
                 }
                 statement.close();
-                return serverResponse;
+                return serverResponse.toString();
             } else {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("[!] Error while getting all users");
             System.out.println("Statement failure : " + sql);
@@ -166,7 +166,7 @@ public class UserDaoImpl implements UserDao {
             statement.executeUpdate();
             return "CHANGE-USER-STATUS;SUCCESS";
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while changing the user status");
             System.out.println("Statement failure : " + sql);
             return "CHANGE-USER-STATUS;FAILURE";
@@ -215,7 +215,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while changing user permission [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "CHANGE-USER-PERMISSION;FAILURE";
@@ -263,7 +263,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while banning user [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "BAN-USER;FAILURE";
@@ -310,7 +310,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while updating last connection time [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "UPDATE-LAST-CONNECTION-TIME;FAILURE";
@@ -362,7 +362,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while retrieving user according to their id [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "GET-USER-BY-ID;FAILURE";
@@ -414,7 +414,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while retrieving status according to user ID [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "GET-USER-PERMISSION-BY-ID;FAILURE";
@@ -466,7 +466,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while retrieving status according to user ID [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "GET-USER-BAN-STATUS-BY-ID;FAILURE";
@@ -507,7 +507,6 @@ public class UserDaoImpl implements UserDao {
 
                 // Execute the SQL statement
                 ResultSet rs = statement.executeQuery();
-                String serverResponse = "";
 
                 if (rs != null && rs.next()) {
                     userId = rs.getInt("ID");
@@ -522,7 +521,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while comparing username and password values in [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "LOGIN;FAILURE";
@@ -530,21 +529,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     public void disconnectAll() {
-
         String sql = "UPDATE USER SET STATUS = 'OFFLINE' WHERE STATUS = 'ONLINE'";
+
         try {
-
             if (!myDb.connection.isClosed()) { // Check if the connection is open
-
                 Statement statement = myDb.connection.createStatement();
-
                 int rowCount = statement.executeUpdate(sql);
-
                 statement.close();
-
                 System.out.println("[!] Updated " + rowCount + " status to OFFLINE in the database.");
             }
-
         } catch (SQLException e) {
             System.out.println("[!] Error while updating status to OFFLINE in the database.");
         }
@@ -591,7 +584,7 @@ public class UserDaoImpl implements UserDao {
                 // Throw an exception if the connection is closed
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while logging out [" + message + "]");
             System.out.println("Statement failure : " + sql);
             return "LOGOUT;FAILURE";
@@ -621,7 +614,7 @@ public class UserDaoImpl implements UserDao {
             } else {
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while analyzing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use: [GET-STATUS-STATISTICS]");
             return "GET-STATUS-STATISTICS;FAILURE";
@@ -651,7 +644,7 @@ public class UserDaoImpl implements UserDao {
             } else {
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while analyzing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use: [GET-PERMISSION-STATISTICS]");
             return "GET-PERMISSION-STATISTICS;FAILURE";
@@ -680,7 +673,7 @@ public class UserDaoImpl implements UserDao {
             } else {
                 throw new SQLException("Connection to database failed.");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("[!] Error while analyzing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use: [GET-BAN-STATISTICS]");
             return "GET-BAN-STATISTICS;FAILURE";
