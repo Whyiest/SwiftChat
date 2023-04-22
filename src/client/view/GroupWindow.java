@@ -13,8 +13,10 @@ import java.awt.event.HierarchyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -420,29 +422,47 @@ public class GroupWindow extends JDialog {
      */
     private void addSentMessage(Message message) {
 
-        // Create the panel that will contain the message
-        JPanel sentMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JLabel sentMessageSenderLabel = new JLabel(currentUser.getFirstName() + " " + currentUser.getLastName());
-        JLabel sentMessageLabel = new JLabel(message.getContent());
+        // Creation of the panel containing the message
+        JPanel sentMessagePanel = new JPanel();
+        sentMessagePanel.setLayout(new BoxLayout(sentMessagePanel, BoxLayout.Y_AXIS));
+        sentMessagePanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
-        // Set the color of the message
+        JLabel sentMessageSenderLabel = new JLabel(currentUser.getFirstName() + " " + currentUser.getLastName());
+        sentMessageSenderLabel.setForeground(Color.WHITE);
+        sentMessageSenderLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        JLabel sentMessageLabel = new JLabel(message.getContent());
         sentMessageLabel.setBackground(new Color(5,194,192));
         sentMessageLabel.setForeground(Color.black);
         sentMessageLabel.setOpaque(true);
         sentMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        sentMessageLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("HH:mm");
+        JLabel sentMessageTimeLabel = new JLabel(dateFormat.format(message.getTimestamp()));
+        sentMessageTimeLabel.setForeground(Color.WHITE);
+        sentMessageTimeLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        sentMessagePanel.setBackground(new Color(1,89,88));
+
         sentMessagePanel.add(sentMessageSenderLabel);
         sentMessagePanel.add(sentMessageLabel);
-        sentMessagePanel.setBackground(new Color(1, 89, 88));
-        chatPanel.add(sentMessagePanel);
+        sentMessagePanel.add(sentMessageTimeLabel);
+
+
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.add(sentMessagePanel, BorderLayout.LINE_END);
+        containerPanel.setBackground(new Color(1, 89, 88));
+
+        chatPanel.add(containerPanel);
         chatPanel.revalidate();
     }
-
 
     /**
      * Allow to display the message at the left side
      *
      * @param message the message to display
      */
+
     private void addReceivedMessage(Message message) {
 
         int senderID = message.getSenderID();
@@ -450,20 +470,41 @@ public class GroupWindow extends JDialog {
         String firstName = sender.getFirstName();
         String lastName = sender.getLastName();
 
-        // Create the panel that will contain the message
-        JPanel receivedMessagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel receivedMessageSenderLabel = new JLabel(firstName + " " + lastName);
-        JLabel receivedMessageLabel = new JLabel(message.getContent());
+        // Creation of the panel containing the message
+        JPanel receivedMessagePanel = new JPanel();
+        receivedMessagePanel.setLayout(new BoxLayout(receivedMessagePanel, BoxLayout.Y_AXIS));
+        receivedMessagePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Set the color of the message
+        JLabel receivedMessageSenderLabel = new JLabel(firstName + " " + lastName);
+        receivedMessageSenderLabel.setForeground(Color.WHITE);
+        receivedMessageSenderLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel receivedMessageLabel = new JLabel(message.getContent());
         receivedMessageLabel.setBackground(new Color(140, 152, 152, 255));
         receivedMessageLabel.setOpaque(true);
         receivedMessageLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        receivedMessageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("HH:mm");
+        JLabel receivedMessageTimeLabel = new JLabel(dateFormat.format(message.getTimestamp()));
+        receivedMessageTimeLabel.setForeground(Color.WHITE);
+        receivedMessageTimeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        receivedMessagePanel.setBackground(new Color(1,89,88));
+
+
+
         receivedMessagePanel.add(receivedMessageSenderLabel);
         receivedMessagePanel.add(receivedMessageLabel);
-        receivedMessagePanel.setBackground(new Color(1, 89, 88));
-        chatPanel.add(receivedMessagePanel);
+        receivedMessagePanel.add(receivedMessageTimeLabel);
+
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.add(receivedMessagePanel, BorderLayout.LINE_START);
+        containerPanel.setBackground(new Color(1, 89, 88));
+
+        chatPanel.add(containerPanel);
         chatPanel.revalidate();
     }
+
 
 }
