@@ -58,7 +58,7 @@ public class UserDaoImpl implements UserDao {
         String sql = "INSERT INTO USER (USERNAME, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, PERMISSION, LAST_CONNECTION_TIME, IS_BANNED, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Create a prepared statement with the SQL statement
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 // Set the parameter values for the prepared statement
                 statement.setString(1, userUsername);
@@ -101,17 +101,17 @@ public class UserDaoImpl implements UserDao {
         // Create a SQL statement to get all the users from the database
         String sql = "SELECT * FROM user";
         StringBuilder serverResponse = new StringBuilder("LIST-ALL-USERS;");
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 ResultSet rs = statement.executeQuery();
 
                 if (rs != null && rs.next()) {
                     // Get the first user
-                    serverResponse.append(rs.getInt("ID")).append(";").append(rs.getString("USERNAME")).append(";").append(rs.getString("FIRST_NAME")).append(";").append(rs.getString("LAST_NAME")).append(";").append(rs.getString("EMAIL")).append(";").append("PASSWORD-REMOVED").append(";").append(rs.getString("PERMISSION")).append(";").append(rs.getString("LAST_CONNECTION_TIME")).append(";").append(rs.getString("IS_BANNED")).append(";").append(rs.getString("STATUS"));
+                    serverResponse.append(rs.getInt("ID")).append(";").append(rs.getString("USERNAME")).append(";").append(rs.getString("FIRST_NAME")).append(";").append(rs.getString("LAST_NAME")).append(";").append("MAIL-REMOVED").append(";").append("PASSWORD-REMOVED").append(";").append(rs.getString("PERMISSION")).append(";").append(rs.getString("LAST_CONNECTION_TIME")).append(";").append(rs.getString("IS_BANNED")).append(";").append(rs.getString("STATUS"));
 
                     while (rs.next()) {
                         // Get the next user
-                        serverResponse.append(";").append(rs.getInt("ID")).append(";").append(rs.getString("USERNAME")).append(";").append(rs.getString("FIRST_NAME")).append(";").append(rs.getString("LAST_NAME")).append(";").append(rs.getString("EMAIL")).append(";").append("PASSWORD-REMOVED").append(";").append(rs.getString("PERMISSION")).append(";").append(rs.getString("LAST_CONNECTION_TIME")).append(";").append(rs.getString("IS_BANNED")).append(";").append(rs.getString("STATUS"));
+                        serverResponse.append(";").append(rs.getInt("ID")).append(";").append(rs.getString("USERNAME")).append(";").append(rs.getString("FIRST_NAME")).append(";").append(rs.getString("LAST_NAME")).append(";").append("MAIL-REMOVED").append(";").append("PASSWORD-REMOVED").append(";").append(rs.getString("PERMISSION")).append(";").append(rs.getString("LAST_CONNECTION_TIME")).append(";").append(rs.getString("IS_BANNED")).append(";").append(rs.getString("STATUS"));
                     }
                 } else {
                     serverResponse.append("EMPTY");
@@ -158,7 +158,7 @@ public class UserDaoImpl implements UserDao {
 
         // Create a prepared statement with the SQL statement
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             statement.setString(1, userStatus);
             statement.setInt(2, Integer.parseInt(userId));
             statement.executeUpdate();
@@ -197,7 +197,7 @@ public class UserDaoImpl implements UserDao {
         // Create an SQL statement to change user permission
         String sql = "UPDATE USER SET PERMISSION = ? WHERE ID = ?";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setString(1, userPermission);
                 statement.setInt(2, Integer.parseInt(userId));
@@ -243,7 +243,7 @@ public class UserDaoImpl implements UserDao {
         // Create an SQL statement to change user ban status
         String sql = "UPDATE USER SET IS_BANNED = ? WHERE ID = ?";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setString(1, userIsBanned);
                 statement.setInt(2, Integer.parseInt(userId));
@@ -290,7 +290,7 @@ public class UserDaoImpl implements UserDao {
         // Create an SQL statement to update user last connection time
         String sql = "UPDATE USER SET LAST_CONNECTION_TIME = ? WHERE ID = ?";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setString(1, userLastConnectionTime);
                 statement.setInt(2, Integer.parseInt(userId));
@@ -335,7 +335,7 @@ public class UserDaoImpl implements UserDao {
         String sql = "SELECT * FROM USER WHERE ID = ?";
         String serverResponse = "GET-USER-BY-ID;";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setInt(1, Integer.parseInt(userId));
 
@@ -387,7 +387,7 @@ public class UserDaoImpl implements UserDao {
         // Create an SQL statement to select the status of a user based on their id
         String sql = "SELECT PERMISSION FROM USER WHERE ID = ?";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setInt(1, Integer.parseInt(userId));
 
@@ -438,7 +438,7 @@ public class UserDaoImpl implements UserDao {
         // Create an SQL statement to select the status of a user based on their id
         String sql = "SELECT IS_BANNED FROM USER WHERE ID = ?";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setInt(1, Integer.parseInt(userId));
 
@@ -491,7 +491,7 @@ public class UserDaoImpl implements UserDao {
         // Create an SQL statement to log the user in
         String sql = "SELECT ID FROM USER WHERE USERNAME = ? AND PASSWORD = ?";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setString(1, username);
                 statement.setString(2, password);
@@ -522,7 +522,7 @@ public class UserDaoImpl implements UserDao {
     public void disconnectAll() {
         String sql = "UPDATE USER SET STATUS = 'OFFLINE' WHERE STATUS = 'ONLINE'";
 
-        try (Statement statement = myDb.connection.prepareStatement(sql)){
+        try (Statement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 int rowCount = statement.executeUpdate(sql);
                 statement.close();
@@ -558,7 +558,7 @@ public class UserDaoImpl implements UserDao {
         // Create an SQL statement to log the user out
         String sql = "UPDATE USER SET STATUS = 'OFFLINE', LAST_CONNECTION_TIME = ? WHERE ID = ?";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) { // Check if the connection is open
                 statement.setString(1, userLastConnectionTime);
                 statement.setInt(2, Integer.parseInt(userId));
@@ -580,7 +580,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    public String getStatusStatistics(String message){
+    public String getStatusStatistics(String message) {
         // Create an SQL statement to get all the logs relating to a user status from the database
         String sql = """
                 SELECT\s
@@ -593,7 +593,7 @@ public class UserDaoImpl implements UserDao {
 
         String serverResponse = "";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) {
                 ResultSet rs = statement.executeQuery();
                 if (rs != null && rs.next()) {
@@ -611,7 +611,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    public String getPermissionStatistics(String message){
+    public String getPermissionStatistics(String message) {
         // Create an SQL statement to get all the logs relating to a user permission from the database
         String sql = """
                 SELECT\s
@@ -624,7 +624,7 @@ public class UserDaoImpl implements UserDao {
 
         String serverResponse = "";
 
-        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)){
+        try (PreparedStatement statement = myDb.connection.prepareStatement(sql)) {
             if (!myDb.connection.isClosed()) {
                 ResultSet rs = statement.executeQuery();
                 if (rs != null && rs.next()) {
@@ -642,7 +642,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    public String getBanStatistics(String message){
+    public String getBanStatistics(String message) {
         // Create an SQL statement to get all the logs relating to a user ban from the database
         String sql = """
                 SELECT\s
