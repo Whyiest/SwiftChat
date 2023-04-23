@@ -169,13 +169,10 @@ public class ResponseAnalyser {
                 p.setSectionPaint("Offline", Color.red);
                 p.setSectionPaint("Online", Color.green);
                 p.setSectionPaint("Away", Color.yellow);
-
             case 2:
                 p.setSectionPaint("Classic user", Color.red);
                 p.setSectionPaint("Moderator", Color.green);
                 p.setSectionPaint("Administrator", Color.yellow);
-
-
             case 3:
                 p.setSectionPaint("Not banned", Color.green);
                 p.setSectionPaint("Banned", Color.red);

@@ -32,7 +32,7 @@ public class ClientManager implements Runnable {
     }
 
     /**
-     * Méthode run() du thread. Allow handle and manage the client connexion.
+     * Method run() of the thread. Allow handle and manage the client connexion.
      */
     public void run() {
 

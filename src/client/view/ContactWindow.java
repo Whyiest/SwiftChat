@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,9 +33,7 @@ public class ContactWindow extends JDialog {
     private JButton lastPageButton;
     private JPanel contactsPanel;
     private JPanel mainPanel;
-    private JPanel buttonPanel;
     private CardLayout cardLayout;
-    private Thread updateThread;
     private List<JLabel> listRightTextLabel;
     private Map<User,JLabel> mapContact ;
 
@@ -101,11 +100,11 @@ public class ContactWindow extends JDialog {
      */
     public void initComponents() {
 
-        // Init pannel objects :
+        // Init panel objects :
         mainPanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
         contactsPanel = new JPanel(cardLayout);
-        buttonPanel = new JPanel(new FlowLayout());
+        JPanel buttonPanel = new JPanel(new FlowLayout());
         nextPageButton = new JButton("⬇");
         backPageButton = new JButton("⬆");
         firstPageButton = new JButton("<<");
@@ -154,7 +153,7 @@ public class ContactWindow extends JDialog {
             mainPanel.repaint();
         });
 
-        // Ajout des boutons au panel
+        // Adding buttons to the panel
 
         buttonPanel.add(nextPageButton);
         buttonPanel.add(backPageButton);
@@ -240,7 +239,11 @@ public class ContactWindow extends JDialog {
 
     public void startUpdateThread() {
 
-        updateThread = new Thread(() -> {
+        // Infinite loop to update the data
+        // If no request is already in progress
+        // Wait 1 second to avoid spamming the server
+        // restore the interrupted status
+        Thread updateThread = new Thread(() -> {
 
             boolean isBusy = false;
 
@@ -250,7 +253,6 @@ public class ContactWindow extends JDialog {
                     // If no request is already in progress
                     if (!isBusy) {
                         // Wait 1 second to avoid spamming the server
-                        upDateStatus();
                         Thread.sleep(1000);
 
                     }
@@ -262,16 +264,6 @@ public class ContactWindow extends JDialog {
         updateThread.start();
     }
 
-    public void upDateStatus () {
-     /*  mapContact = new LinkedHashMap<>();
-        for (int p = 0; p < totalPage; p++){
-         for (int i = 0; i < userPerPage ; i++) {
-          mapContact.put(usersPerPage[p][i], listRightTextLabel.get(i));
-          }
-        }
-*/
-
-    }
     /**
      * Allow to get the permissions of the client
      *
@@ -279,7 +271,6 @@ public class ContactWindow extends JDialog {
      */
     private String getClientPermission() {
         User user;
-
         try {
             String serverResponse = this.serverConnection.getUserByID(Client.getClientID());
             ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
@@ -350,16 +341,6 @@ public class ContactWindow extends JDialog {
     }
 
     /**
-     * Allow to get the current user
-     *
-     * @return the current user
-     */
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    /**
      * Allow to create a label with the initials of the user
      *
      * @param initials the initials of the user
@@ -378,7 +359,7 @@ public class ContactWindow extends JDialog {
     }
 
     /**
-     * Allow to create a contact button for an user
+     * Allow to create a contact button for a user
      *
      * @return the contact button
      */
@@ -489,21 +470,13 @@ public class ContactWindow extends JDialog {
         createStatusComboBox.setPreferredSize(new Dimension(50, 30));
         createStatusComboBox.setBackground(new Color(26, 26, 26, 255));
         createStatusComboBox.setForeground(new Color(5,194,192));
-        createStatusComboBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                String actionChoice = (String) createStatusComboBox.getSelectedItem();
-                switch (actionChoice) {
-                    case "ONLINE":
-                        setOnline();
-                        break;
-                    case "OFFLINE":
-                        setOffline();
-                        break;
-                    case "AWAY":
-                        setAway();
-                        break;
-                    default:
-                        break;
+        createStatusComboBox.addItemListener(e -> {
+            String actionChoice = (String) createStatusComboBox.getSelectedItem();
+            switch (Objects.requireNonNull(actionChoice)) {
+                case "ONLINE" -> setOnline();
+                case "OFFLINE" -> setOffline();
+                case "AWAY" -> setAway();
+                default -> {
                 }
             }
         });
@@ -516,7 +489,7 @@ public class ContactWindow extends JDialog {
     void setOnline() {
         String serverResponse;
         serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "ONLINE");
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        new ResponseAnalyser(serverResponse);
     }
 
     /**
@@ -525,7 +498,7 @@ public class ContactWindow extends JDialog {
     void setOffline() {
         String serverResponse;
         serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "OFFLINE");
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        new ResponseAnalyser(serverResponse);
     }
 
     /**
@@ -534,7 +507,7 @@ public class ContactWindow extends JDialog {
     void setAway() {
         String serverResponse;
         serverResponse = serverConnection.changeStatus(this.currentUser.getId(), "AWAY");
-        ResponseAnalyser responseAnalyser = new ResponseAnalyser(serverResponse);
+        new ResponseAnalyser(serverResponse);
     }
 
     /**
@@ -601,26 +574,4 @@ public class ContactWindow extends JDialog {
         return gbcSimpleQuestionAIButton;
     }
 
-    /**
-     * Create a colored circle to represent the user status
-     *
-     * @param status the user status
-     * @return a colored circle
-     */
-    private JLabel createStatusCircle(String status) {
-        JLabel statusCircle = new JLabel();
-        int size = 10;
-        statusCircle.setPreferredSize(new Dimension(size, size));
-        statusCircle.setOpaque(true);
-        if (status.equalsIgnoreCase("ONLINE")) {
-            statusCircle.setBackground(Color.GREEN);
-        } else if (status.equalsIgnoreCase("AWAY")) {
-            statusCircle.setBackground(Color.YELLOW);
-        } else {
-            statusCircle.setBackground(Color.GRAY);
-        }
-        statusCircle.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
-
-        return statusCircle;
-    }
 }

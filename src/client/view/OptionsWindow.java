@@ -15,8 +15,6 @@ public class OptionsWindow extends JDialog {
     private JRadioButton setModeratorRadioButton;
     private JRadioButton setClassicUserRadioButton;
     private JRadioButton setAdminRadioButton;
-    private JButton submitButton;
-    private JButton cancelButton;
     private final ServerConnection serverConnection;
     User userChattingWith;
 
@@ -81,9 +79,9 @@ public class OptionsWindow extends JDialog {
         }
 
         // Create submit button
-        submitButton = new JButton("Confirm");
+        JButton submitButton = new JButton("Confirm");
         //Create the cancel button
-        cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("Cancel");
         submitButton.setBackground(new Color(1,89,88));
         submitButton.setForeground(new Color(251,251,251));
         cancelButton.setForeground(new Color(251,251,251));
@@ -217,16 +215,14 @@ public class OptionsWindow extends JDialog {
             panel.add(setClassicUserRadioButton);
             panel.add(setModeratorRadioButton);
             panel.add(setAdminRadioButton);
-            panel.add(submitButton);
-            panel.add(cancelButton);
         }
         else {
             panel.setLayout(new GridLayout(4, 1));
             panel.add(banRadioButton);
             panel.add(unbanRadioButton);
-            panel.add(submitButton);
-            panel.add(cancelButton);
         }
+        panel.add(submitButton);
+        panel.add(cancelButton);
 
         // Default values
         setInitialButtonMarked();
@@ -253,7 +249,7 @@ public class OptionsWindow extends JDialog {
     }
 
     /**
-     * This function allow to get the current privileges of an user
+     * This function allow to get the current privileges of a user
      *
      * @return the permission of the use, or error if there is an error
      */

@@ -65,58 +65,35 @@ public class Database {
 
         try (Statement populate = connection.createStatement()) {
             // Create USER table
-            String createUserTableSQL = "CREATE TABLE USER " +
-                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
-                    " USERNAME VARCHAR(255), " +
-                    " FIRST_NAME VARCHAR(255), " +
-                    " LAST_NAME VARCHAR(255), " +
-                    " EMAIL VARCHAR(255), " +
-                    " PASSWORD VARCHAR(255), " +
-                    " PERMISSION VARCHAR(255), " +
-                    " LAST_CONNECTION_TIME VARCHAR(255), " +
-                    " IS_BANNED VARCHAR(255), " +
-                    " STATUS VARCHAR(255), " +
-                    " PRIMARY KEY ( ID ))";
+            String createUserTableSQL = "CREATE TABLE USER (ID INTEGER not NULL AUTO_INCREMENT, " +
+                    " USERNAME VARCHAR(255), FIRST_NAME VARCHAR(255), LAST_NAME VARCHAR(255), EMAIL VARCHAR(255), " +
+                    " PASSWORD VARCHAR(255), PERMISSION VARCHAR(255), LAST_CONNECTION_TIME VARCHAR(255), IS_BANNED VARCHAR(255), " +
+                    " STATUS VARCHAR(255), PRIMARY KEY ( ID ))";
 
             populate.executeUpdate(createUserTableSQL);
 
 
             // Create MESSAGE table
-            String createMessageTableSQL = "CREATE TABLE MESSAGE " +
-                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
-                    " SENDER_ID INTEGER," +
-                    " RECEIVER_ID INTEGER, " +
-                    " TIMESTAMP VARCHAR(255), " +
-                    " CONTENT VARCHAR(255), " +
-                    " PRIMARY KEY ( ID ), " +
-                    " FOREIGN KEY ( SENDER_ID ) REFERENCES USER(ID)," +
-                    " FOREIGN KEY ( RECEIVER_ID ) REFERENCES USER(ID))";
+            String createMessageTableSQL = "CREATE TABLE MESSAGE (ID INTEGER not NULL AUTO_INCREMENT, " +
+                    " SENDER_ID INTEGER, RECEIVER_ID INTEGER, TIMESTAMP VARCHAR(255), CONTENT VARCHAR(255), PRIMARY KEY ( ID ), " +
+                    " FOREIGN KEY ( SENDER_ID ) REFERENCES USER(ID), FOREIGN KEY ( RECEIVER_ID ) REFERENCES USER(ID))";
 
             populate.executeUpdate(createMessageTableSQL);
 
 
             // Create MESSAGE-GROUP table
-            String createMessageGroupTableSQL = "CREATE TABLE MESSAGEGROUP " +
-                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
-                    " SENDER_ID INTEGER," +
-                    " TIMESTAMP VARCHAR(255), " +
-                    " CONTENT VARCHAR(255), " +
-                    " PRIMARY KEY ( ID ), " +
+            String createMessageGroupTableSQL = "CREATE TABLE MESSAGEGROUP (ID INTEGER not NULL AUTO_INCREMENT, " +
+                    " SENDER_ID INTEGER, TIMESTAMP VARCHAR(255), CONTENT VARCHAR(255), PRIMARY KEY ( ID ), " +
                     " FOREIGN KEY ( SENDER_ID ) REFERENCES USER(ID))";
 
             populate.executeUpdate(createMessageGroupTableSQL);
 
 
             // Create LOG table
-            String createLogTableSQL = "CREATE TABLE LOG " +
-                    "(ID INTEGER not NULL AUTO_INCREMENT, " +
-                    " USER_ID INTEGER, " +
-                    " TIMESTAMP VARCHAR(255), " +
-                    " TYPE VARCHAR(255), " +
-                    " PRIMARY KEY ( ID ), " +
-                    " FOREIGN KEY ( USER_ID ) REFERENCES USER(ID))";
+            String createLogTableSQL = "CREATE TABLE LOG (ID INTEGER not NULL AUTO_INCREMENT, " +
+                    " USER_ID INTEGER, TIMESTAMP VARCHAR(255), TYPE VARCHAR(255), " +
+                    " PRIMARY KEY ( ID ), FOREIGN KEY ( USER_ID ) REFERENCES USER(ID))";
             populate.executeUpdate(createLogTableSQL);
-            populate.close();
 
         } catch (SQLException se) {
             se.printStackTrace();
@@ -127,10 +104,8 @@ public class Database {
      * This method allows to clear the database
      */
     public void clearDB() {
-        Statement statement = null;
 
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
 
             // Delete all rows from LOG table
             String clearLogTableSQL = "DROP TABLE LOG";
@@ -148,19 +123,8 @@ public class Database {
             String clearUserTableSQL = "DROP TABLE USER";
             statement.executeUpdate(clearUserTableSQL);
 
-
-
-
-            statement.close();
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (statement != null) statement.close();
-            } catch (SQLException se2) {
-            }
         }
     }
 }

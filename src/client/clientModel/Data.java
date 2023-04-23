@@ -208,7 +208,7 @@ public class Data {
     }
 
     /**
-     * Allow to get an user by his ID in the list of user
+     * Allow to get a user by his ID in the list of user
      *
      * @param id the ID of the user
      * @return the user found

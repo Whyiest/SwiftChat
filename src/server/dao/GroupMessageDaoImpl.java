@@ -24,9 +24,9 @@ public class GroupMessageDaoImpl implements GroupMessageDao {
     public String addMessageToGroup(String[] messageParts, String message){
 
         // Linking message parts to variables
-        String messageSenderID = "";
-        String messageTimestamp = "";
-        String messageContent = "";
+        String messageSenderID;
+        String messageTimestamp;
+        String messageContent;
 
         try {
             messageSenderID = messageParts[1];

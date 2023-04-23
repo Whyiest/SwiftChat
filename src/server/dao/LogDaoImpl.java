@@ -174,7 +174,7 @@ public class LogDaoImpl implements LogDao {
     public String getConnectionsStatisticsByUserId(String[] messageParts, String message){
         // Linking message parts to variables
         String logType = "LOGIN";
-        int idUser = 0;
+        int idUser;
 
         try {
             idUser = Integer.parseInt(messageParts[1]);
@@ -201,19 +201,9 @@ public class LogDaoImpl implements LogDao {
     public String getTopUsersBySentMessages(String message){
 
         // Create an SQL statement to get the 3 top users according to a specified type of log from the database
-        String sql = "SELECT U.USERNAME, COUNT(L.TYPE) AS MESSAGE_COUNT\n" +
-                "FROM LOG L\n" +
-                "JOIN (\n" +
-                "  SELECT USER_ID\n" +
-                "  FROM LOG\n" +
-                "  WHERE TYPE = 'Sent-message'\n" +
-                "  GROUP BY USER_ID\n" +
-                "  ORDER BY COUNT(*) DESC\n" +
-                "  LIMIT 4\n" +
-                ") T ON T.USER_ID = L.USER_ID\n" +
-                "JOIN USER U ON U.ID = L.USER_ID\n" +
-                "GROUP BY U.ID, U.USERNAME\n" +
-                "ORDER BY MESSAGE_COUNT DESC;\n";
+        String sql = "SELECT U.USERNAME, COUNT(L.TYPE) AS MESSAGE_COUNT FROM LOG L " +
+                "JOIN (SELECT USER_ID FROM LOG WHERE TYPE = 'SENT-MESSAGE' GROUP BY USER_ID ORDER BY COUNT(*) DESC LIMIT 4) " +
+                "T ON T.USER_ID = L.USER_ID JOIN USER U ON U.ID = L.USER_ID GROUP BY U.ID, U.USERNAME ORDER BY MESSAGE_COUNT DESC;";
         StringBuilder serverResponse = new StringBuilder();
 
         try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){
@@ -246,19 +236,9 @@ public class LogDaoImpl implements LogDao {
     public String getTopUsersByLogin(String message){
 
         // Create an SQL statement to get the 3 top users according to a specified type of log from the database
-        String sql = "SELECT U.USERNAME, COUNT(L.TYPE) AS LOGIN_COUNT\n" +
-                "FROM LOG L\n" +
-                "JOIN (\n" +
-                "  SELECT USER_ID\n" +
-                "  FROM LOG\n" +
-                "  WHERE TYPE = 'LOGIN'\n" +
-                "  GROUP BY USER_ID\n" +
-                "  ORDER BY COUNT(*) DESC\n" +
-                "  LIMIT 4\n" +
-                ") T ON T.USER_ID = L.USER_ID\n" +
-                "JOIN USER U ON U.ID = L.USER_ID\n" +
-                "GROUP BY U.ID, U.USERNAME\n" +
-                "ORDER BY LOGIN_COUNT DESC;\n";
+        String sql = "SELECT U.USERNAME, COUNT(L.TYPE) AS LOGIN_COUNT FROM LOG L " +
+                "JOIN (SELECT USER_ID FROM LOG  WHERE TYPE = 'LOGIN' GROUP BY USER_ID ORDER BY COUNT(*) DESC LIMIT 4) " +
+                "T ON T.USER_ID = L.USER_ID JOIN USER U ON U.ID = L.USER_ID GROUP BY U.ID, U.USERNAME ORDER BY LOGIN_COUNT DESC;";
         StringBuilder serverResponse = new StringBuilder();
 
         try(PreparedStatement statement = myDb.connection.prepareStatement(sql)){

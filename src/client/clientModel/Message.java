@@ -132,8 +132,9 @@ public class Message implements Comparable<Message> {
     }
 
     /**
-     * This method allow to compare the timestamp of two messages. This seem a bit overkill but it is necessary to compare the timestamp
-     * we had some problems with comparing the timestamp of two messages because the timestamp is too precise and add some milliseconds of difference
+     * This method allow to compare the timestamp of two messages
+     * we had some problems with comparing the timestamp of two messages because the timestamp is too precise
+     * it shows any milliseconds of difference
      *
      * @param otherMessage The message to compare
      * @return true if the timestamp are the same, false otherwise

@@ -4,7 +4,6 @@ import client.clientModel.Data;
 import client.clientModel.User;
 import client.controler.ServerConnection;
 
-import javax.swing.*;
 
 public class ViewManager implements Runnable {
     public ServerConnection serverConnection;
@@ -16,7 +15,7 @@ public class ViewManager implements Runnable {
     private OptionsWindow optionsWindow; // BAN 5
     private ReportingWindow reportingWindow; //REPORTS
 
-    private Data localStorage;
+    private final Data localStorage;
     public static int currentWindow; // 0 = Login , 1 = Registration, 2 = ContactWindow, 3 = ConversationWindow, 4= BanPage, 5=ReportWindow
     public static User chattingWithThisUser; // If you chat with someone, his user ID is here
     public static User currentUser; // If you chat with someone, his user ID is here

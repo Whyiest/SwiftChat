@@ -77,7 +77,8 @@ public class MessageDaoImpl implements MessageDao {
         } catch (Exception e) {
             System.out.println("[!] Error while analysing the message [" + message + "]");
             System.out.println("Incorrect syntax provided, please use : [LIST_ALL_MESSAGES_FOR_USER;SENDER_ID;RECEIVER_ID]");
-            e.printStackTrace(); // Ajoutez cette ligne pour afficher la trace de la pile d'erreurs
+            // display the stack trace of the error
+            e.printStackTrace();
             return "LIST-MESSAGES-BETWEEN-USERS;FAILURE";
         }
 

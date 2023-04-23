@@ -173,6 +173,7 @@ public class User {
         }
         return null;
     }
+
     /**
      * This method allow to transform a user into a string to send it to the server
      *

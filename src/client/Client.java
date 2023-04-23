@@ -16,8 +16,6 @@ public class Client {
 
     private static ViewManager viewManager;
 
-    private static Data localStorage;
-
     private static Timer timer;
 
     /**
@@ -30,7 +28,7 @@ public class Client {
 
         // Create basics objects
         serverConnection = new ServerConnection("localhost", 3000);
-        localStorage = new Data(serverConnection);
+        Data localStorage = new Data(serverConnection);
         viewManager = new ViewManager(serverConnection, localStorage);
 
         // Code to execute when the program is closed
@@ -56,7 +54,7 @@ public class Client {
             } catch (InterruptedException e) {
                 System.out.println("[!] Waiting for connexion...");
             }
-        };
+        }
 
         // Blocking the main thread until the client is disconnected
         while (serverConnection.isClientAlive()) {
@@ -68,7 +66,7 @@ public class Client {
                 viewThread.start();
                 oneTimeCall = true;
             }
-            if (isClientBanned == true) {
+            if (isClientBanned) {
                 // Kicks out the banned user and sends logout message
                 System.out.println("[!] Starting logout protocol : client has been banned.");
                 logout();
@@ -101,7 +99,7 @@ public class Client {
 
     /**
      * get client ID
-     * @return
+     * @return ID of the client if logged, -1 otherwise
      */
     public static int getClientID() {
         return clientID;

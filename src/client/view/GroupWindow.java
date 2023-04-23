@@ -3,23 +3,18 @@ import client.clientModel.Data;
 import client.clientModel.Message;
 import client.clientModel.User;
 import client.controler.ServerConnection;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 public class GroupWindow extends JDialog {
@@ -28,8 +23,8 @@ public class GroupWindow extends JDialog {
     private final ServerConnection serverConnection;
     private final User currentUser;
     private List<Message> groupMessageList;
-    private List<Message> alreadyDisplay;
-    private Data localStorage;
+    private final List<Message> alreadyDisplay;
+    private final Data localStorage;
 
     static JFrame parent = new JFrame();
     private JPanel chatPanel;
@@ -61,7 +56,7 @@ public class GroupWindow extends JDialog {
         this.currentUser = sender;
         this.groupMessageList = new ArrayList<>();
         this.header = "General conversation";
-        this.alreadyDisplay = new ArrayList<Message>();
+        this.alreadyDisplay = new ArrayList<>();
         this.messageLoaded = false;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -159,31 +154,24 @@ public class GroupWindow extends JDialog {
         groupMessageList = localStorage.getGroupMessageData();
 
         // If list is empty, do nothing
-        if (groupMessageList == null || groupMessageList.size() == 0) {
-            return;
-        }
-
-        List<Message> toDisplay = new ArrayList<Message>();
-        Message newMessage = null;
-
+        if (groupMessageList == null || groupMessageList.size() == 0) {return;}
+        List<Message> toDisplay = new ArrayList<>();
+        Message newMessage;
         // Check if there is new messages
         if (alreadyDisplay.size() > 0) {
-
             // For each message in the list of all messages
-            for (int i = 0; i < groupMessageList.size(); i++) {
-
+            for (Message value : groupMessageList) {
                 boolean isNewMessage = true;
-
                 // If the message is already displayed, it's not a new message
-                for (int j = 0; j < alreadyDisplay.size(); j++) {
-                    if (groupMessageList.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
+                for (Message message : alreadyDisplay) {
+                    if (value.compareTo(message) == 0) {
                         isNewMessage = false;
                         break;
                     }
                 }
                 // If it's a new message, we add it to the list of messages to display
                 if (isNewMessage) {
-                    newMessage = groupMessageList.get(i);
+                    newMessage = value;
                     toDisplay.add(newMessage);
                 }
             }
@@ -191,7 +179,6 @@ public class GroupWindow extends JDialog {
             // If there is no message displayed, we display all messages
             toDisplay.addAll(groupMessageList);
         }
-
 
         // Add the different messages to the UI
         for (Message message : toDisplay) {
@@ -259,24 +246,7 @@ public class GroupWindow extends JDialog {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatscrollpane = new JScrollPane(chatPanel);
-        chatscrollpane.addHierarchyListener(new HierarchyListener() {
-            @Override
-            public void hierarchyChanged(HierarchyEvent e) {
-                if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
-                    if (chatscrollpane.isShowing()) {
-                        Runnable scrollDown = new Runnable() {
-                            @Override
-                            public void run() {
-                                JScrollBar verticalScrollBar = chatscrollpane.getVerticalScrollBar();
-                                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
-                            }
-                        };
-                        SwingUtilities.invokeLater(scrollDown);
-                    }
-                }
-
-            }
-        });
+        chatscrollpane.addHierarchyListener(e -> ConversationWindow.hierarchyListenerEvent(e, chatscrollpane));
 
         return chatscrollpane;
     }
@@ -342,30 +312,6 @@ public class GroupWindow extends JDialog {
         buttonPanel.add(createSendButton());
         return buttonPanel;
     }
-
-    public static JPanel formatLabel(String out) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        JLabel output = new JLabel("<html><p style=\"width: 150px\">" + out + "</p></html>");
-        output.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        output.setBackground(new Color(37, 211, 102));
-        output.setOpaque(true);
-        output.setBorder(new EmptyBorder(15, 15, 15, 50));
-
-        panel.add(output);
-
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
-        JLabel time = new JLabel();
-        time.setText(sdf.format(cal.getTime()));
-
-        panel.add(time);
-
-        return panel;
-    }
-
 
     /**
      * Create the send button

@@ -141,7 +141,7 @@ public class MessageAnalyser {
     }
 
     /**
-     * This method allow to add an user to the database
+     * This method allow to add a user to the database
      * Message format : ADD-USER;ID;USERNAME;FIRST_NAME;LAST_NAME;EMAIL;PASSWORD;PERMISSION;LAST-CONNECTION_TIME;BAN_STATUS;STATUS
      * Response format : ADD-USER;SUCCESS/FAILURE
      *

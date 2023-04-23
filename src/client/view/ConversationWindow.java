@@ -2,7 +2,6 @@ package client.view;
 
 import java.io.*;
 import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -18,19 +17,15 @@ import client.clientModel.User;
 import client.controler.ServerConnection;
 
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class ConversationWindow extends JDialog {
-    private String contactName;
     private JTextField messageField;
     private final ServerConnection serverConnection;
     private final User chattingWithThisUser;
@@ -41,13 +36,12 @@ public class ConversationWindow extends JDialog {
     private JPanel conversationPanel;
     static JFrame parent = new JFrame();
     private List<Message> listOfMessageBetweenUsers;
-    private List<Message> alreadyDisplay;
-    private Data localStorage;
+    private final List<Message> alreadyDisplay;
+    private final Data localStorage;
     private Thread updateThread;
-    private boolean talkingToSimpleQuestionAI = false;
-    public boolean messageLoaded = false;
+    private final boolean talkingToSimpleQuestionAI;
+    public boolean messageLoaded;
     private JScrollPane chatScrollPane;
-    private LocalDateTime userConnexionTime;
     private String file;
 
 
@@ -68,7 +62,7 @@ public class ConversationWindow extends JDialog {
         this.currentUser = whoIam;
         this.listOfMessageBetweenUsers = new ArrayList<>();
         this.localStorage = localStorage;
-        this.alreadyDisplay = new ArrayList<Message>();
+        this.alreadyDisplay = new ArrayList<>();
         this.messageLoaded = false;
         this.talkingToSimpleQuestionAI = talkingToSimpleQuestionAI;
 
@@ -174,21 +168,21 @@ public class ConversationWindow extends JDialog {
             return;
         }
         // Getting last messages
-        List<Message> toDisplay = new ArrayList<Message>();
-        Message newMessage = null;
+        List<Message> toDisplay = new ArrayList<>();
+        Message newMessage;
 
         if (alreadyDisplay.size() > 0) {
-            for (int i = 0; i < listOfMessageBetweenUsers.size(); i++) {
+            for (Message listOfMessageBetweenUser : listOfMessageBetweenUsers) {
 
                 boolean isNewMessage = true;
-                for (int j = 0; j < alreadyDisplay.size(); j++) {
-                    if (listOfMessageBetweenUsers.get(i).compareTo(alreadyDisplay.get(j)) == 0) {
+                for (Message message : alreadyDisplay) {
+                    if (listOfMessageBetweenUser.compareTo(message) == 0) {
                         isNewMessage = false;
                         break;
                     }
                 }
                 if (isNewMessage) {
-                    newMessage = listOfMessageBetweenUsers.get(i);
+                    newMessage = listOfMessageBetweenUser;
                     toDisplay.add(newMessage);
                 }
             }
@@ -242,7 +236,7 @@ public class ConversationWindow extends JDialog {
      */
     private JPanel createUserPanel() {
 
-        String currentPrivilege = "";
+        String currentPrivilege;
 
         JPanel userPanel = new JPanel(new GridBagLayout());
         userPanel.setPreferredSize(new Dimension(550, 30));
@@ -296,7 +290,7 @@ public class ConversationWindow extends JDialog {
 
     private JLabel createTimeLabel() {
 
-        userConnexionTime = chattingWithThisUser.getLastConnectionTime();
+        LocalDateTime userConnexionTime = chattingWithThisUser.getLastConnectionTime();
         String formatted = formatDate(userConnexionTime);
         JLabel timeLabel = new JLabel();
         timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -315,26 +309,29 @@ public class ConversationWindow extends JDialog {
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatScrollPane = new JScrollPane(chatPanel);
-        chatScrollPane.addHierarchyListener(new HierarchyListener() {
-            @Override
-            public void hierarchyChanged(HierarchyEvent e) {
-                if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
-                    if (chatScrollPane.isShowing()) {
-                        Runnable scrollDown = new Runnable() {
-                            @Override
-                            public void run() {
-                                JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
-                                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
-                            }
-                        };
-                        SwingUtilities.invokeLater(scrollDown);
-                    }
-                }
 
-            }
+        chatScrollPane.addHierarchyListener(e -> {
+            hierarchyListenerEvent(e, chatScrollPane);
+
         });
         return chatScrollPane;
 
+    }
+
+    /**
+     * Create the message field
+     *
+     */
+    static void hierarchyListenerEvent(HierarchyEvent e, JScrollPane chatScrollPane) {
+        if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+            if (chatScrollPane.isShowing()) {
+                Runnable scrollDown = () -> {
+                    JScrollBar verticalScrollBar = chatScrollPane.getVerticalScrollBar();
+                    verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                };
+                SwingUtilities.invokeLater(scrollDown);
+            }
+        }
     }
 
 
@@ -364,7 +361,7 @@ public class ConversationWindow extends JDialog {
         backButton.setForeground(new Color(255, 255, 255));
         backButton.addActionListener(e -> {
 
-            // Go gack to contact page
+            // Go back to contact page
             ViewManager.setCurrentDisplay(2);
             closeConversationWindow();
             if (!talkingToSimpleQuestionAI) {
@@ -376,11 +373,12 @@ public class ConversationWindow extends JDialog {
     }
 
     /**
-     * Create the user name label
+     * Create the username label
      *
-     * @return the user name label
+     * @return the username label
      */
     private JLabel createUserNameLabel() {
+        String contactName;
         if (!talkingToSimpleQuestionAI) {
             contactName = chattingWithThisUser.getFirstName() + " " + chattingWithThisUser.getLastName();
         } else {
@@ -413,7 +411,7 @@ public class ConversationWindow extends JDialog {
     }
 
     /**
-     * This function allow to get the current privileges of an user
+     * This function allow to get the current privileges of a user
      *
      * @return the permission of the use
      */
@@ -439,7 +437,7 @@ public class ConversationWindow extends JDialog {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        // Create and setup the message
+        // Create and set up the message
         JLabel output = new JLabel("<html><p style=\"width: 100px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
         output.setBackground(new Color(5, 194, 192));
@@ -474,7 +472,7 @@ public class ConversationWindow extends JDialog {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        // Create and setup the message
+        // Create and set up the message
         JLabel output = new JLabel("<html><p style=\"width: 100px\">" + out + "</p></html>");
         output.setFont(new Font("Tahoma", Font.PLAIN, 16));
         output.setBackground(new Color(140, 152, 152, 255));
@@ -544,7 +542,6 @@ public class ConversationWindow extends JDialog {
                     serverConnection.addLog(currentUser.getId(), "SENT-MESSAGE");
                 }
             });
-            return sendButton;
         } else {
 
             sendButton.addActionListener(e -> {
@@ -556,14 +553,14 @@ public class ConversationWindow extends JDialog {
                     messageField.setText("");
                 }
             });
-            return sendButton;
         }
+        return sendButton;
     }
 
     /**
-     * Allow to display the message at the right side
+     * Allow to display the message on the right side
      *
-     * @param newMessage
+     * @param newMessage the message to display
      */
     private void addSentMessage(Message newMessage) {
 
@@ -577,7 +574,7 @@ public class ConversationWindow extends JDialog {
     }
 
     /**
-     * Allow to display the message at the left side"
+     * Allow to display the message on the left side
      *
      * @param newMessage the message to display
      */
@@ -590,15 +587,6 @@ public class ConversationWindow extends JDialog {
         receivedMessagePanel.add(panel);
         chatPanel.add(receivedMessagePanel);
         chatPanel.revalidate();
-    }
-
-    /**
-     * Allow to aknowledge that the message list is loaded
-     *
-     * @param messageLoaded true if the message list is loaded
-     */
-    public void setMessageLoaded(boolean messageLoaded) {
-        this.messageLoaded = messageLoaded;
     }
 
     /**
@@ -653,8 +641,7 @@ public class ConversationWindow extends JDialog {
         in.close();
 
         JSONObject json = new JSONObject(response.toString());
-        String text = json.getJSONArray("choices").getJSONObject(0).getString("text");
-        return text;
+        return json.getJSONArray("choices").getJSONObject(0).getString("text");
     }
 }
 
