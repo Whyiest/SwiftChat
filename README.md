@@ -17,11 +17,12 @@ java -jar client.jar
 
 # Features:
 
-Real-time messaging between multiple clients connected to a server.
-User-friendly GUI designed using Java Swing.
-Support private chat and grou pchat.
-Usernames displayed alongside messages for easy identification.
-Contributing:
+- Real-time messaging between multiple clients connected to a server.
+- User-friendly GUI designed using Java Swing.
+- Support private chat and group chat.
+- Usernames and Timestamp displayed alongside messages for easy identification.
+
+# Contributing:
 We welcome contributions to this project. Feel free to fork the repository and make changes. If you find any bugs or issues, please open an issue on GitHub.
 
 # License:
