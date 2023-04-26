@@ -8,12 +8,19 @@ Welcome to our real-time messaging software built using Java Swing. This project
 2. Open the project in your preferred Java IDE (we used IntelliJ IDEA for this project).
 3. Enter the IP address of the server and credentials of your database computer in the server code.
 4. Enter and OPENAI API Key if you want to use one (Go to ConversationWindow class).
-5. Build the project to generate the client and server jar files.
-6. Launch the server jar file on a computer that will act as the server. You can do this by running the following command in the terminal:
+6. Build the project to generate the client and server jar files.
+7. Launch the server jar file on a computer that will act as the server. You can do this by running the following command in the terminal:
 java -jar server.jar
-7. Launch the client jar file on two different computers to start chatting. You can do this by running the following command in the terminal:
+8. Launch the client jar file on two different computers to start chatting. You can do this by running the following command in the terminal:
 java -jar client.jar
-8. Start messaging in real-time!
+9. Start messaging in real-time!
+
+# How populate database ?
+
+Please go to server main, in "danger zone" you will have 3 options : 
+- Clear current database
+- Create database tables 
+- Populate all the tables with test data (can be customized)
 
 # Features:
 
