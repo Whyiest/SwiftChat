@@ -33,4 +33,4 @@ Please go to server main, in "danger zone" you will have 3 options :
 We welcome contributions to this project. Feel free to fork the repository and make changes. If you find any bugs or issues, please open an issue on GitHub.
 
 # License:
-This project is licensed under the MIT License. Please see the LICENSE file for more details.
+This project is licensed under the MIT License. Please see the LICENSE.md file for more details.
